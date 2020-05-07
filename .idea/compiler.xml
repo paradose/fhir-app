@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Assignment-2-FHIR" target="1.5" />
+      <module name="Assignment-2-FHIR" target="1.12" />
     </bytecodeTargetLevel>
   </component>
 </project>
