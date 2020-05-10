@@ -23,22 +23,20 @@ public class PractitionerRecord {
     private IGenericClient client;
     private FhirContext context;
     private ArrayList<PatientRecord> monitoredPatients;
-    private ArrayList<String> patientsIds = new ArrayList<String>();
+    private ArrayList<String> patientsIds = new ArrayList<>();
 
 
-    public PractitionerRecord(String inputID){
+    public PractitionerRecord(String inputIdentifier){
         context = FhirContext.forR4();
         client = context.newRestfulGenericClient("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
-
-        practitionerID = inputID;
-        practitionerIdentifier = retrieveIdentifier(inputID);
-        practitionerPatients = new ArrayList<PatientRecord>();
+        practitionerIdentifier = inputIdentifier;
+        practitionerPatients = new ArrayList<>();
     }
 
-    public String retrieveIdentifier(String id){
-        Practitioner practitioner = client.read().resource(Practitioner.class).withId(id).execute();
-        return practitioner.getIdentifier().get(0).getSystem() +"|"+ practitioner.getIdentifier().get(0).getValue();
-    }
+//    public String retrieveIdentifier(String id){
+//        Practitioner practitioner = client.read().resource(Practitioner.class).withId(id).execute();
+//        return practitioner.getIdentifier().get(0).getSystem() +"|"+ practitioner.getIdentifier().get(0).getValue();
+//    }
 
 
     public String getPractitionerIdentifier() {
@@ -51,8 +49,7 @@ public class PractitionerRecord {
 
     public void retrievePractitionerPatients() {
 //        List<IBaseResource> encountersWithId = new ArrayList<>();
-        System.out.println(practitionerIdentifier);
-        String encounterUrl = "https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/Encounter?practitioner.identifier=" + practitionerIdentifier;
+        String encounterUrl = "https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/Encounter?practitioner.identifier=http://hl7.org/fhir/sid/us-npi|" + practitionerIdentifier;
         Bundle encounters = client.search().byUrl(encounterUrl)
                 .returnBundle(Bundle.class).execute();
 
