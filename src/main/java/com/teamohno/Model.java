@@ -16,7 +16,7 @@ public class Model extends AbstractTableModel {
     private ArrayList<String> dateMeasured;
 
     private PractitionerRecord loggedInPractitioner;
-    private DefaultListModel myListModel;
+    private DefaultListModel patientListModel;
 //    private ArrayList<String> patientListNames;
 
 
@@ -37,7 +37,7 @@ public class Model extends AbstractTableModel {
 //        patientListNames = new ArrayList<String>();
 
         // ListModel
-        myListModel = new DefaultListModel();
+        patientListModel = new DefaultListModel();
     }
 
     public void setValueAt(int row, int col, String value){
@@ -81,14 +81,14 @@ public class Model extends AbstractTableModel {
 
     public DefaultListModel getList(){
 //        return patientListNames;
-        return myListModel;
+        return patientListModel;
     }
 
     public void updatePatientNamesList(){
-        myListModel.clear();
+        patientListModel.clear();
 
         for (int i = 0; i < loggedInPractitioner.getPractitionerPatients().size(); i++) {
-            myListModel.add(i, loggedInPractitioner.getPractitionerPatients().get(i).getFirstName() + " " +
+            patientListModel.add(i, loggedInPractitioner.getPractitionerPatients().get(i).getFirstName() + " " +
                     loggedInPractitioner.getPractitionerPatients().get(i).getLastName());
         }
     }
