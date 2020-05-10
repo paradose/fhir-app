@@ -8,7 +8,16 @@ import org.hl7.fhir.r4.model.Patient;
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+        // setup before getting input from user
+        Model m = new Model();
+        View v = new View(m);
+        Controller c = new Controller(m, v);
+        c.initController();
+        c.initView();
+
+
+
+
         //create a context
         FhirContext context = FhirContext.forR4();
 
