@@ -24,6 +24,6 @@ public class PatientRecord {
     }
 
     public String toString(){
-        return id + " " + firstName + " " + lastName;
+        return "Patient ID: " + id + ", " + firstName + " " + lastName;
     }
 }
