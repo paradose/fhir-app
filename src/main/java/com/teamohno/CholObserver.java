@@ -16,9 +16,15 @@ public class CholObserver extends Observer {
     public void update() {
         PatientRecord newState = observerState.getState();
         Cholesterol patientsCurrentChol = newState.getCholesterolMeasurement();
-        boolean sameChol = patientsCurrentChol.getCholesterolValue().equals(lastState.getCholesterolValue());
+        BigDecimal totalchol = patientsCurrentChol.getCholesterolValue();
+        // compares last state with current
+        boolean sameChol = totalchol.equals(lastState.getCholesterolValue());
         if (!sameChol){
-            //update the model
+            lastState.setCholesterolValue(totalchol);
+            // send update to model
+            System.out.println(patientsCurrentChol.getCholesterolValue());
+        }else{
+            System.out.println("no change : )");
         }
     }
 }
