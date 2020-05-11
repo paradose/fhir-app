@@ -3,6 +3,7 @@ package com.teamohno;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class View extends JFrame{
     private JLabel pracIDLabel;
@@ -17,16 +18,25 @@ public class View extends JFrame{
     private JScrollPane monitorScrollPane;
     private JScrollPane patientListScrollPane;
     private JPanel mainParentPanel;
+    private JList patientJList;
+
+    private DefaultListModel listModel;
 
     // Empty constructor
     public View(){
 
     }
 
-    public View(TableModel dataModel) {
+    public View(TableModel dataModel, DefaultListModel listModel) {
         super("Title");
 
-        //Creating a JTable and adding it to the scrollpane
+        //Instantiating JList object
+        patientJList = new JList(listModel);
+        patientJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        patientJList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        patientListScrollPane.setViewportView(patientJList);
+
+        //Creating a JTable and adding it to the scroll pane
         JTable monitorTable = new JTable(dataModel);
         monitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorScrollPane.setViewportView(monitorTable);
@@ -37,5 +47,29 @@ public class View extends JFrame{
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    public JTextField getPracIDfield() {
+        return pracIDfield;
+    }
+
+    public JTextField getFreqField() {
+        return freqField;
+    }
+
+    public JButton getUpdatePracButton() {
+        return updatePracButton;
+    }
+
+    public JList getPatientJList() {
+        return patientJList;
+    }
+
+    public void setPatientJList(JList patientJList) {
+        this.patientJList = patientJList;
+    }
+
+    public JButton getUpdateFreqButton() {
+        return updateFreqButton;
     }
 }

@@ -72,7 +72,12 @@
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="a6db7" class="javax.swing.JList" binding="patientJList">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
       </scrollpane>
       <component id="e4666" class="javax.swing.JLabel" binding="freqLabel">
         <constraints>
