@@ -3,21 +3,20 @@ package com.teamohno;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class Cholesterol {
-    private BigDecimal cholesterolValue;
-    private Date dateMeasured;
+public class Cholesterol extends Measurement{
 
     public Cholesterol(BigDecimal newCholValue, Date newCholDate){
-        cholesterolValue = newCholValue;
+        measurementValue = newCholValue;
         dateMeasured = newCholDate;
+        measurementType = Type.CHOLESTEROL;
     }
 
     public BigDecimal getCholesterolValue() {
-        return cholesterolValue;
+        return measurementValue;
     }
 
     public void setCholesterolValue(BigDecimal cholesterolValue) {
-        this.cholesterolValue = cholesterolValue;
+        this.measurementValue = cholesterolValue;
     }
 
     public Date getDateMeasured() {

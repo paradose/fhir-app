@@ -12,7 +12,6 @@ import java.util.List;
 
 public class PatientSubject extends Subject {
     private PatientRecord state;
-    private Boolean isMonitored;
     private IGenericClient client;
     private FhirContext context;
 
@@ -29,13 +28,6 @@ public class PatientSubject extends Subject {
         state = patient;
     }
 
-    public Boolean checkMonitor() {
-        return isMonitored;
-    }
-
-    public void setIsMonitored(Boolean monitored){
-        isMonitored = monitored;
-    }
     public void retrieveCholVal() {
         String id = state.getId();
         // code for getting total cholesterol
@@ -47,7 +39,7 @@ public class PatientSubject extends Subject {
             // gets latest observation
             Observation observation = (Observation) choleResults.getEntry().get(0).getResource();
             Date date = observation.getIssued();
-            BigDecimal totalChol =observation.getValueQuantity().getValue();
+            BigDecimal totalChol = observation.getValueQuantity().getValue();
             state.addCholesterolMeasurement(totalChol,date);
             System.out.println("Total chol value for " + observation.getValueQuantity().getValue());
             System.out.println(date);

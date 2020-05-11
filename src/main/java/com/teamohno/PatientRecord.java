@@ -11,6 +11,7 @@ public class PatientRecord {
     private String birthDate;
     private String address;
     private Cholesterol cholesterolMeasurement;
+    private boolean isMonitored;
 
     public PatientRecord(String patientId, String patientFirstName, String patientLastName,String gender, String birthDate, String address){
         id=patientId;
@@ -39,6 +40,14 @@ public class PatientRecord {
     }
     public String getAddress(){
         return address;
+    }
+
+    public boolean getIsMonitored(){
+        return isMonitored;
+    }
+
+    public void triggerMonitorState(){
+        isMonitored = !isMonitored;
     }
 
     public Cholesterol getCholesterolMeasurement() {

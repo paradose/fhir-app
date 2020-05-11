@@ -19,8 +19,11 @@ public class View extends JFrame{
     private JScrollPane patientListScrollPane;
     private JPanel mainParentPanel;
     private JList patientJList;
+    private JButton monitorCholButton;
+    private JButton stopMonitorButton;
 
     private DefaultListModel listModel;
+    private JTable monitorTable;
 
     // Empty constructor
     public View(){
@@ -32,12 +35,12 @@ public class View extends JFrame{
 
         //Instantiating JList object
         patientJList = new JList(listModel);
-        patientJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        patientJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         patientJList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         patientListScrollPane.setViewportView(patientJList);
 
         //Creating a JTable and adding it to the scroll pane
-        JTable monitorTable = new JTable(dataModel);
+        monitorTable = new JTable(dataModel);
         monitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorScrollPane.setViewportView(monitorTable);
 
@@ -71,5 +74,17 @@ public class View extends JFrame{
 
     public JButton getUpdateFreqButton() {
         return updateFreqButton;
+    }
+
+    public JButton getMonitorCholButton() {
+        return monitorCholButton;
+    }
+
+    public JButton getStopMonitorButton() {
+        return stopMonitorButton;
+    }
+
+    public JTable getMonitorTable(){
+        return monitorTable;
     }
 }

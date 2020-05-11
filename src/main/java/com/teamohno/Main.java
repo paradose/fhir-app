@@ -10,9 +10,13 @@ public class Main {
     public static void main(String[] args) {
         // setup before getting input from user
         Model m = new Model();
-        View v = new View(m, m.getList());
+        View v = new View(m.getMonitorTable(), m.getList());
         Controller c = new Controller(m, v);
+
+        // Add listeners to view objects
         c.initController();
+
+        // Setup view values
         c.initView();
 
         // prac Identifier: 65440 - returns 39 encounters , 270 - 50 returns encounters
