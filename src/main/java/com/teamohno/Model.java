@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Model extends AbstractTableModel {
     private ArrayList<String> monitoredColumns;
@@ -40,8 +41,10 @@ public class Model extends AbstractTableModel {
         patientListModel = new DefaultListModel();
     }
 
-    public void setValueAt(int row, int col, String value){
-        monitoredData.get(col).set(row, value);
+    public void addValue(String newMonPatientName, String newMonValue, String date){
+        monitoredPatientNames.add(newMonPatientName);
+        cholesterolLevels.add(newMonValue);
+        dateMeasured.add(date);
     }
 
     @Override
@@ -90,6 +93,9 @@ public class Model extends AbstractTableModel {
         for (int i = 0; i < loggedInPractitioner.getPractitionerPatients().size(); i++) {
             patientListModel.add(i, loggedInPractitioner.getPractitionerPatients().get(i).getFirstName() + " " +
                     loggedInPractitioner.getPractitionerPatients().get(i).getLastName());
+
+            //temporary to test adding in monitored patients
+            addValue(loggedInPractitioner.getPractitionerPatients().get(i).getFirstName(),"0" ,"0");
         }
     }
 }

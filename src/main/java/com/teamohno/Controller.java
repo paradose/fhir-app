@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Controller {
     private Model myModel;
+
     private View myView;
 
     public Controller(Model newModel, View newView){
@@ -37,6 +38,8 @@ public class Controller {
 
         // update model with new practitioner id now stored in model
         myModel.updatePatientNamesList();
+
+        // add listener
     }
 
     private void updateFrequency(){
@@ -58,4 +61,6 @@ public class Controller {
             }
         }
     }
+
+    // addMonitoredPatient()
 }
