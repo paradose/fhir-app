@@ -1,21 +1,22 @@
 package com.teamohno;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class Cholesterol {
-    private int cholesterolValue;
+    private BigDecimal cholesterolValue;
     private Date dateMeasured;
 
-    public Cholesterol(int newCholValue, Date newCholDate){
+    public Cholesterol(BigDecimal newCholValue, Date newCholDate){
         cholesterolValue = newCholValue;
         dateMeasured = newCholDate;
     }
 
-    public int getCholesterolValue() {
+    public BigDecimal getCholesterolValue() {
         return cholesterolValue;
     }
 
-    public void setCholesterolValue(int cholesterolValue) {
+    public void setCholesterolValue(BigDecimal cholesterolValue) {
         this.cholesterolValue = cholesterolValue;
     }
 
