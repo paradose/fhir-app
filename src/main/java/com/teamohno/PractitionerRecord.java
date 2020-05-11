@@ -36,10 +36,6 @@ public class PractitionerRecord {
         practitionerPatients = new ArrayList<PatientRecord>();
     }
 
-    public String retrieveIdentifier(String id){
-        Practitioner practitioner = client.read().resource(Practitioner.class).withId(id).execute();
-        return practitioner.getIdentifier().get(0).getSystem() +"|"+ practitioner.getIdentifier().get(0).getValue();
-    }
 
     public String getPractitionerIdentifier() {
         return practitionerIdentifier;
@@ -49,20 +45,20 @@ public class PractitionerRecord {
         return practitionerID;
     }
 
-    public String retrievePractitionerID(String identifier){
-        Practitioner practitioner;
-        String pracID = "";
-        Bundle practitionerBundle = client.search()
-                .forResource(Practitioner.class)
-                .where(Practitioner.IDENTIFIER.exactly().identifier(identifier))
-                .returnBundle(Bundle.class).execute();
-        if (practitionerBundle.getEntry().size() > 0) {
-            practitioner = (Practitioner) practitionerBundle.getEntry().get(0).getResource();
-//            pracID = practitioner
-//          practitioner.getIdentifier().get(0).getSystem() +"|"+ practitioner.getIdentifier().get(0).getValue();
-        }
-        return pracID;
-    }
+//    public String retrievePractitionerID(String identifier){
+//        Practitioner practitioner;
+//        String pracID = "";
+//        Bundle practitionerBundle = client.search()
+//                .forResource(Practitioner.class)
+//                .where(Practitioner.IDENTIFIER.exactly().identifier(identifier))
+//                .returnBundle(Bundle.class).execute();
+//        if (practitionerBundle.getEntry().size() > 0) {
+//            practitioner = (Practitioner) practitionerBundle.getEntry().get(0).getResource();
+////            pracID = practitioner
+////          practitioner.getIdentifier().get(0).getSystem() +"|"+ practitioner.getIdentifier().get(0).getValue();
+//        }
+//        return pracID;
+//    }
 
     public void retrievePractitionerPatients() {
 //        List<IBaseResource> encountersWithId = new ArrayList<>();
@@ -102,8 +98,12 @@ public class PractitionerRecord {
         Patient newPatient = client.read().resource(Patient.class).withId(id).execute();
         String firstName = newPatient.getName().get(0).getGivenAsSingleString();
         String lastName = newPatient.getName().get(0).getFamily();
-        return new PatientRecord(id,firstName,lastName);
+        String birthDate = newPatient.getBirthDate().toString();
+        String gender = newPatient.getGender().toString();
+        String address = newPatient.getAddress().toString();
+        return new PatientRecord(id,firstName,lastName,gender,birthDate,address);
     }
+
     public ArrayList<PatientRecord> getPractitionerPatients(){
         return practitionerPatients;
     }
