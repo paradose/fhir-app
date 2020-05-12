@@ -13,11 +13,16 @@ public class PatientRecord{
     private Cholesterol cholesterolMeasurement;
     private boolean isMonitored;
 
-    public PatientRecord(String patientId, String patientFirstName, String patientLastName,String gender, String birthDate, String address){
+
+    public PatientRecord(String patientId, String patientFirstName, String patientLastName,String patientGender, String patientBirthDate, String patientAddress){
         id=patientId;
         firstName = patientFirstName;
         lastName = patientLastName;
         cholesterolMeasurement = new Cholesterol(BigDecimal.ZERO, null);
+        gender = patientGender;
+        birthDate=patientBirthDate;
+        address=patientAddress;
+
     }
 
     public String getFirstName() {
@@ -60,6 +65,6 @@ public class PatientRecord{
     }
 
     public String toString(){
-        return "Patient ID: " + id + ", " + firstName + " " + lastName;
+        return "Patient ID: " + id + ", " + firstName + " " + lastName + " "+ gender+" "+address+" "+birthDate;
     }
 }
