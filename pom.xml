@@ -28,6 +28,13 @@
             <artifactId>hapi-fhir-client</artifactId>
             <version>4.1.0</version>
         </dependency>
+
+        <!-- Used for StringUtils.isNumeric-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+        </dependency>
     </dependencies>
 
 

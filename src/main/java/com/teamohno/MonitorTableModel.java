@@ -1,5 +1,7 @@
 package com.teamohno;
 
+import org.hl7.fhir.r4.model.Measure;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.math.BigDecimal;
@@ -13,7 +15,7 @@ public class MonitorTableModel extends AbstractTableModel {
     private ArrayList<String> cholesterolLevels;
     private ArrayList<String> effectiveDate;
 
-    // Array list used to navigate to correct index inside the data columns for a given patient
+    // used to gather index of patient that are being monitored
     private ArrayList<PatientRecord> monitoredPatients;
 
     public MonitorTableModel() {
@@ -33,6 +35,10 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(monitoredPatientNames);
         monitoredData.add(cholesterolLevels);
         monitoredData.add(effectiveDate);
+    }
+
+    public ArrayList<PatientRecord> getIndexArrayPatients() {
+        return monitoredPatients;
     }
 
     public void addMonitoredPatient(PatientRecord newMonPatient){
@@ -110,5 +116,9 @@ public class MonitorTableModel extends AbstractTableModel {
             }
         }
         return rowCount;
+    }
+
+    public ArrayList<ArrayList<String>> getMonitorData(){
+        return monitoredData;
     }
 }

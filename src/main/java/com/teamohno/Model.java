@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Model {
-    MonitorTableModel myMonitorTableModel;
-    DefaultListModel patientListModel;
-    PractitionerRecord loggedInPractitioner;
+    private MonitorTableModel myMonitorTableModel;
+    private DefaultListModel patientListModel;
+    private PractitionerRecord loggedInPractitioner;
+    private ArrayList<PatientSubject> monitoredSubjects;
 
     public Model() {
         myMonitorTableModel = new MonitorTableModel();
-
-        // ListModel
         patientListModel = new DefaultListModel();
+        monitoredSubjects = new ArrayList<PatientSubject>();
     }
 
     public MonitorTableModel getMonitorTable(){
@@ -45,5 +45,13 @@ public class Model {
             patientListModel.add(i, loggedInPractitioner.getPractitionerPatients().get(i).getFirstName() + " " +
                     loggedInPractitioner.getPractitionerPatients().get(i).getLastName());
         }
+    }
+
+    public ArrayList<PatientSubject> getMonitoredSubjects() {
+        return monitoredSubjects;
+    }
+
+    public void addMonitoredSubjects(PatientSubject newSubject){
+        monitoredSubjects.add(newSubject);
     }
 }

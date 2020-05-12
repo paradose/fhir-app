@@ -15,10 +15,10 @@ public class PatientSubject extends Subject {
     private IGenericClient client;
     private FhirContext context;
 
-    public PatientSubject(){
+    public PatientSubject(PatientRecord initialPatientData){
         context = FhirContext.forR4();
         client = context.newRestfulGenericClient("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
-
+        state = initialPatientData;
     }
     public PatientRecord getState() {
         return state;

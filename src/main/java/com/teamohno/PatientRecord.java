@@ -3,7 +3,7 @@ package com.teamohno;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class PatientRecord {
+public class PatientRecord{
     private String id;
     private String firstName;
     private String lastName;

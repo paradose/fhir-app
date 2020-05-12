@@ -24,7 +24,7 @@ public class PractitionerRecord {
     private FhirContext context;
     private ArrayList<PatientRecord> monitoredPatients;
     private ArrayList<String> patientsIds = new ArrayList<String>();
-
+    private ArrayList<PatientSubject> monitoredSubjects;
 
     public PractitionerRecord(String inputIdentifier){
         context = FhirContext.forR4();
@@ -35,7 +35,6 @@ public class PractitionerRecord {
         practitionerIdentifier = inputIdentifier;
         practitionerPatients = new ArrayList<PatientRecord>();
     }
-
 
     public String getPractitionerIdentifier() {
         return practitionerIdentifier;

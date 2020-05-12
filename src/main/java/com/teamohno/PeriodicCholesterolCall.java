@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.TimerTask;
 
 public class PeriodicCholesterolCall extends TimerTask {
-//    private ArrayList<PatientSubject> patientSubjectList;
+    public static int iteration;
+    private ArrayList<PatientSubject> patientSubjectList;
 
-//    public PeriodicCholesterolCall(ArrayList<PatientSubject> newPatientSubjectList){
-//        patientSubjectList = newPatientSubjectList;
-//    }
+    public PeriodicCholesterolCall(ArrayList<PatientSubject> newPatientSubjectList){
+        patientSubjectList = newPatientSubjectList;
+        iteration = 0;
+    }
 
     @Override
     public void run() {
-//        for (int i = 0; i < patientSubjectList.size(); i++) {
+        for (int i = 0; i < patientSubjectList.size(); i++) {
 //            patientSubjectList.get(i).getCholVal();
-//        }
+            System.out.println("Iteration " + iteration + ", Finding cholesterol for patient " + i);
+        }
+
+        iteration++;
     }
 }
