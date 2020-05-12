@@ -22,18 +22,17 @@ public class PractitionerRecord {
     private String practitionerIdentifier;
     private IGenericClient client;
     private FhirContext context;
+    private Server server;
     private ArrayList<PatientRecord> monitoredPatients;
-    private ArrayList<String> patientsIds = new ArrayList<String>();
     private ArrayList<PatientSubject> monitoredSubjects;
 
-    public PractitionerRecord(String inputIdentifier){
-        context = FhirContext.forR4();
-        client = context.newRestfulGenericClient("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
+    public PractitionerRecord(String inputIdentifier,Server inputServer){
 
 //        practitionerID = inputID;
 //        practitionerIdentifier = retrieveIdentifier(inputID);
         practitionerIdentifier = inputIdentifier;
         practitionerPatients = new ArrayList<PatientRecord>();
+        server=inputServer;
     }
 
     public String getPractitionerIdentifier() {
@@ -44,63 +43,8 @@ public class PractitionerRecord {
         return practitionerID;
     }
 
-//    public String retrievePractitionerID(String identifier){
-//        Practitioner practitioner;
-//        String pracID = "";
-//        Bundle practitionerBundle = client.search()
-//                .forResource(Practitioner.class)
-//                .where(Practitioner.IDENTIFIER.exactly().identifier(identifier))
-//                .returnBundle(Bundle.class).execute();
-//        if (practitionerBundle.getEntry().size() > 0) {
-//            practitioner = (Practitioner) practitionerBundle.getEntry().get(0).getResource();
-////            pracID = practitioner
-////          practitioner.getIdentifier().get(0).getSystem() +"|"+ practitioner.getIdentifier().get(0).getValue();
-//        }
-//        return pracID;
-//    }
-
     public void retrievePractitionerPatients() {
-//        List<IBaseResource> encountersWithId = new ArrayList<>();
-        System.out.println("Retrieving patients for practitioner " + practitionerIdentifier);
-        String encounterUrl = "https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/Encounter?practitioner.identifier=" + practitionerIdentifier;
-        Bundle encounters = client.search().byUrl(encounterUrl)
-                .returnBundle(Bundle.class).execute();
-
-        System.out.println("Practitioner has " + encounters.getEntry().size() + " encounters");
-
-        /* don't need to load subsequent pages?
-        while (encounters.getLink(IBaseBundle.LINK_NEXT) != null) {
-            encounters = client
-                    .loadPage()
-                    .next(encounters)
-                    .execute();
-            // process bundle
-        }        */
-
-        for (int i = 0; i < encounters.getEntry().size(); i++) {
-//            System.out.println("Checking encounter: " + i);
-            Encounter practitionerEncounter = (Encounter) encounters.getEntry().get(i).getResource();
-            String patientRef = practitionerEncounter.getSubject().getReference();
-            String id = patientRef.substring(8);
-
-            // storing patients that have not yet been added to the arraylist
-            if (!patientsIds.contains(id)) {
-                patientsIds.add(id);
-                PatientRecord patient = retrievePatient(id);
-                System.out.println(patient.toString());
-                practitionerPatients.add(patient);
-            }
-        }
-    }
-
-    public PatientRecord retrievePatient(String id ){
-        Patient newPatient = client.read().resource(Patient.class).withId(id).execute();
-        String firstName = newPatient.getName().get(0).getGivenAsSingleString();
-        String lastName = newPatient.getName().get(0).getFamily();
-        String birthDate = newPatient.getBirthDate().toString();
-        String gender = newPatient.getGender().toString();
-        String address = newPatient.getAddress().toString();
-        return new PatientRecord(id,firstName,lastName,gender,birthDate,address);
+        practitionerPatients = server.retrievePractitionerPatients(practitionerIdentifier);
     }
 
     public ArrayList<PatientRecord> getPractitionerPatients(){

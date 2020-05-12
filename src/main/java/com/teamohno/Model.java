@@ -15,6 +15,7 @@ public class Model {
     private PractitionerRecord loggedInPractitioner;
     private ArrayList<PatientSubject> monitoredSubjects;
 
+
     public Model() {
         myMonitorTableModel = new MonitorTableModel();
         patientListModel = new DefaultListModel();
@@ -25,8 +26,8 @@ public class Model {
         return myMonitorTableModel;
     }
 
-    public void createPractitoner(String newIdentifier){
-        loggedInPractitioner = new PractitionerRecord(newIdentifier);
+    public void createPractitoner(String newIdentifier, Server inputServer){
+        loggedInPractitioner = new PractitionerRecord(newIdentifier, inputServer);
     }
 
     public PractitionerRecord getPractitioner(){

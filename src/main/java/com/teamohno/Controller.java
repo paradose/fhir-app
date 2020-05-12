@@ -13,10 +13,12 @@ public class Controller {
     private Model myModel;
     private Timer myTimer;
     private View myView;
+    private Server server;
 
-    public Controller(Model newModel, View newView){
+    public Controller(Model newModel, View newView, Server inputServer){
         myModel = newModel;
         myView = newView;
+        server = inputServer;
     }
 
     public void initView(){
@@ -34,7 +36,7 @@ public class Controller {
 
     public void storePracIdentifier(){
         if(!myView.getPracIDfield().getText().isEmpty()) {
-            myModel.createPractitoner(myView.getPracIDfield().getText());
+            myModel.createPractitoner(myView.getPracIDfield().getText(),server);
             System.out.println("Entered Prac Identifier: " + myView.getPracIDfield().getText());
 
             updatePatientList();
@@ -66,8 +68,8 @@ public class Controller {
                 myModel.getMonitorTable().addPatientName(processPatient.getFirstName() + " " + processPatient.getLastName());
                 processPatient.triggerMonitorState();
 
-                // add patient to subjectArray
-                PatientSubject newSubject = new PatientSubject(processPatient);
+                // add patient to subjectArray and attach server for request
+                PatientSubject newSubject = new PatientSubject(processPatient,server);
                 myModel.getMonitoredSubjects().add(newSubject);
 
                 //stop current schedule if necessary???

@@ -11,7 +11,8 @@ public class Main {
         // setup before getting input from user
         Model m = new Model();
         View v = new View(m.getMonitorTable(), m.getList());
-        Controller c = new Controller(m, v);
+        Server fhirServer = new Server("http://hapi.fhir.org/baseR4/");
+        Controller c = new Controller(m, v,fhirServer);
 
         // Add listeners to view objects
         c.initController();
