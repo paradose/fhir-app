@@ -55,22 +55,22 @@ public class Controller {
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
-            // this is removed since we can ensure this error doesnt occur inside monitorTableModel
-            // if not monitored - or already monitoring anything but that type (cholesterol) - check for the selected patient - iterating through their measurements
-//            if (!myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]).getIsMonitored()) {
 
-            // add patients to monitorTable's indexArray
-            if(myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType)) {
+            // add patients to monitorTable's indexArray - if haven't monitored returns false
+            if (myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType.toString())) {
                 processPatient.triggerMonitorState();
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
-                myModel.getMonitoredSubjects().add(newSubject);
+                myModel.addMonitoredSubjects(newSubject);
 
-                //stop current schedule if previous monitoring schedule causes issues?
+                //stop current schedule if previously already monitoring schedule - (may causes issues)?
 
                 //trigger scheduler - will schedule entire monitored subject list
                 scheduleMonitor();
+            }
+            else{
+                System.out.println("Error attempting to monitor an already monitored patient+measurement combo.");
             }
         }
     }
@@ -81,46 +81,43 @@ public class Controller {
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
-            // check if monitored
-            if(processPatient.getIsMonitored()) {
-                // remove patient row's
-                myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
-                processPatient.triggerMonitorState();
 
-                // remove patientSubject corresponding to processPatientRecord
-                for (int j = 0; j < myModel.getMonitoredSubjects().size(); j++) {
-                    if (myModel.getMonitoredSubjects().get(j).getState().getId() == processPatient.getId()) {
-                        myModel.getMonitoredSubjects().remove(myModel.getMonitoredSubjects().get(j));
-                    }
-                }
-            }
+            // remove patient row's
+            myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
+            processPatient.triggerMonitorState();
+            myModel.getMonitoredSubjects().remove(myModel.getMonitoredSubjects().get(selectedIndices[i]));
         }
-
-        // if no more patients monitored stop scheduler?
+        // if no more patients monitored - scheduler runs but no patients to process
     }
 
     // add everyoine back in!!
-    public void scheduleMonitor(){
+    public void scheduleMonitor() {
         myTimer = new Timer();
 
-        // check the monitored list of patients... is inside... monitor table
-//        if(myModel..size()){/
-//
-//        }
-//
-//        for (int i = 0; i < ; i++) {
-            // add back into the monitor table...?
-//        }
+        // check if monitored patients existing (but not inside table) - check rowCount of index tracker
+//        int monitoredRows = myModel.getMonitorTable().getMonitoredRowCount();
+//        if (monitoredRows > 0) {
+//            for (int i = 0; i < monitoredRows; i++) {
+////             add back into the monitor table...?
+////                (String newPatientID, String newPatientName, Measurement.Type newType){
+//                String prevID = myModel.getMonitorTable().getIndexPatientsMeasurement().get(0).get(i);
+//                String prevName = myModel.getMonitorTable().getIndexPatientsMeasurement().get(1).get(i);
+//                String prevType = myModel.getMonitorTable().getIndexPatientsMeasurement().get(2).get(i);
+//                myModel.getMonitorTable().addMonitorPatient(prevID, prevName, prevType);
+//            }
 
-        String inputFrequency = myView.getFreqValueLabel().getText();
-        int intFreq = Integer.parseInt(inputFrequency);
-        // implement a parent class for measurementCalls
+            String inputFrequency = myView.getFreqValueLabel().getText();
+            int intFreq = Integer.parseInt(inputFrequency);
+
+            // implement a parent class for measurementCalls
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
-        myPeriodicTask = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
+            myPeriodicTask = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
 
-        myTimer.scheduleAtFixedRate(myPeriodicTask, 0, 1000 * intFreq);
+            myTimer.scheduleAtFixedRate(myPeriodicTask, 0, 1000 * intFreq);
+//        }
     }
 
+    // stop = patients data is cleared... and monitoring is ceased => however they still exist in subject array -> ready for the scheduler to start again?
     public void stopMonitor(){
         for (int i = 0; i < myModel.getMonitoredSubjects().size(); i++) {
             PatientRecord processPatient = myModel.getMonitoredSubjects().get(i).getState();
@@ -131,7 +128,10 @@ public class Controller {
                 myModel.getMonitorTable().getMonitorData().get(j).clear();
             }
         }
-        myModel.getMonitoredSubjects().clear();
+
+        // maybe instead of clearing subject array -> just stop timer ?
+//        myModel.getMonitoredSubjects().clear();
+
         // stop timerTask
     }
 
@@ -139,7 +139,6 @@ public class Controller {
         String inputFrequency = myView.getFreqField().getText();
         if(StringUtils.isNumeric(inputFrequency)) {
             int intFreq = Integer.parseInt(inputFrequency);
-
             myView.getFreqValueLabel().setText(inputFrequency);
             myView.getFreqField().setText("");
 

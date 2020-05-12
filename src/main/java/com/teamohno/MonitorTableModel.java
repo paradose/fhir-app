@@ -40,36 +40,32 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(effectiveDate);
     }
 
-//    public ArrayList<PatientRecord> getIndexArrayPatients() {
-//        return monitoredPatients;
-//    }
     public ArrayList<ArrayList<String>> getIndexPatientsMeasurement(){
         return  patientMeasurementTable;
     }
 
-//    public void addMonitoredPatient(PatientRecord newMonPatient){
-//        monitoredPatients.add(newMonPatient);
-//    }
-//    public void removeMonitoredPatient(PatientRecord newMonPatient){
-//        if(monitoredPatients.contains(newMonPatient)){
-//            monitoredPatients.remove(newMonPatient);
-//        }
-//        else{
-//            System.out.println("Error: patient attempted to remove from monitored array does not exist in array");
-//        }
-//    }
+    public int getMonitoredRowCount(){
+        int size = -1;
+        if(monitoredPatientID.size() == monitoredType.size()){
+            size = monitoredPatientID.size();
+        }
+        else{
+            System.out.println("Error: patient and type data inconsistent");
+        }
+        return size;
+    }
 
     // use this to replace addPatientName
-    public boolean addMonitorPatient(String newPatientID, String newPatientName, Measurement.Type newType){
+    public boolean addMonitorPatient(String newPatientID, String newPatientName, String newType){
         boolean returnResult = false;
         // if patient NOT monitored (OR patient monitored but different type) ->
-        if (monitoredPatientID.contains(newPatientID) && monitoredType.contains(newType.toString())){
-            System.out.println("Error: attempting monitor patient's " + newType.toString() + ", with id: " + newPatientID + ", which is already monitored");
+        if (monitoredPatientID.contains(newPatientID) && monitoredType.contains(newType)){
+            System.out.println("Error: attempting monitor patient's " + newType + ", with id: " + newPatientID + ", which is already monitored");
         }
         else {
             monitoredPatientID.add(newPatientID);
             monitoredPatientNames.add(newPatientName);
-            monitoredType.add(newType.toString());
+            monitoredType.add(newType);
             cholesterolLevels.add("N/A");
             effectiveDate.add("N/A");
             fireTableDataChanged();
@@ -77,13 +73,6 @@ public class MonitorTableModel extends AbstractTableModel {
         }
         return returnResult;
     }
-//
-//    public void addPatientName(String newPatientName){
-//        monitoredPatientNames.add(newPatientName);
-//        cholesterolLevels.add("N/A");
-//        effectiveDate.add("N/A");
-//        fireTableDataChanged();
-//    }
 
     public void removePatientFromTable(int newPatientIndex){
         // remove to track index
