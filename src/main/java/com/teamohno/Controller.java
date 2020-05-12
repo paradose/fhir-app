@@ -24,6 +24,7 @@ public class Controller {
 
     public void initController(){
         //initialise controller - add listeners to UI elements
+        myTimer = new Timer();
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
@@ -90,22 +91,7 @@ public class Controller {
         // if no more patients monitored - scheduler runs but no patients to process
     }
 
-    // add everyoine back in!!
     public void scheduleMonitor() {
-        myTimer = new Timer();
-
-        // check if monitored patients existing (but not inside table) - check rowCount of index tracker
-//        int monitoredRows = myModel.getMonitorTable().getMonitoredRowCount();
-//        if (monitoredRows > 0) {
-//            for (int i = 0; i < monitoredRows; i++) {
-////             add back into the monitor table...?
-////                (String newPatientID, String newPatientName, Measurement.Type newType){
-//                String prevID = myModel.getMonitorTable().getIndexPatientsMeasurement().get(0).get(i);
-//                String prevName = myModel.getMonitorTable().getIndexPatientsMeasurement().get(1).get(i);
-//                String prevType = myModel.getMonitorTable().getIndexPatientsMeasurement().get(2).get(i);
-//                myModel.getMonitorTable().addMonitorPatient(prevID, prevName, prevType);
-//            }
-
             String inputFrequency = myView.getFreqValueLabel().getText();
             int intFreq = Integer.parseInt(inputFrequency);
 
@@ -113,26 +99,8 @@ public class Controller {
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
             myPeriodicTask = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
 
-            myTimer.scheduleAtFixedRate(myPeriodicTask, 0, 1000 * intFreq);
-//        }
-    }
-
-    // stop = patients data is cleared... and monitoring is ceased => however they still exist in subject array -> ready for the scheduler to start again?
-    public void stopMonitor(){
-        for (int i = 0; i < myModel.getMonitoredSubjects().size(); i++) {
-            PatientRecord processPatient = myModel.getMonitoredSubjects().get(i).getState();
-            processPatient.triggerMonitorState();
-
-            //iterating through each column of data
-            for (int j = 0; j < myModel.getMonitorTable().getColumnCount(); j++) {
-                myModel.getMonitorTable().getMonitorData().get(j).clear();
-            }
-        }
-
-        // maybe instead of clearing subject array -> just stop timer ?
-//        myModel.getMonitoredSubjects().clear();
-
-        // stop timerTask
+            PeriodicCholesterolCall.frequency = intFreq * 1000;
+            myTimer.scheduleAtFixedRate(myPeriodicTask, 0, 1);
     }
 
     public void updateFrequency(){
@@ -142,9 +110,11 @@ public class Controller {
             myView.getFreqValueLabel().setText(inputFrequency);
             myView.getFreqField().setText("");
 
-            if(myModel.getMonitoredSubjects().size() > 0) {
-                stopMonitor();
-                scheduleMonitor();
+            if (intFreq * 1000 >= 1000) {
+                PeriodicCholesterolCall.frequency = intFreq * 1000;
+            }
+            else{
+                System.out.println("Error: frequency must be greater or equal to 1000ms (1 second).");
             }
         }
         else{

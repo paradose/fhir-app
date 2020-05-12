@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         // TEST ENUM TO STRING
-        System.out.println(Measurement.Type.CHOLESTEROL.toString());
+//        System.out.println(Measurement.Type.CHOLESTEROL.toString());
 
         // setup before getting input from user
         Model m = new Model();

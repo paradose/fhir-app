@@ -45,6 +45,9 @@ public class View extends JFrame{
         monitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorScrollPane.setViewportView(monitorTable);
 
+        // added to work around error from removing all monitored patients at once - look over when have time
+        monitorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         // instantiate the view
         setContentPane(mainParentPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
