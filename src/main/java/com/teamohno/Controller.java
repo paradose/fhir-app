@@ -27,13 +27,13 @@ public class Controller {
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
-        myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients());
+        myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(Measurement.Type.CHOLESTEROL));
         myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients());
     }
 
     public void storePracIdentifier(){
         if(!myView.getPracIDfield().getText().isEmpty()) {
-            myModel.createPractitoner(myView.getPracIDfield().getText(),server);
+            myModel.createPractitoner(myView.getPracIDfield().getText(), server);
             System.out.println("Entered Prac Identifier: " + myView.getPracIDfield().getText());
 
             updatePatientList();
@@ -49,46 +49,41 @@ public class Controller {
         myModel.updatePatientNamesList();
     }
 
-    public void monitorSelectedPatients() {
+    public void monitorSelectedPatients(Measurement.Type newType) {
         // get selected indexes from JList
         int[] selectedIndices = myView.getPatientJList().getSelectedIndices();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
-            // if not already monitored
-            if (!myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]).getIsMonitored()){
-                PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
+            PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
+            // this is removed since we can ensure this error doesnt occur inside monitorTableModel
+            // if not monitored - or already monitoring anything but that type (cholesterol) - check for the selected patient - iterating through their measurements
+//            if (!myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]).getIsMonitored()) {
 
-                // add patients to monitorTable's array
-                myModel.getMonitorTable().addMonitoredPatient(processPatient);
-                // make a function inside myModel to pass patient objects from practitioner -> monitorTable? more cleaner?
-
-                // add patients to monitorTableData (names)
-                myModel.getMonitorTable().addPatientName(processPatient.getFirstName() + " " + processPatient.getLastName());
+            // add patients to monitorTable's indexArray
+            if(myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType)) {
                 processPatient.triggerMonitorState();
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
                 myModel.getMonitoredSubjects().add(newSubject);
 
-                //stop current schedule if necessary???
+                //stop current schedule if previous monitoring schedule causes issues?
 
-//                 trigger scheduler - pass in patientSubject Array
+                //trigger scheduler - will schedule entire monitored subject list
                 scheduleMonitor();
             }
         }
     }
 
     public void stopMonitorSelectedPatients() {
-        // get selected indexes from JTable
+        // get selected indexes from JTable - only concern is if these indexes don't line up?
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
             // check if monitored
             if(processPatient.getIsMonitored()) {
-                // remove patientRecords from monitorTable's (index) array
-                myModel.getMonitorTable().removeMonitoredPatient(processPatient);
-                // remove patient row's from monitorTableData (names)
+                // remove patient row's
                 myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
                 processPatient.triggerMonitorState();
 

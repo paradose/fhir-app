@@ -31,4 +31,14 @@ public abstract class Measurement {
     public Type getMeasurementType(){
         return measurementType;
     }
+//
+//    public String typeToString(){
+//        String stringType = "";
+//        switch (measurementType){
+//            case CHOLESTEROL:
+//                stringType = "Cholesterol";
+//                break;
+//        }
+//        return stringType;
+//    }
 }

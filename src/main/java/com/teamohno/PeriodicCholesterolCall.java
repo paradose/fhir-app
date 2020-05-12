@@ -15,8 +15,9 @@ public class PeriodicCholesterolCall extends TimerTask {
     @Override
     public void run() {
         for (int i = 0; i < patientSubjectList.size(); i++) {
-//            patientSubjectList.get(i).getCholVal();
-            System.out.println("Iteration " + iteration + ", Finding cholesterol for patient " + i);
+
+            // For testing
+            System.out.println("Iteration " + iteration + ", Finding cholesterol/measurement for patient " + i);
             System.out.println("patient " + i + " , name:" + patientSubjectList.get(i).getState().getFirstName());
         }
 

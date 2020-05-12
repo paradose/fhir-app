@@ -1,12 +1,9 @@
 package com.teamohno;
 
-import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.Patient;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class MonitorTableModel extends AbstractTableModel {
     private ArrayList<String> dataColumns;
@@ -15,11 +12,17 @@ public class MonitorTableModel extends AbstractTableModel {
     private ArrayList<String> cholesterolLevels;
     private ArrayList<String> effectiveDate;
 
-    // used to gather index of patient that are being monitored
-    private ArrayList<PatientRecord> monitoredPatients;
+    // used to gather index of patient that are being monitored - might be redundant due to lack of knowledge of row for measurement - will use from model
+    private ArrayList<ArrayList<String>> patientMeasurementTable;
+    private ArrayList<String> monitoredPatientID;
+    private ArrayList<String> monitoredType;
 
     public MonitorTableModel() {
-        monitoredPatients = new ArrayList<PatientRecord>();
+        patientMeasurementTable = new ArrayList<ArrayList<String>>();
+        monitoredPatientID = new ArrayList<String>();
+        monitoredType = new ArrayList<String>();
+        patientMeasurementTable.add(monitoredPatientID);
+        patientMeasurementTable.add(monitoredType);
 
         dataColumns = new ArrayList<String>();
         dataColumns.add("Name");
@@ -37,39 +40,65 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(effectiveDate);
     }
 
-    public ArrayList<PatientRecord> getIndexArrayPatients() {
-        return monitoredPatients;
+//    public ArrayList<PatientRecord> getIndexArrayPatients() {
+//        return monitoredPatients;
+//    }
+    public ArrayList<ArrayList<String>> getIndexPatientsMeasurement(){
+        return  patientMeasurementTable;
     }
 
-    public void addMonitoredPatient(PatientRecord newMonPatient){
-        monitoredPatients.add(newMonPatient);
-    }
-    public void removeMonitoredPatient(PatientRecord newMonPatient){
-        if(monitoredPatients.contains(newMonPatient)){
-            monitoredPatients.remove(newMonPatient);
+//    public void addMonitoredPatient(PatientRecord newMonPatient){
+//        monitoredPatients.add(newMonPatient);
+//    }
+//    public void removeMonitoredPatient(PatientRecord newMonPatient){
+//        if(monitoredPatients.contains(newMonPatient)){
+//            monitoredPatients.remove(newMonPatient);
+//        }
+//        else{
+//            System.out.println("Error: patient attempted to remove from monitored array does not exist in array");
+//        }
+//    }
+
+    // use this to replace addPatientName
+    public boolean addMonitorPatient(String newPatientID, String newPatientName, Measurement.Type newType){
+        boolean returnResult = false;
+        // if patient NOT monitored (OR patient monitored but different type) ->
+        if (monitoredPatientID.contains(newPatientID) && monitoredType.contains(newType.toString())){
+            System.out.println("Error: attempting monitor patient's " + newType.toString() + ", with id: " + newPatientID + ", which is already monitored");
         }
-        else{
-            System.out.println("Error: patient attempted to remove from monitored array does not exist in array");
+        else {
+            monitoredPatientID.add(newPatientID);
+            monitoredPatientNames.add(newPatientName);
+            monitoredType.add(newType.toString());
+            cholesterolLevels.add("N/A");
+            effectiveDate.add("N/A");
+            fireTableDataChanged();
+            returnResult = true;
         }
+        return returnResult;
     }
+//
+//    public void addPatientName(String newPatientName){
+//        monitoredPatientNames.add(newPatientName);
+//        cholesterolLevels.add("N/A");
+//        effectiveDate.add("N/A");
+//        fireTableDataChanged();
+//    }
 
-    public void addPatientName(String newPatientName){
-        monitoredPatientNames.add(newPatientName);
-        cholesterolLevels.add("N/A");
-        effectiveDate.add("N/A");
-        fireTableDataChanged();
-    }
+    public void removePatientFromTable(int newPatientIndex){
+        // remove to track index
+        monitoredPatientID.remove(newPatientIndex);
+        monitoredType.remove(newPatientIndex);
 
-    public void removePatientFromTable(int patientIndex){
-        monitoredPatientNames.remove(patientIndex);
-        cholesterolLevels.remove(patientIndex);
-        effectiveDate.remove(patientIndex);
+        monitoredPatientNames.remove(newPatientIndex);
+        cholesterolLevels.remove(newPatientIndex);
+        effectiveDate.remove(newPatientIndex);
         fireTableDataChanged();
     }
 
     public void updateMeasurements(PatientRecord newPatient, Measurement newMeasurement){
         // obtain index to navigate inside table data
-        int currentIndex = monitoredPatients.indexOf(newPatient);
+        int currentIndex = monitoredPatientID.indexOf(newPatient.getId());
 
         if (newMeasurement.getMeasurementType() == Measurement.Type.CHOLESTEROL) {
             cholesterolLevels.remove(currentIndex);
@@ -84,14 +113,6 @@ public class MonitorTableModel extends AbstractTableModel {
 
         fireTableDataChanged();
     }
-
-    // not used??
-    /*
-    public void addValue(String newMonPatientName, int newMonValue, Date date){
-        monitoredPatientNames.add(newMonPatientName);
-        cholesterolLevels.add(Integer.toString(newMonValue));
-        effectiveDate.add(date.toString());
-    }*/
 
     public Object getValueAt(int row, int col) {
         return monitoredData.get(col).get(row);

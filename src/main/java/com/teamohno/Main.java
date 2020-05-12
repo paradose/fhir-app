@@ -8,6 +8,9 @@ import org.hl7.fhir.r4.model.Patient;
 public class Main {
 
     public static void main(String[] args) {
+        // TEST ENUM TO STRING
+        System.out.println(Measurement.Type.CHOLESTEROL.toString());
+
         // setup before getting input from user
         Model m = new Model();
         View v = new View(m.getMonitorTable(), m.getList());
@@ -21,18 +24,5 @@ public class Main {
         c.initView();
 
         // prac Identifier: 65440 - returns 39 encounters , 270 - 50 returns encounters
-
-        //create a context
-//        FhirContext context = FhirContext.forR4();
-
-        // create a client
-//        IGenericClient client = context.newRestfulGenericClient("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
-//
-//        // read patient with given ID
-//        Patient patient = client.read().resource(Patient.class).withId("10489587").execute();
-//
-//        // print patient name
-//        String patientName = patient.getName().get(0).getGivenAsSingleString();
-//        System.out.println("Patient given name:" + patientName);
     }
 }

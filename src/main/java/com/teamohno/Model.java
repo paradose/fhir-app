@@ -15,7 +15,6 @@ public class Model {
     private PractitionerRecord loggedInPractitioner;
     private ArrayList<PatientSubject> monitoredSubjects;
 
-
     public Model() {
         myMonitorTableModel = new MonitorTableModel();
         patientListModel = new DefaultListModel();
