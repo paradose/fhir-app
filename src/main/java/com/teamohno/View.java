@@ -21,6 +21,7 @@ public class View extends JFrame{
     private JList patientJList;
     private JButton monitorCholButton;
     private JButton stopMonitorButton;
+    private JLabel freqValueLabel;
 
     private DefaultListModel listModel;
     private JTable monitorTable;
@@ -86,5 +87,9 @@ public class View extends JFrame{
 
     public JTable getMonitorTable(){
         return monitorTable;
+    }
+
+    public JLabel getFreqValueLabel(){
+        return freqValueLabel;
     }
 }

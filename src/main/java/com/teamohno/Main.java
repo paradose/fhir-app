@@ -12,7 +12,7 @@ public class Main {
         Model m = new Model();
         View v = new View(m.getMonitorTable(), m.getList());
         Server fhirServer = new Server("http://hapi.fhir.org/baseR4/");
-        Controller c = new Controller(m, v,fhirServer);
+        Controller c = new Controller(m, v, fhirServer);
 
         // Add listeners to view objects
         c.initController();

@@ -3,15 +3,12 @@ package com.teamohno;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Timer;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.util.ArrayList;
 import java.util.TimerTask;
 
 public class Controller {
     private Model myModel;
     private Timer myTimer;
+    private TimerTask myPeriodicTask;
     private View myView;
     private Server server;
 
@@ -30,7 +27,7 @@ public class Controller {
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
-        myView.getMonitorCholButton().addActionListener(e -> monitorPatients());
+        myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients());
         myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients());
     }
 
@@ -45,13 +42,14 @@ public class Controller {
 
     public void updatePatientList(){
         // retrieve patients for the given practitioner id
-        myModel.getPractitioner().retrievePractitionerPatients();
+//        myModel.getPractitioner().retrievePractitionerPatients();
+        myModel.getPractitioner().makeFake();
 
         // update model with new practitioner id now stored in model
         myModel.updatePatientNamesList();
     }
 
-    public void monitorPatients() {
+    public void monitorSelectedPatients() {
         // get selected indexes from JList
         int[] selectedIndices = myView.getPatientJList().getSelectedIndices();
 
@@ -68,8 +66,8 @@ public class Controller {
                 myModel.getMonitorTable().addPatientName(processPatient.getFirstName() + " " + processPatient.getLastName());
                 processPatient.triggerMonitorState();
 
-                // add patient to subjectArray and attach server for request
-                PatientSubject newSubject = new PatientSubject(processPatient,server);
+                // add patient to subjectArray and attach server for requests
+                PatientSubject newSubject = new PatientSubject(processPatient, server);
                 myModel.getMonitoredSubjects().add(newSubject);
 
                 //stop current schedule if necessary???
@@ -78,6 +76,54 @@ public class Controller {
                 scheduleMonitor();
             }
         }
+    }
+
+    public void stopMonitorSelectedPatients() {
+        // get selected indexes from JTable
+        int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
+
+        for (int i = 0; i < selectedIndices.length ; i++) {
+            PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
+            // check if monitored
+            if(processPatient.getIsMonitored()) {
+                // remove patientRecords from monitorTable's (index) array
+                myModel.getMonitorTable().removeMonitoredPatient(processPatient);
+                // remove patient row's from monitorTableData (names)
+                myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
+                processPatient.triggerMonitorState();
+
+                // remove patientSubject corresponding to processPatientRecord
+                for (int j = 0; j < myModel.getMonitoredSubjects().size(); j++) {
+                    if (myModel.getMonitoredSubjects().get(j).getState().getId() == processPatient.getId()) {
+                        myModel.getMonitoredSubjects().remove(myModel.getMonitoredSubjects().get(j));
+                    }
+                }
+            }
+        }
+
+        // if no more patients monitored stop scheduler?
+    }
+
+    // add everyoine back in!!
+    public void scheduleMonitor(){
+        myTimer = new Timer();
+
+        // check the monitored list of patients... is inside... monitor table
+//        if(myModel..size()){/
+//
+//        }
+//
+//        for (int i = 0; i < ; i++) {
+            // add back into the monitor table...?
+//        }
+
+        String inputFrequency = myView.getFreqValueLabel().getText();
+        int intFreq = Integer.parseInt(inputFrequency);
+        // implement a parent class for measurementCalls
+//        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
+        myPeriodicTask = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
+
+        myTimer.scheduleAtFixedRate(myPeriodicTask, 0, 1000 * intFreq);
     }
 
     public void stopMonitor(){
@@ -91,64 +137,24 @@ public class Controller {
             }
         }
         myModel.getMonitoredSubjects().clear();
-//        myTimer.cancel();
-    }
-
-    public void stopMonitorSelectedPatients() {
-        // get selected indexes from JTable
-        int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
-
-        for (int i = 0; i < selectedIndices.length ; i++) {
-            PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
-            // check if monitored
-            if(processPatient.getIsMonitored()) {
-                // remove patients to monitorTable's array
-                myModel.getMonitorTable().removeMonitoredPatient(processPatient);
-                // remove patients to monitorTableData (names)
-                myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
-                processPatient.triggerMonitorState();
-
-                // stop scheduler
-                // remove patientSubject corresponding to processPatientRecord
-                for (int j = 0; j < myModel.getMonitoredSubjects().size(); j++) {
-                    if (myModel.getMonitoredSubjects().get(j).getState().getId() == processPatient.getId()) {
-                        myModel.getMonitoredSubjects().remove(myModel.getMonitoredSubjects().get(j));
-                    }
-                }
-            }
-        }
+        // stop timerTask
     }
 
     public void updateFrequency(){
         String inputFrequency = myView.getFreqField().getText();
         if(StringUtils.isNumeric(inputFrequency)) {
             int intFreq = Integer.parseInt(inputFrequency);
+
+            myView.getFreqValueLabel().setText(inputFrequency);
+            myView.getFreqField().setText("");
+
             if(myModel.getMonitoredSubjects().size() > 0) {
                 stopMonitor();
                 scheduleMonitor();
             }
         }
-    }
-
-
-//    public void scheduleMonitor(ArrayList<PatientSubject> newPatientSubArray){
-    public void scheduleMonitor(){
-            myTimer = new Timer();
-        String inputFrequency = myView.getFreqField().getText();
-        if(StringUtils.isNumeric(inputFrequency)) {
-            int intFreq = Integer.parseInt(inputFrequency);
-
-            // implement a parent class for measurementCalls
-//        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
-
-            // remove parameter - redundant
-//            TimerTask measurementCall = new PeriodicCholesterolCall(newPatientSubArray);
-            TimerTask measurementCall = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
-
-            myTimer.scheduleAtFixedRate(measurementCall, 0, 1000 * intFreq);
-        }
-        else {
-            System.out.println("Error input not a valid integer for frequency");
+        else{
+            System.out.println("Error: frequency value is not numeric");
         }
     }
 }

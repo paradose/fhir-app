@@ -17,7 +17,9 @@ public class PeriodicCholesterolCall extends TimerTask {
         for (int i = 0; i < patientSubjectList.size(); i++) {
 //            patientSubjectList.get(i).getCholVal();
             System.out.println("Iteration " + iteration + ", Finding cholesterol for patient " + i);
+            System.out.println("patient " + i + " , name:" + patientSubjectList.get(i).getState().getFirstName());
         }
+
 
         iteration++;
     }
