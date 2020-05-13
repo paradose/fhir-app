@@ -6,6 +6,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
 
 import java.math.BigDecimal;
+import java.sql.SQLOutput;
 import java.util.Date;
 
 public class PatientSubject extends Subject {
@@ -26,8 +27,16 @@ public class PatientSubject extends Subject {
 
     public void updateCholVal() {
         String patientsId = patientState.getId();
-        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
+        BigDecimal prevCholVal = patientState.getCholesterolMeasurement().getCholesterolValue();
+
+        // testing
+// server
+//        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
+// fake data (same as before) for testing
+      Cholesterol updatedTotalChol = new Cholesterol(prevCholVal, patientState.getCholesterolMeasurement().getDateMeasured());
+
         //sets the states chol measurement
         patientState.setCholesterolMeasurement(updatedTotalChol.getCholesterolValue(),updatedTotalChol.getDateMeasured());
+        notifyObservers();
     }
 }

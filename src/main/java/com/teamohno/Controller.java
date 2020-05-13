@@ -65,7 +65,9 @@ public class Controller {
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
                 myModel.addMonitoredSubjects(newSubject);
 
-                //stop current schedule if previously already monitoring schedule - (may causes issues)?
+                // create observers
+                CholObserver newObserver = new CholObserver(newSubject, myModel.getMonitorTable());
+                myModel.getCholObserverArray().add(newObserver);
 
                 //trigger scheduler - will schedule entire monitored subject list
                 scheduleMonitor();
@@ -86,16 +88,22 @@ public class Controller {
             // remove patient row's
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
             processPatient.triggerMonitorState();
-            myModel.getMonitoredSubjects().remove(myModel.getMonitoredSubjects().get(selectedIndices[i]));
+
+            //remove processing subject + observer
+            PatientSubject processSubject = myModel.getMonitoredSubjects().get(selectedIndices[i]);
+            CholObserver processObserver = myModel.getCholObserverArray().get(selectedIndices[i]);
+            myModel.getMonitoredSubjects().remove(processSubject);
+            myModel.getCholObserverArray().remove(processObserver);
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
 
+    // pass in measurement type parameter
     public void scheduleMonitor() {
             String inputFrequency = myView.getFreqValueLabel().getText();
             int intFreq = Integer.parseInt(inputFrequency);
 
-            // implement a parent class for measurementCalls
+            // implement an abstract parent class for measurementCalls - contains patientSubArray and measurementType, constructor involves both
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
             myPeriodicTask = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
 

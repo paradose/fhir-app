@@ -5,26 +5,30 @@ import java.math.BigDecimal;
 public class CholObserver extends Observer {
     private PatientSubject observerState;
     private Cholesterol lastState;
+    private MonitorTableModel monitorredData;
 
     // is it right ??? patientSubject is passed
-    public CholObserver(PatientSubject patient){
+    public CholObserver(PatientSubject patient, MonitorTableModel newModelTable){
         observerState = patient;
-        // sets last state as null by default
-        lastState= new Cholesterol(BigDecimal.ZERO, null);
+        // sets last state as patients current cholesterol value
+        lastState= new Cholesterol(patient.getState().getCholesterolMeasurement().getCholesterolValue(), patient.getState().getCholesterolMeasurement().getDateMeasured());
+        monitorredData = newModelTable;
     }
     @Override
     public void update() {
         PatientRecord newState = observerState.getState();
-        Cholesterol patientsCurrentChol = newState.getCholesterolMeasurement();
-        BigDecimal totalchol = patientsCurrentChol.getCholesterolValue();
-        // compares last state with current
-        boolean sameChol = totalchol.equals(lastState.getCholesterolValue());
-        if (!sameChol){
-            lastState.setCholesterolValue(totalchol);
+
+        Cholesterol patientsNewChol = newState.getCholesterolMeasurement();
+        BigDecimal newTotalcholVal = patientsNewChol.getCholesterolValue();
+
+        //check first then set value (check date?)
+        if (!(newTotalcholVal == lastState.getCholesterolValue())){
             // send update to model
-            System.out.println(patientsCurrentChol.getCholesterolValue());
-        }else{
-            System.out.println("no change : )");
+            monitorredData.updateMeasurements(observerState.getState(), patientsNewChol);
         }
+        else{
+            System.out.println("Patient " + observerState.getState().getId() + " has no change in cholesterol :)");
+        }
+        System.out.println("Observer spotted new chol val: " + patientsNewChol.getCholesterolValue());
     }
 }

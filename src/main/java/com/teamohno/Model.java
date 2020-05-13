@@ -14,11 +14,13 @@ public class Model {
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
     private ArrayList<PatientSubject> monitoredSubjects;
+    private ArrayList<CholObserver> cholObserverArray;
 
     public Model() {
         myMonitorTableModel = new MonitorTableModel();
         patientListModel = new DefaultListModel();
         monitoredSubjects = new ArrayList<PatientSubject>();
+        cholObserverArray = new ArrayList<CholObserver>();
     }
 
     public MonitorTableModel getMonitorTable(){
@@ -53,5 +55,9 @@ public class Model {
 
     public void addMonitoredSubjects(PatientSubject newSubject){
         monitoredSubjects.add(newSubject);
+    }
+
+    public ArrayList<CholObserver> getCholObserverArray() {
+        return cholObserverArray;
     }
 }

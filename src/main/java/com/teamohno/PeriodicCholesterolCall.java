@@ -26,6 +26,8 @@ public class PeriodicCholesterolCall extends TimerTask {
         }
 
         for (int i = 0; i < patientSubjectList.size(); i++) {
+            //commented out to test without server
+            patientSubjectList.get(i).updateCholVal();
 
             // For testing
             System.out.println("Iteration " + iteration + ", Finding cholesterol/measurement for patient " + i);
