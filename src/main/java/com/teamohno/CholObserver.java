@@ -11,7 +11,7 @@ public class CholObserver extends Observer {
     public CholObserver(PatientSubject patient, MonitorTableModel newModelTable){
         observerState = patient;
         // sets last state as patients current cholesterol value
-        lastState= new Cholesterol(patient.getState().getCholesterolMeasurement().getCholesterolValue(), patient.getState().getCholesterolMeasurement().getDateMeasured());
+        lastState = patient.getState().getCholesterolMeasurement();
         monitorredData = newModelTable;
     }
     @Override
