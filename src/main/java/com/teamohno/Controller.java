@@ -69,6 +69,9 @@ public class Controller {
                 CholObserver newObserver = new CholObserver(newSubject, myModel.getMonitorTable());
                 myModel.getCholObserverArray().add(newObserver);
 
+                //attach
+                newSubject.attach(newObserver);
+
                 //trigger scheduler - will schedule entire monitored subject list
                 scheduleMonitor();
             }
@@ -93,6 +96,7 @@ public class Controller {
             PatientSubject processSubject = myModel.getMonitoredSubjects().get(selectedIndices[i]);
             CholObserver processObserver = myModel.getCholObserverArray().get(selectedIndices[i]);
             myModel.getMonitoredSubjects().remove(processSubject);
+            processSubject.detach(processObserver);
             myModel.getCholObserverArray().remove(processObserver);
         }
         // if no more patients monitored - scheduler runs but no patients to process

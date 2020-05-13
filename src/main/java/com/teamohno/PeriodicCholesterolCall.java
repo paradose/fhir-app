@@ -34,7 +34,6 @@ public class PeriodicCholesterolCall extends TimerTask {
             System.out.println("patient " + i + " , name:" + patientSubjectList.get(i).getState().getFirstName());
         }
 
-
         iteration++;
     }
 }
