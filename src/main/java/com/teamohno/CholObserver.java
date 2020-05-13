@@ -22,8 +22,11 @@ public class CholObserver extends Observer {
         if (!(newTotalcholVal == lastState.getCholesterolValue())){
             // send update to model
             monitorredData.updateMeasurements(observerSubject.getState(), patientsNewChol);
+
+            //... calculate new average
+
             System.out.println("Observer spotted new chol val: " + patientsNewChol.getCholesterolValue());
-        }
+    }
         else{
             System.out.println("Patient " + observerSubject.getState().getId() + " has no change in cholesterol :)");
         }

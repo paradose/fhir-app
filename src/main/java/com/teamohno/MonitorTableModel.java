@@ -5,6 +5,8 @@ import org.hl7.fhir.r4.model.Patient;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
+// change to general measurement (pass in measurement type in constructor to make column name
+
 public class MonitorTableModel extends AbstractTableModel {
     private ArrayList<String> dataColumns;
     private ArrayList<ArrayList<String>> monitoredData;
@@ -102,6 +104,8 @@ public class MonitorTableModel extends AbstractTableModel {
 
         fireTableDataChanged();
     }
+
+    // calcuclate average -> update lowest/highest average value
 
     public Object getValueAt(int row, int col) {
         return monitoredData.get(col).get(row);

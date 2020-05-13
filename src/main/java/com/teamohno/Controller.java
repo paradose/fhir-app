@@ -8,9 +8,9 @@ import java.util.TimerTask;
 public class Controller {
     private Model myModel;
     private Timer myTimer;
-    private TimerTask myPeriodicTask;
     private View myView;
     private Server server;
+    private PeriodicCholesterolCall myPeriodicCholesterol;
 
     public Controller(Model newModel, View newView, Server inputServer){
         myModel = newModel;
@@ -65,7 +65,8 @@ public class Controller {
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
                 myModel.addMonitoredSubjects(newSubject);
 
-                // create observers
+                // create observers (for measurement type...)
+//                newType... -> create observer for that type
                 CholObserver newObserver = new CholObserver(newSubject, myModel.getMonitorTable());
 
                 //attach
@@ -73,13 +74,17 @@ public class Controller {
 
                 //trigger scheduler - will schedule entire monitored subject list
                 scheduleMonitor();
+
             }
+            // else if monitored but not this measurement -> add new measurement observer...?
             else{
                 System.out.println("Error attempting to monitor an already monitored patient+measurement combo.");
             }
         }
     }
 
+
+    // pass in measurement type
     public void stopMonitorSelectedPatients() {
         // get selected indexes from JTable - only concern is if these indexes don't line up?
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
@@ -91,11 +96,14 @@ public class Controller {
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
             processPatient.triggerMonitorState();
 
+            // check measurement observers
+
             //remove processing subject + observer(?)
             PatientSubject processSubject = myModel.getMonitoredSubjects().get(selectedIndices[i]);
             myModel.removeMonitoredSubject(processSubject);
 
             // destroy observer for given measurement from subject (?) - or add to a list to reuse non-asssigned (specific measurement) observers?
+            // detach...!
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
@@ -107,10 +115,10 @@ public class Controller {
 
             // implement an abstract parent class for measurementCalls - contains patientSubArray and measurementType, constructor involves both
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
-            myPeriodicTask = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
+            myPeriodicCholesterol = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
 
-            PeriodicCholesterolCall.frequency = intFreq * 1000;
-            myTimer.scheduleAtFixedRate(myPeriodicTask, 0, 1);
+            myPeriodicCholesterol.setFrequency(intFreq * 1000);
+            myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
     }
 
     public void updateFrequency(){
@@ -121,7 +129,9 @@ public class Controller {
             myView.getFreqField().setText("");
 
             if (intFreq * 1000 >= 1000) {
-                PeriodicCholesterolCall.frequency = intFreq * 1000;
+                // Update frequency for cholesterol only in this system - however can take parameter and deal with different monitor frequencies.
+                // if want to update all - can consider too by looping through all periodic tasks
+                myPeriodicCholesterol.setFrequency(intFreq * 1000);
             }
             else{
                 System.out.println("Error: frequency must be greater or equal to 1000ms (1 second).");

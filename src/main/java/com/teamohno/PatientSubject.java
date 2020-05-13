@@ -33,7 +33,7 @@ public class PatientSubject extends Subject {
 // server
 //        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
 // fake data (same as before) for testing
-      Cholesterol updatedTotalChol = new Cholesterol(prevCholVal, patientState.getCholesterolMeasurement().getDateMeasured());
+        Cholesterol updatedTotalChol = new Cholesterol(prevCholVal, patientState.getCholesterolMeasurement().getDateMeasured());
 
         //sets the states chol measurement
         patientState.setCholesterolMeasurement(updatedTotalChol.getCholesterolValue(),updatedTotalChol.getDateMeasured());

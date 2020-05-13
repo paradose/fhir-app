@@ -7,7 +7,7 @@ public abstract class PeriodicMeasurementCall extends TimerTask {
     public static int iteration;
 
     // put a static variable inside parent class (MeasurementCholesterolCall) -> so this would cause all meassurement periodic calls to have saem frequency?
-    public static int frequency;
+    protected int frequency;
     protected Measurement.Type type;
     protected ArrayList<PatientSubject> patientSubjectList;
 
@@ -20,6 +20,10 @@ public abstract class PeriodicMeasurementCall extends TimerTask {
         iteration = 0;
         // default 2 seconds
         frequency = 2000;
+    }
+
+    public void setFrequency(int newFreq){
+        frequency = newFreq;
     }
 
     @Override
