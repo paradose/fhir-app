@@ -14,13 +14,11 @@ public class Model {
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
     private ArrayList<PatientSubject> monitoredSubjects;
-    private ArrayList<CholObserver> cholObserverArray;
 
     public Model() {
         myMonitorTableModel = new MonitorTableModel();
         patientListModel = new DefaultListModel();
         monitoredSubjects = new ArrayList<PatientSubject>();
-        cholObserverArray = new ArrayList<CholObserver>();
     }
 
     public MonitorTableModel getMonitorTable(){
@@ -57,7 +55,11 @@ public class Model {
         monitoredSubjects.add(newSubject);
     }
 
-    public ArrayList<CholObserver> getCholObserverArray() {
-        return cholObserverArray;
+
+    //    public void removeMonitoredSubject(PatientSubject newSubject, Measurement newMeasurement){
+    public void removeMonitoredSubject(PatientSubject newSubject){
+        // destroy observer for given measurement (?)
+        monitoredSubjects.remove(newSubject);
+
     }
 }

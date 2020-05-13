@@ -67,7 +67,6 @@ public class Controller {
 
                 // create observers
                 CholObserver newObserver = new CholObserver(newSubject, myModel.getMonitorTable());
-                myModel.getCholObserverArray().add(newObserver);
 
                 //attach
                 newSubject.attach(newObserver);
@@ -92,12 +91,11 @@ public class Controller {
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
             processPatient.triggerMonitorState();
 
-            //remove processing subject + observer
+            //remove processing subject + observer(?)
             PatientSubject processSubject = myModel.getMonitoredSubjects().get(selectedIndices[i]);
-            CholObserver processObserver = myModel.getCholObserverArray().get(selectedIndices[i]);
-            myModel.getMonitoredSubjects().remove(processSubject);
-            processSubject.detach(processObserver);
-            myModel.getCholObserverArray().remove(processObserver);
+            myModel.removeMonitoredSubject(processSubject);
+
+            // destroy observer for given measurement from subject (?) - or add to a list to reuse non-asssigned (specific measurement) observers?
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
