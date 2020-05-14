@@ -13,12 +13,12 @@ public class Model {
     private MonitorTableModel myMonitorTableModel;
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
-    private ArrayList<PatientSubject> monitoredSubjects;
+    private ArrayList<PatientSubject> monitoredCholSubjects;
 
     public Model() {
         myMonitorTableModel = new MonitorTableModel();
         patientListModel = new DefaultListModel();
-        monitoredSubjects = new ArrayList<PatientSubject>();
+        monitoredCholSubjects = new ArrayList<PatientSubject>();
     }
 
     public MonitorTableModel getMonitorTable(){
@@ -47,19 +47,35 @@ public class Model {
         }
     }
 
-    public ArrayList<PatientSubject> getMonitoredSubjects() {
-        return monitoredSubjects;
+    public ArrayList<PatientSubject> getMonitoredSubjects(Measurement.Type newType) {
+        ArrayList <PatientSubject> returnList = null;
+        if(newType == Measurement.Type.CHOLESTEROL) {
+            returnList = monitoredCholSubjects;
+        }
+        else{
+            System.out.println("Error: measurement type not valid.");
+        }
+        return returnList;
     }
 
-    public void addMonitoredSubjects(PatientSubject newSubject){
-        monitoredSubjects.add(newSubject);
+    public void addMonitoredSubjects(PatientSubject newSubject, Measurement.Type newType){
+        if(newType == Measurement.Type.CHOLESTEROL) {
+            monitoredCholSubjects.add(newSubject);
+        }
+        else{
+            System.out.println("Error: measurement type not valid.");
+        }
     }
 
 
     //    public void removeMonitoredSubject(PatientSubject newSubject, Measurement newMeasurement){
-    public void removeMonitoredSubject(PatientSubject newSubject){
+    public void removeMonitoredSubject(PatientSubject newSubject, Measurement.Type newType){
         // destroy observer for given measurement (?)
-        monitoredSubjects.remove(newSubject);
-
+        if (newType == Measurement.Type.CHOLESTEROL) {
+            monitoredCholSubjects.remove(newSubject);
+        }
+        else{
+            System.out.println("Error: measurement type not valid.");
+        }
     }
 }
