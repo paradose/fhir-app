@@ -25,9 +25,6 @@ public class PractitionerRecord {
     private ArrayList<PatientRecord> monitoredPatients;
     private ArrayList<PatientSubject> monitoredSubjects;
 
-    private IGenericClient client;
-    private FhirContext context;
-
     private String practitionerIdentifier;
     private ArrayList<PatientRecord> practitionerPatients;
     private ArrayList<String> patientsIds = new ArrayList<String>();
@@ -38,9 +35,6 @@ public class PractitionerRecord {
     public PractitionerRecord(String inputIdentifier, Server inputServer){
         practitionerIdentifier = inputIdentifier;
         practitionerPatients = new ArrayList<PatientRecord>();
-        // not used?
-//        practitionerID = inputID;
-//        practitionerIdentifier = retrieveIdentifier(inputID);
         server = inputServer;
     }
 

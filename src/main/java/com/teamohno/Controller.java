@@ -68,7 +68,6 @@ public class Controller {
 
             // add patients to monitorTable's indexArray - if haven't monitored returns false
             if (myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType.toString())) {
-                processPatient.triggerMonitorState();
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
@@ -102,7 +101,6 @@ public class Controller {
 
             // remove patient row's
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
-            processPatient.triggerMonitorState();
 
             // check measurement observers
 

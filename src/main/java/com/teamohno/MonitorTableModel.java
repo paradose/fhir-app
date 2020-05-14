@@ -46,7 +46,8 @@ public class MonitorTableModel extends AbstractTableModel {
         return  patientMeasurementTable;
     }
 
-    public int getMonitoredRowCount(){
+    // returns number of patients being monitored (from data table)
+    public int getMonitoredRowCount(Measurement.Type newType){
         int size = -1;
         if(monitoredPatientID.size() == monitoredType.size()){
             size = monitoredPatientID.size();
@@ -101,8 +102,6 @@ public class MonitorTableModel extends AbstractTableModel {
         else{
             System.out.println("Error: measurement value being updated contains invalid measurement type");
         }
-
-
         fireTableDataChanged();
     }
 
