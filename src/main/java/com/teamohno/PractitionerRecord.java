@@ -12,6 +12,8 @@ import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 
+import javax.print.attribute.standard.DateTimeAtCreation;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,11 +60,17 @@ public class PractitionerRecord {
         return practitionerPatients;
     }
 
+    // check existing practitioner (?)
+
     // used for testing
     public void makeFake(){
         for (int i = 0; i < 3; i++) {
             PatientRecord newPatient = new PatientRecord("123" + i, "First" + i, "Last", "male", null, "aad");
             practitionerPatients.add(newPatient);
+
+            //sample initial record date / cholesterol value
+            Date newDate = new Date(2323223232L);
+            newPatient.setCholesterolMeasurement(BigDecimal.ONE, newDate);
         }
     }
 }

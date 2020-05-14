@@ -93,14 +93,15 @@ public class MonitorTableModel extends AbstractTableModel {
 
         if (newMeasurement.getMeasurementType() == Measurement.Type.CHOLESTEROL) {
             cholesterolLevels.remove(currentIndex);
+            effectiveDate.remove(currentIndex);
+
             cholesterolLevels.add(currentIndex, newMeasurement.getMeasurementValue().toString());
+            effectiveDate.add(currentIndex, newMeasurement.getDateMeasured().toString());
         }
         else{
             System.out.println("Error: measurement value being updated contains invalid measurement type");
         }
 
-        effectiveDate.remove(currentIndex);
-        effectiveDate.add(currentIndex, newMeasurement.getDateMeasured().toString());
 
         fireTableDataChanged();
     }

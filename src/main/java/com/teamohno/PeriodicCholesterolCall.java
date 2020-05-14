@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.TimerTask;
 
 public class PeriodicCholesterolCall extends PeriodicMeasurementCall {
+    public PeriodicCholesterolCall(){ super(); }
+
     public PeriodicCholesterolCall(ArrayList<PatientSubject> newPatientSubjectList){
         super(newPatientSubjectList, Measurement.Type.CHOLESTEROL);
     }
@@ -12,13 +14,12 @@ public class PeriodicCholesterolCall extends PeriodicMeasurementCall {
     public void run() {
         super.run();
 
+        System.out.println("waited for " + frequency/1000 + " seconds.");
         for (int i = 0; i < patientSubjectList.size(); i++) {
-            //commented out to test without server
             patientSubjectList.get(i).updateCholVal();
 
             // For testing
-            System.out.println("Iteration " + iteration + ", Finding cholesterol/measurement for patient " + i);
-            System.out.println("patient " + i + " , name:" + patientSubjectList.get(i).getState().getFirstName());
+            System.out.println("calling for cholesterol of patient " + " name:" + patientSubjectList.get(i).getState().getFirstName());
         }
     }
 }

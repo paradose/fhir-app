@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 public class CholObserver extends Observer {
     private PatientSubject observerSubject;
-    private Cholesterol lastState;
+    private BigDecimal lastState;
     private MonitorTableModel monitorredData;
 
     public CholObserver(PatientSubject patient, MonitorTableModel newModelTable){
         observerSubject = patient;
         // sets last state as patients current cholesterol value
-        lastState = patient.getState().getCholesterolMeasurement();
+        lastState = patient.getState().getCholesterolMeasurement().getCholesterolValue();
         monitorredData = newModelTable;
     }
     @Override
@@ -19,7 +19,7 @@ public class CholObserver extends Observer {
         BigDecimal newTotalcholVal = patientsNewChol.getCholesterolValue();
 
         //check first then set value
-        if (!(newTotalcholVal == lastState.getCholesterolValue())){
+        if (!(newTotalcholVal == lastState)){
             // send update to model
             monitorredData.updateMeasurements(observerSubject.getState(), patientsNewChol);
 
@@ -32,7 +32,7 @@ public class CholObserver extends Observer {
         }
 
         System.out.println("Observer updated");
-        lastState = patientsNewChol;
+        lastState = patientsNewChol.getCholesterolValue();
     }
 
     public void setObserverSubject(PatientSubject newSubject){

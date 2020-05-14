@@ -24,26 +24,35 @@ public class Controller {
 
     public void initController(){
         //initialise controller - add listeners to UI elements
-        myTimer = new Timer();
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
         myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(Measurement.Type.CHOLESTEROL));
         myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients());
+
+        // initialise timer and periodic caller
+        myTimer = new Timer();
+        // passing in subject list (empty list at start)
+        myPeriodicCholesterol = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
     }
 
     public void storePracIdentifier(){
         if(!myView.getPracIDfield().getText().isEmpty()) {
+            // Initialise a practitioner - (to do: deal with non-existent practitioner identifier(?)
             myModel.createPractitoner(myView.getPracIDfield().getText(), server);
-            System.out.println("Entered Prac Identifier: " + myView.getPracIDfield().getText());
-
             updatePatientList();
+
+            System.out.println("Entered Prac Identifier: " + myView.getPracIDfield().getText());
         }
     }
 
     public void updatePatientList(){
         // retrieve patients for the given practitioner id
+
+        // server access - deal with empty patient list(?)
 //        myModel.getPractitioner().retrievePractitionerPatients();
+
+        // using for testing w/o server
         myModel.getPractitioner().makeFake();
 
         // update model with new practitioner id now stored in model
@@ -110,19 +119,25 @@ public class Controller {
 
     // pass in measurement type parameter
     public void scheduleMonitor() {
-            String inputFrequency = myView.getFreqValueLabel().getText();
-            int intFreq = Integer.parseInt(inputFrequency);
-
             // implement an abstract parent class for measurementCalls - contains patientSubArray and measurementType, constructor involves both
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
-            myPeriodicCholesterol = new PeriodicCholesterolCall(myModel.getMonitoredSubjects());
 
-            myPeriodicCholesterol.setFrequency(intFreq * 1000);
+        updateFrequency();
+
+        // if monitor not turned on yet
+        if(!myPeriodicCholesterol.getTurnedOn()){
             myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
+            myPeriodicCholesterol.setTurnedOn();
+        }
+        else{
+            System.out.println("Cholesterol monitor already turned on");
+        }
     }
 
     public void updateFrequency(){
+        String currentFreq = myView.getFreqValueLabel().getText();
         String inputFrequency = myView.getFreqField().getText();
+
         if(StringUtils.isNumeric(inputFrequency)) {
             int intFreq = Integer.parseInt(inputFrequency);
             myView.getFreqValueLabel().setText(inputFrequency);
@@ -136,6 +151,9 @@ public class Controller {
             else{
                 System.out.println("Error: frequency must be greater or equal to 1000ms (1 second).");
             }
+        }
+        else if (inputFrequency.isEmpty()) {
+            myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
         }
         else{
             System.out.println("Error: frequency value is not numeric");
