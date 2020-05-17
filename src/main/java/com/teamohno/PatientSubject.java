@@ -31,13 +31,13 @@ public class PatientSubject extends Subject {
 
         // testing
 // server
-//        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
+        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
 
 // fake data (doesnt change cholesterol value) for testing
 //        Cholesterol updatedTotalChol = new Cholesterol(prevCholVal, patientState.getCholesterolMeasurement().getDateMeasured());
 // fake data (new chol value) for testing
-        Cholesterol updatedTotalChol = new Cholesterol(prevCholVal.add(BigDecimal.ONE), patientState.getCholesterolMeasurement().getDateMeasured());
-        System.out.println("UPDATED CHOL VAL: " + updatedTotalChol.getCholesterolValue());
+//        Cholesterol updatedTotalChol = new Cholesterol(prevCholVal.add(BigDecimal.ONE), patientState.getCholesterolMeasurement().getDateMeasured());
+//        System.out.println("UPDATED CHOL VAL: " + updatedTotalChol.getCholesterolValue());
 
         //sets the states chol measurement
         patientState.setCholesterolMeasurement(updatedTotalChol.getCholesterolValue(),updatedTotalChol.getDateMeasured());

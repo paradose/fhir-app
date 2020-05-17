@@ -1,9 +1,5 @@
 package com.teamohno;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import org.hl7.fhir.r4.model.Patient;
-
 
 public class Main {
 
@@ -12,9 +8,9 @@ public class Main {
 //        System.out.println(Measurement.Type.CHOLESTEROL.toString());
 
         // setup before getting input from user
-        Model m = new Model();
-        View v = new View(m.getMonitorTable(), m.getList());
-        Server fhirServer = new Server("http://hapi.fhir.org/baseR4/");
+        Server fhirServer = new Server("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
+        Model m = new Model(fhirServer);
+        View v = new View(m.getMonitorTable(), m.getPatientListModel());
         Controller c = new Controller(m, v, fhirServer);
 
         // Add listeners to view objects

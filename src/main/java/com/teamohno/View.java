@@ -37,7 +37,7 @@ public class View extends JFrame{
         //Instantiating JList object
         patientJList = new JList(listModel);
         patientJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        patientJList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        patientJList.setLayoutOrientation(JList.VERTICAL);
         patientListScrollPane.setViewportView(patientJList);
 
         //Creating a JTable and adding it to the scroll pane

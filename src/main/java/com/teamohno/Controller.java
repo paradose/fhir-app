@@ -36,26 +36,78 @@ public class Controller {
         myPeriodicCholesterol = new PeriodicCholesterolCall(myModel.getMonitoredSubjects(Measurement.Type.CHOLESTEROL));
     }
 
-    public void storePracIdentifier(){
-        if(!myView.getPracIDfield().getText().isEmpty()) {
-            // Initialise a practitioner - (to do: deal with non-existent practitioner identifier(?)
-            myModel.createPractitoner(myView.getPracIDfield().getText(), server);
-            updatePatientList();
+    public void storePracIdentifier() {
+/*  checks (any existing?)
+	-> if no
+        create prac -> set logged in
+	-> if yes
+        clear first
+                - (monitorredSubjects).clear()
+                - monitorred table model
+                - patient list model
+        set loggedInPrac
+        update patient list */
 
-            System.out.println("Entered Prac Identifier: " + myView.getPracIDfield().getText());
+        String newPracIdentifier = myView.getPracIDfield().getText();
+        boolean createPrac = false, clearExisting = false, foundIdentifier = false;
+        if (!newPracIdentifier.isEmpty()) {
+            if (myModel.getStoredIdentifiers().size() > 0) {
+                String oldPracIdentifier = myModel.getLoggedInPractitioner().getPractitionerIdentifier();
+
+                // check last logged in first
+                if (oldPracIdentifier.equals(newPracIdentifier)) {
+                    System.out.println("Current practitioner identifier is the same as the previous entered.");
+                    createPrac = false;
+                    clearExisting = false;
+                }
+                else {
+                    clearExisting = true;
+                    // search within stored identifiers
+                    for (int i = 0; i < myModel.getStoredIdentifiers().size(); i++) {
+                        if (newPracIdentifier.equals(myModel.getStoredIdentifiers().get(i))) {
+                            foundIdentifier = true;
+                            myModel.setLoggedInPractitioner(myModel.getStoredPractitioners().get(i));
+                        }
+                    }
+                    if (!foundIdentifier) {
+                        createPrac = true;
+                        System.out.println("Practitioner has not been entered into system.");
+                    }
+                }
+            } else {
+                createPrac = true;
+                clearExisting = false;
+            }
+
+            if(clearExisting){
+                // clear out existing subject lists - loop through all measurement types
+                myModel.clearSubjectLists();
+                // clear monitor table entries - loop through all measurement types
+                myModel.getMonitorTable().clearDataValues();
+                // clear patient list model
+                myModel.getPatientListModel().clear(); // can make this a method inside myModel/listModel (inside listmodel can fire -> update)
+            }
+            if (createPrac) {
+                PractitionerRecord newPrac = myModel.createPractitoner(newPracIdentifier);
+                myModel.getStoredIdentifiers().add(newPracIdentifier);
+                myModel.getStoredPractitioners().add(newPrac);
+                myModel.setLoggedInPractitioner(newPrac);
+                updatePatientList(newPracIdentifier, true);
+            }
+            if (foundIdentifier){
+                updatePatientList(newPracIdentifier, false);
+            }
         }
     }
 
-    public void updatePatientList(){
-        // retrieve patients for the given practitioner id
-
-        // server access - deal with empty patient list(?)
-//        myModel.getPractitioner().retrievePractitionerPatients();
-
-        // using for testing w/o server
-        myModel.getPractitioner().makeFake();
-
-        // update model with new practitioner id now stored in model
+    public void updatePatientList(String newIdentifier, boolean retrievePatientsFromServer){
+        if(retrievePatientsFromServer){
+            myModel.getLoggedInPractitioner().retrievePractitionerPatients();
+            System.out.println("Update patient list: accessing server.");
+        }
+        else{
+            System.out.println("Update patient list: not accessing server.");
+        }
         myModel.updatePatientNamesList();
     }
 
@@ -64,7 +116,7 @@ public class Controller {
         int[] selectedIndices = myView.getPatientJList().getSelectedIndices();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
-            PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
+            PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
 
             // add patients to monitorTable's indexArray - if haven't monitored returns false
             if (myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType.toString())) {
@@ -89,14 +141,13 @@ public class Controller {
         }
     }
 
-
     // pass in measurement type
     public void stopMonitorSelectedPatients(Measurement.Type newType) {
         // get selected indexes from JTable - only concern is if these indexes don't line up?
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
-            PatientRecord processPatient = myModel.getPractitioner().getPractitionerPatients().get(selectedIndices[i]);
+            PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
             PatientSubject processSubject = myModel.getMonitoredSubjects(Measurement.Type.CHOLESTEROL).get(selectedIndices[i]);
 
             // remove patient row's
@@ -106,9 +157,6 @@ public class Controller {
 
             //remove processing subject + observer(?)
             myModel.removeMonitoredSubject(processSubject, newType);
-
-            // destroy observer for given measurement from subject (?) - or add to a list to reuse non-asssigned (specific measurement) observers?
-            // detach...!
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
@@ -117,8 +165,8 @@ public class Controller {
     public void scheduleMonitor(Measurement.Type newType) {
             // implement an abstract parent class for measurementCalls - contains patientSubArray and measurementType, constructor involves both
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
-
-        updateFrequency();
+        String currentFreq = myView.getFreqValueLabel().getText();
+        myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
 
         if (newType == Measurement.Type.CHOLESTEROL) {
             // if monitor not turned on yet

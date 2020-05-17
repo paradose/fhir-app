@@ -75,7 +75,10 @@
         <children>
           <component id="a6db7" class="javax.swing.JList" binding="patientJList">
             <constraints/>
-            <properties/>
+            <properties>
+              <layoutOrientation value="0"/>
+              <selectionBackground color="-11833681"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

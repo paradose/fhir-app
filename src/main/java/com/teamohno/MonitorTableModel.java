@@ -95,7 +95,6 @@ public class MonitorTableModel extends AbstractTableModel {
         if (newMeasurement.getMeasurementType() == Measurement.Type.CHOLESTEROL) {
             cholesterolLevels.remove(currentIndex);
             effectiveDate.remove(currentIndex);
-
             cholesterolLevels.add(currentIndex, newMeasurement.getMeasurementValue().toString());
             effectiveDate.add(currentIndex, newMeasurement.getDateMeasured().toString());
         }
@@ -134,5 +133,15 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public ArrayList<ArrayList<String>> getMonitorData(){
         return monitoredData;
+    }
+
+    public void clearDataValues(){
+        System.out.println("Clearing monitorred data in table");
+        monitoredPatientNames.clear();
+        cholesterolLevels.clear();
+        effectiveDate.clear();
+
+        monitoredPatientID.clear();
+        fireTableDataChanged();
     }
 }

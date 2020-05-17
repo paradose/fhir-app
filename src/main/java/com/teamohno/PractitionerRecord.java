@@ -19,32 +19,27 @@ import java.util.Date;
 import java.util.List;
 
 public class PractitionerRecord {
-
-    // not used??
-    private String practitionerID;
-    private ArrayList<PatientRecord> monitoredPatients;
-    private ArrayList<PatientSubject> monitoredSubjects;
-
     private String practitionerIdentifier;
+    private ArrayList<String> practitionerIDs;
+
     private ArrayList<PatientRecord> practitionerPatients;
     private ArrayList<String> patientsIds = new ArrayList<String>();
 
     private Server server;
 
-
     public PractitionerRecord(String inputIdentifier, Server inputServer){
         practitionerIdentifier = inputIdentifier;
         practitionerPatients = new ArrayList<PatientRecord>();
         server = inputServer;
+        practitionerIDs = server.retrievePractitionerIDs(inputIdentifier);
     }
 
-    public String getPractitionerIdentifier() {
-        return practitionerIdentifier;
+    public String getPractitionerIdentifier() { return practitionerIdentifier; }
+
+    public ArrayList<String> getPractitionerIDs(){ return practitionerIDs;
     }
 
-    public String getPractitionerID(){
-        return practitionerID;
-    }
+    public void setPractitionerIDs(ArrayList<String> newPracIDs){practitionerIDs = newPracIDs;}
 
     public void retrievePractitionerPatients() {
        practitionerPatients = server.retrievePractitionerPatients(practitionerIdentifier);
