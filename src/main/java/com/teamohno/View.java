@@ -35,17 +35,17 @@ public class View extends JFrame{
 
     }
 
-    public View(TableModel dataModel, DefaultListModel listModel) {
+    public View(Model model) {
         super("Title");
 
         //Instantiating JList object
-        patientJList = new JList(listModel);
+        patientJList = new JList(model.getPatientListModel());
         patientJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         patientJList.setLayoutOrientation(JList.VERTICAL);
         patientListScrollPane.setViewportView(patientJList);
 
         //Creating a JTable and adding it to the scroll pane
-        monitorTable = new JTable(dataModel);
+        monitorTable = new JTable(model.getMonitorTable());
 
         monitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorScrollPane.setViewportView(monitorTable);

@@ -42,7 +42,7 @@ public class PractitionerRecord {
     public void setPractitionerIDs(ArrayList<String> newPracIDs){practitionerIDs = newPracIDs;}
 
     public void retrievePractitionerPatients() {
-       practitionerPatients = server.retrievePractitionerPatients(practitionerIdentifier);
+        practitionerPatients = server.retrievePractitionerPatients(practitionerIdentifier);
     }
 
     public ArrayList<PatientRecord> getPractitionerPatients(){
@@ -51,15 +51,4 @@ public class PractitionerRecord {
 
     // check existing practitioner (?)
 
-    // used for testing
-    public void makeFake(){
-        for (int i = 0; i < 3; i++) {
-            PatientRecord newPatient = new PatientRecord("123" + i, "First" + i, "Last", "male", null, "aad");
-            practitionerPatients.add(newPatient);
-
-            //sample initial record date / cholesterol value
-            Date newDate = new Date(2323223232L);
-            newPatient.setCholesterolMeasurement(BigDecimal.ONE, newDate);
-        }
-    }
 }

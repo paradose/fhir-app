@@ -3,6 +3,7 @@ package com.teamohno;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Observation;
 
 import java.math.BigDecimal;
@@ -25,22 +26,25 @@ public class PatientSubject extends Subject {
         patientState = patient;
     }
 
-    public void updateCholVal() {
+    public void updateMeasurementValue(MeasurementType newType) {
         String patientsId = patientState.getId();
-        BigDecimal prevCholVal = patientState.getCholesterolMeasurement().getCholesterolValue();
+        BigDecimal prevCholVal = patientState.getMeasurement(newType).getMeasurementValue();
 
         // testing
 // server
-        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
-
-// fake data (doesnt change cholesterol value) for testing
-//        Cholesterol updatedTotalChol = new Cholesterol(prevCholVal, patientState.getCholesterolMeasurement().getDateMeasured());
-// fake data (new chol value) for testing
-//        Cholesterol updatedTotalChol = new Cholesterol(prevCholVal.add(BigDecimal.ONE), patientState.getCholesterolMeasurement().getDateMeasured());
-//        System.out.println("UPDATED CHOL VAL: " + updatedTotalChol.getCholesterolValue());
+        MeasurementRecording updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
+//        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
 
         //sets the states chol measurement
-        patientState.setCholesterolMeasurement(updatedTotalChol.getCholesterolValue(),updatedTotalChol.getDateMeasured());
+        System.out.println("Updated measurement value about to set: " + updatedMeasurement.getMeasurementValue());
+        patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(),updatedMeasurement.getDateMeasured(), newType);
         notifyObservers();
     }
+
+    // needs update X val to be created for extension - unless.....
+    /* updateMeasurementVal(MeasurementType / name){
+        server.retrieveMeasurementVal(id, type)
+
+        .....
+    * */
 }

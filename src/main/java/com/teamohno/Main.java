@@ -1,6 +1,8 @@
 package com.teamohno;
 
 
+import java.util.ArrayList;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -10,7 +12,7 @@ public class Main {
         // setup before getting input from user
         Server fhirServer = new Server("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
         Model m = new Model(fhirServer);
-        View v = new View(m.getMonitorTable(), m.getPatientListModel());
+        View v = new View(m);
         Controller c = new Controller(m, v, fhirServer);
 
         // Add listeners to view objects

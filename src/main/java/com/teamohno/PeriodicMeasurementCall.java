@@ -3,27 +3,27 @@ package com.teamohno;
 import java.util.ArrayList;
 import java.util.TimerTask;
 
-public abstract class PeriodicMeasurementCall extends TimerTask {
+public class PeriodicMeasurementCall extends TimerTask {
     // used for testing
     public static int iteration;
 
     // static variable inside parent class (MeasurementCholesterolCall) -> all measurement periodic calls to have same frequency
-    protected int frequency;
-    protected Measurement.Type type;
-    protected ArrayList<PatientSubject> patientSubjectList;
-    protected boolean isTurnedOn;
+    public static int frequency;
+    private MeasurementType type;
+    private ArrayList<PatientSubject> patientSubjectList;
+    private boolean isTurnedOn;
 
-    protected PeriodicMeasurementCall(){ isTurnedOn = false;}
+    public PeriodicMeasurementCall(){ isTurnedOn = false;}
 
-    protected PeriodicMeasurementCall(ArrayList<PatientSubject> newPatientSubjectList, Measurement.Type typeMeasurement){
+    public PeriodicMeasurementCall(MeasurementType typeMeasurements){
         isTurnedOn = false;
-        patientSubjectList = newPatientSubjectList;
-        type = typeMeasurement;
+        patientSubjectList = typeMeasurements.getMonitorredSubjects();
+        type = typeMeasurements;
 
         iteration = 0;
     }
 
-    protected void setTurnedOn(){isTurnedOn = true;}
+    public void setTurnedOn(){isTurnedOn = true;}
 
     public boolean getTurnedOn() {return isTurnedOn;}
 
@@ -38,6 +38,15 @@ public abstract class PeriodicMeasurementCall extends TimerTask {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        System.out.println("waited for " + frequency/1000 + " seconds.");
+        for (int i = 0; i < patientSubjectList.size(); i++) {
+            patientSubjectList.get(i).updateMeasurementValue(type);
+
+            // For testing
+            System.out.println("calling for cholesterol of patient " + " name:" + patientSubjectList.get(i).getState().getFirstName());
+        }
+
         System.out.println("Iteration " + iteration);
         iteration++;
     }

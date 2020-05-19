@@ -126,30 +126,30 @@ public class Server {
         return new PatientRecord(id,firstName,lastName,gender,birthDate,location);
     }
 
-    public Cholesterol retrieveCholVal(String patientId) {
-        Cholesterol newChol = new Cholesterol(BigDecimal.ZERO,null);
+    public MeasurementRecording retrieveMeasurement(String patientId, MeasurementType newType) {
+        MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
         // code for getting total cholesterol
-        String cholCode = "2093-3";
+        String measurementCode = newType.getFhirCode();
         try {
-            String searchURLchol = serverBase+"Observation?code=" + cholCode + "&subject=" + patientId;
-            Bundle choleResults = client.search()
-                    .byUrl(searchURLchol)
+            String searchURL = serverBase+"Observation?code=" + measurementCode + "&subject=" + patientId;
+            Bundle results = client.search()
+                    .byUrl(searchURL)
                     .sort()
                     .descending("date")
                     .returnBundle(Bundle.class)
                     .execute();
             // gets latest observation
-            Observation observation = (Observation) choleResults.getEntry().get(0).getResource();
+            Observation observation = (Observation) results.getEntry().get(0).getResource();
             Date date = observation.getIssued();
-            BigDecimal totalChol = observation.getValueQuantity().getValue();
-            newChol.setCholesterolValue(totalChol);
-            newChol.setDateMeasured(date);
-            System.out.println("Total chol value for " + observation.getValueQuantity().getValue());
+            BigDecimal newValue = observation.getValueQuantity().getValue();
+            newRecording.setMeasurementValue(newValue);
+            newRecording.setDateMeasured(date);
+            System.out.println("Total value for " + observation.getValueQuantity().getValue());
             System.out.println(date);
         } catch (Exception e) {
-            System.out.println("no chol level available");
+            System.out.println("no value available");
         }
-        return newChol;
+        return newRecording;
     }
 
     public void addPatientToList(ArrayList<String> identifierList, ArrayList<PatientRecord> patientList, Bundle newBundle){

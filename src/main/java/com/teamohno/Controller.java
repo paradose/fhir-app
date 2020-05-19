@@ -2,19 +2,18 @@ package com.teamohno;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class Controller {
     private Model myModel;
     private Timer myTimer;
     private View myView;
     private Server server;
-    private PeriodicCholesterolCall myPeriodicCholesterol;
+    private PeriodicMeasurementCall myPeriodicCholesterol;
+    private ArrayList<MeasurementType> allTypes;
 
     public Controller(Model newModel, View newView, Server inputServer){
         myModel = newModel;
@@ -27,12 +26,24 @@ public class Controller {
     }
 
     public void initController(){
+        allTypes = myModel.getTypes();
+        // need to decide where we make this...? -> if we had more types
+
         //initialise controller - add listeners to UI elements
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
-        myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(Measurement.Type.CHOLESTEROL));
-        myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(Measurement.Type.CHOLESTEROL));
+        // loop through all measurement types - pass through
+//        Cholesterol cholesterol = new Cholesterol();
+        for (int i = 0; i < allTypes.size(); i++) {
+            if(allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL){
+                int index = i;
+                myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(allTypes.get(index)));
+                myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(allTypes.get(index)));
+                myPeriodicCholesterol = new PeriodicMeasurementCall(allTypes.get(index));
+            }
+        }
+
         // adds mouse listener to monitor table
         myView.getMonitorTable().addMouseListener(new MouseAdapter() {
             @Override
@@ -42,24 +53,14 @@ public class Controller {
                 displaySelectedPatient(rowIndex);
             }
         });
+
         // initialise timer and periodic caller
         myTimer = new Timer();
-        // passing in subject list (empty list at start)
-        myPeriodicCholesterol = new PeriodicCholesterolCall(myModel.getMonitoredSubjects(Measurement.Type.CHOLESTEROL));
+        // passing in subject list (empty list at start) - gets called once
+        scheduleMonitor();
     }
 
     public void storePracIdentifier() {
-/*  checks (any existing?)
-	-> if no
-        create prac -> set logged in
-	-> if yes
-        clear first
-                - (monitorredSubjects).clear()
-                - monitorred table model
-                - patient list model
-        set loggedInPrac
-        update patient list */
-
         String newPracIdentifier = myView.getPracIDfield().getText();
         boolean createPrac = false, clearExisting = false, foundIdentifier = false;
         if (!newPracIdentifier.isEmpty()) {
@@ -93,7 +94,12 @@ public class Controller {
 
             if(clearExisting){
                 // clear out existing subject lists - loop through all measurement types
-                myModel.clearSubjectLists();
+//                myModel.getMonitorTable().clearSubjectLists();
+                for (int i = 0; i < allTypes.size(); i++) {
+                    System.out.println("Clearing monitorred subjects");
+                    allTypes.get(i).getMonitorredSubjects().clear();
+                    System.out.println("Size after clearing inside controlller:" + allTypes.get(i).getMonitorredSubjects().size());
+                }
                 // clear monitor table entries - loop through all measurement types
                 myModel.getMonitorTable().clearDataValues();
                 // clear patient list model
@@ -115,6 +121,9 @@ public class Controller {
     public void updatePatientList(String newIdentifier, boolean retrievePatientsFromServer){
         if(retrievePatientsFromServer){
             myModel.getLoggedInPractitioner().retrievePractitionerPatients();
+            for (int i = 0; i < myModel.getLoggedInPractitioner().getPractitionerPatients().size() ; i++) {
+                myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).addMeasurementObject(allTypes);
+            }
             System.out.println("Update patient list: accessing server.");
         }
         else{
@@ -123,7 +132,7 @@ public class Controller {
         myModel.updatePatientNamesList();
     }
 
-    public void monitorSelectedPatients(Measurement.Type newType) {
+    public void monitorSelectedPatients(MeasurementType newType) {
         // get selected indexes from JList
         int[] selectedIndices = myView.getPatientJList().getSelectedIndices();
 
@@ -131,20 +140,21 @@ public class Controller {
             PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
 
             // add patients to monitorTable's indexArray - if haven't monitored returns false
-            if (myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType.toString())) {
+            if (myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType)) {
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
-                myModel.addMonitoredSubjects(newSubject, newType);
+//                myModel.getMonitorTable().addMonitoredSubjects(newSubject, newType);
+                newType.getMonitorredSubjects().add(newSubject);
 
                 // create observers (for measurement type...)**
-                CholObserver newObserver = new CholObserver(newSubject, myModel.getMonitorTable());
+                MeasurementObserver newObserver = new MeasurementObserver(newSubject, myModel.getMonitorTable(), newType);
 
                 //attach
                 newSubject.attach(newObserver);
 
                 //trigger scheduler - will schedule entire monitored subject list
-                scheduleMonitor(newType);
+//                scheduleMonitor();
             }
             // else if monitored but not this measurement -> add new measurement observer...?
             else{
@@ -153,55 +163,44 @@ public class Controller {
         }
     }
 
-    // displays patient on patient display panel
-    public void displaySelectedPatient(int patientIndex){
-        PatientSubject chosenMonitoredPatient = myModel.getMonitoredSubjects(Measurement.Type.CHOLESTEROL).get(patientIndex);
-        PatientRecord chosenPatient = chosenMonitoredPatient.getState();
-        myView.getPatientNameLabel().setText("Name: "+ chosenPatient.getFirstName() + " " + chosenPatient.getLastName());
-        myView.getPatientBirthDateLabel().setText("BirthDate: " + chosenPatient.getBirthDate());
-        myView.getPatientGenderLabel().setText("Gender: " + chosenPatient.getGender());
-        myView.getPatientAddressLabel().setText( "Address: " + chosenPatient.getAddress());
-
-    }
     // pass in measurement type
-    public void stopMonitorSelectedPatients(Measurement.Type newType) {
+    public void stopMonitorSelectedPatients(MeasurementType newType) {
         // get selected indexes from JTable - only concern is if these indexes don't line up?
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
-            PatientSubject processSubject = myModel.getMonitoredSubjects(Measurement.Type.CHOLESTEROL).get(selectedIndices[i]);
+            PatientSubject processSubject = myModel.getMonitorTable().getMonitoredSubjects(newType).get(selectedIndices[i]);
 
             // remove patient row's
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
 
-            // check measurement observers
-
             //remove processing subject + observer(?)
-            myModel.removeMonitoredSubject(processSubject, newType);
+//            myModel.getMonitorTable().removeMonitoredSubject(processSubject, newType);
+            newType.getMonitorredSubjects().remove(processSubject);
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
 
+    // displays patient on patient display panel
+    public void displaySelectedPatient(int patientIndex){
+        PatientSubject chosenMonitoredPatient = allTypes.get(0).getMonitorredSubjects().get(patientIndex);
+        PatientRecord chosenPatient = chosenMonitoredPatient.getState();
+        myView.getPatientNameLabel().setText("Name: "+ chosenPatient.getFirstName() + " " + chosenPatient.getLastName());
+        myView.getPatientBirthDateLabel().setText("BirthDate: " + chosenPatient.getBirthDate());
+        myView.getPatientGenderLabel().setText("Gender: " + chosenPatient.getGender());
+        myView.getPatientAddressLabel().setText( "Address: " + chosenPatient.getAddress());
+    }
+
     // pass in measurement type parameter
-    public void scheduleMonitor(Measurement.Type newType) {
+    public void scheduleMonitor() {
             // implement an abstract parent class for measurementCalls - contains patientSubArray and measurementType, constructor involves both
 //        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
         String currentFreq = myView.getFreqValueLabel().getText();
         myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
 
-        if (newType == Measurement.Type.CHOLESTEROL) {
-            // if monitor not turned on yet
-            if (!myPeriodicCholesterol.getTurnedOn()) {
-                myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
-                myPeriodicCholesterol.setTurnedOn();
-            } else {
-                System.out.println("Cholesterol monitor already turned on");
-            }
-        }
-        else{
-            System.out.println("Error: Measurement type does not exist");
-        }
+        myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
+        myPeriodicCholesterol.setTurnedOn();
     }
 
     public void updateFrequency(){
