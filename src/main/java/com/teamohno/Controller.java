@@ -2,6 +2,10 @@ package com.teamohno;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,7 +33,15 @@ public class Controller {
 
         myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(Measurement.Type.CHOLESTEROL));
         myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(Measurement.Type.CHOLESTEROL));
-
+        // adds mouse listener to monitor table
+        myView.getMonitorTable().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int rowIndex = myView.getMonitorTable().getSelectedRow();
+                displaySelectedPatient(rowIndex);
+            }
+        });
         // initialise timer and periodic caller
         myTimer = new Timer();
         // passing in subject list (empty list at start)
@@ -141,6 +153,16 @@ public class Controller {
         }
     }
 
+    // displays patient on patient display panel
+    public void displaySelectedPatient(int patientIndex){
+        PatientSubject chosenMonitoredPatient = myModel.getMonitoredSubjects(Measurement.Type.CHOLESTEROL).get(patientIndex);
+        PatientRecord chosenPatient = chosenMonitoredPatient.getState();
+        myView.getPatientNameLabel().setText("Name: "+ chosenPatient.getFirstName() + " " + chosenPatient.getLastName());
+        myView.getPatientBirthDateLabel().setText("BirthDate: " + chosenPatient.getBirthDate());
+        myView.getPatientGenderLabel().setText("Gender: " + chosenPatient.getGender());
+        myView.getPatientAddressLabel().setText( "Address: " + chosenPatient.getAddress());
+
+    }
     // pass in measurement type
     public void stopMonitorSelectedPatients(Measurement.Type newType) {
         // get selected indexes from JTable - only concern is if these indexes don't line up?
