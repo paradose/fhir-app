@@ -1,8 +1,8 @@
 package com.teamohno;
 
-import org.hl7.fhir.r4.model.Patient;
-
 import javax.swing.table.AbstractTableModel;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 // change to general measurement (pass in measurement type in constructor to make column name
@@ -19,13 +19,20 @@ public class MonitorTableModel extends AbstractTableModel {
     private ArrayList<String> monitoredPatientID;
     private ArrayList<String> monitoredType;
 
+    //watches the average of chol
+    private BigDecimal totalChol;
+    private BigDecimal totalAverageChol;
+    private CholCellRenderer cholAverageWatcher;
+
+
     public MonitorTableModel() {
         patientMeasurementTable = new ArrayList<ArrayList<String>>();
         monitoredPatientID = new ArrayList<String>();
         monitoredType = new ArrayList<String>();
         patientMeasurementTable.add(monitoredPatientID);
         patientMeasurementTable.add(monitoredType);
-
+        totalAverageChol = BigDecimal.ZERO;
+        totalChol = BigDecimal.ZERO;
         dataColumns = new ArrayList<String>();
         dataColumns.add("Name");
         dataColumns.add("Cholesterol Level");
@@ -40,6 +47,7 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(monitoredPatientNames);
         monitoredData.add(cholesterolLevels);
         monitoredData.add(effectiveDate);
+        cholAverageWatcher = new CholCellRenderer();
     }
 
     public ArrayList<ArrayList<String>> getIndexPatientsMeasurement(){
@@ -83,6 +91,10 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredType.remove(newPatientIndex);
 
         monitoredPatientNames.remove(newPatientIndex);
+        //
+        if (!cholesterolLevels.get(newPatientIndex).equals("N/A"))
+        totalChol = totalChol.subtract(new BigDecimal(cholesterolLevels.get(newPatientIndex)));
+
         cholesterolLevels.remove(newPatientIndex);
         effectiveDate.remove(newPatientIndex);
         fireTableDataChanged();
@@ -91,20 +103,35 @@ public class MonitorTableModel extends AbstractTableModel {
     public void updateMeasurements(PatientRecord newPatient, Measurement newMeasurement){
         // obtain index to navigate inside table data
         int currentIndex = monitoredPatientID.indexOf(newPatient.getId());
-
+        BigDecimal oldValue;
         if (newMeasurement.getMeasurementType() == Measurement.Type.CHOLESTEROL) {
+            // where value cant be casted into big decimal consider??
+            if (!cholesterolLevels.get(currentIndex).equals("N/A")) {
+                oldValue = new BigDecimal(cholesterolLevels.get(currentIndex));
+            } else oldValue = BigDecimal.ZERO;
+
             cholesterolLevels.remove(currentIndex);
             effectiveDate.remove(currentIndex);
+
+            BigDecimal newValue =newMeasurement.getMeasurementValue();
+            updateNewCholAverage(oldValue,newValue);
+
             cholesterolLevels.add(currentIndex, newMeasurement.getMeasurementValue().toString());
             effectiveDate.add(currentIndex, newMeasurement.getDateMeasured().toString());
         }
-        else{
+        else {
             System.out.println("Error: measurement value being updated contains invalid measurement type");
         }
         fireTableDataChanged();
     }
 
-    // calcuclate average -> update lowest/highest average value
+    // have to deal with cases where they have no cholesterol levels being updated?
+    private void updateNewCholAverage(BigDecimal oldValue, BigDecimal newValue){
+        totalChol= (totalChol.add(newValue)).subtract(oldValue);
+        totalAverageChol = totalChol.divide(new BigDecimal(monitoredPatientNames.size()),3, RoundingMode.CEILING);
+        // updates cholesterol average in renderer that observes all the data
+        cholAverageWatcher.updateCholAverage(totalAverageChol);
+    }
 
     public Object getValueAt(int row, int col) {
         return monitoredData.get(col).get(row);
@@ -118,7 +145,11 @@ public class MonitorTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return dataColumns.size();
     }
-
+    // gets class of the column ?
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return String.class;
+    }
     public int getRowCount() {
         // all columns should have same numbers of rows
         int rowCount = monitoredData.get(0).size();
@@ -135,6 +166,9 @@ public class MonitorTableModel extends AbstractTableModel {
         return monitoredData;
     }
 
+    public ArrayList<String> getMonitoredPatientID(){
+        return monitoredPatientID;
+    }
     public void clearDataValues(){
         System.out.println("Clearing monitorred data in table");
         monitoredPatientNames.clear();
