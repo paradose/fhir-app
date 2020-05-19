@@ -3,7 +3,6 @@ package com.teamohno;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class View extends JFrame{
     private JLabel pracIDLabel;
@@ -22,6 +21,11 @@ public class View extends JFrame{
     private JButton monitorCholButton;
     private JButton stopMonitorButton;
     private JLabel freqValueLabel;
+    private JPanel displayPatient;
+    private JLabel patientGender;
+    private JLabel patientAddress;
+    private JLabel patientBirthDate;
+    private JLabel patientName;
 
     private DefaultListModel listModel;
     private JTable monitorTable;
@@ -42,11 +46,14 @@ public class View extends JFrame{
 
         //Creating a JTable and adding it to the scroll pane
         monitorTable = new JTable(dataModel);
+
         monitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorScrollPane.setViewportView(monitorTable);
 
+
         // added to work around error from removing all monitored patients at once - look over when have time
         monitorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        monitorTable.setDefaultRenderer(String.class, new CholCellRenderer());
 
         // instantiate the view
         setContentPane(mainParentPanel);
@@ -87,7 +94,9 @@ public class View extends JFrame{
     public JButton getStopMonitorButton() {
         return stopMonitorButton;
     }
-
+    public JPanel getDisplayPatient(){
+        return displayPatient;
+    }
     public JTable getMonitorTable(){
         return monitorTable;
     }
@@ -95,4 +104,9 @@ public class View extends JFrame{
     public JLabel getFreqValueLabel(){
         return freqValueLabel;
     }
+
+    public JLabel getPatientGenderLabel() {return patientGender;}
+    public JLabel getPatientAddressLabel() {return patientAddress;}
+    public JLabel getPatientBirthDateLabel() {return patientBirthDate;}
+    public JLabel getPatientNameLabel() {return patientName;}
 }
