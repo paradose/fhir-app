@@ -84,6 +84,19 @@ public class PatientRecord{
         }
     }
 
+    public void resetRecording(MeasurementType newType){
+        for (int i = 0; i < measurementRecordings.size(); i++) {
+            if(measurementRecordings.get(i).getType().type == newType.type){
+                System.out.println("Type about to set is correct");
+                measurementRecordings.get(i).setMeasurementValue(BigDecimal.ZERO);
+                measurementRecordings.get(i).setDateMeasured(new Date(2323223232L));
+            }
+            else{
+                System.out.println("Type not matched");
+            }
+        }
+    }
+
     public String toString(){
         return "Patient ID: " + id + ", " + firstName + " " + lastName + " ,"+ gender+", Address: "+address+", Birthdate: "+birthDate;
     }

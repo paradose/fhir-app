@@ -127,6 +127,8 @@ public class MonitorTableModel extends AbstractTableModel {
         return measurementAverageWatcher;
     }
     public Object getValueAt(int row, int col) {
+        // column index = for the list of names / measurements / dates
+        // row index = for the value that column
         return monitoredData.get(col).get(row);
     }
 
@@ -170,5 +172,16 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public ArrayList<PatientSubject> getMonitoredSubjects(MeasurementType newType) {
         return newType.getMonitorredSubjects();
+    }
+
+    public String getValueForPatient(String patientID, MeasurementType newType){
+        String returnValue = "-";
+        for (int i = 0; i < columnNames.size(); i++) {
+            if(columnNames.get(i).equals(newType.getName())){
+                // i = index of column for this type
+                 returnValue = monitoredData.get(i).get(monitoredPatientID.indexOf(patientID));
+            }
+        }
+        return returnValue;
     }
 }

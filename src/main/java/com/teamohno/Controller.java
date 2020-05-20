@@ -4,7 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 
 public class Controller {
@@ -95,9 +97,13 @@ public class Controller {
             if (clearExisting) {
                 // clear out existing subject lists - loop through all measurement types
                 for (int i = 0; i < allTypes.size(); i++) {
-                    allTypes.get(i).getMonitorredSubjects().clear();
+                    MeasurementType currentType = allTypes.get(i);
+                    for (int j = 0; j < currentType.getMonitorredSubjects().size(); j++) {
+                        currentType.getMonitorredSubjects().get(j).getState().resetRecording(currentType);
+                    }
+                    currentType.getMonitorredSubjects().clear();
                     // update(clear) averages for types after clearing subject list
-                    allTypes.get(i).updateAverage();
+                    currentType.updateAverage();
                 }
                 // clear monitor table entries - loop through all measurement types
                 myModel.getMonitorTable().clearDataValues();
@@ -162,6 +168,7 @@ public class Controller {
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientSubject processSubject = myModel.getMonitorTable().getMonitoredSubjects(newType).get(selectedIndices[i]);
+            processSubject.getState().resetRecording(newType);
             // remove patient row's
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
             myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
