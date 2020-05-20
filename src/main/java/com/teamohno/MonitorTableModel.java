@@ -1,10 +1,6 @@
 package com.teamohno;
 
 import javax.swing.table.AbstractTableModel;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.Array;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 // change to general measurement (pass in measurement type in constructor to make column name
@@ -23,9 +19,7 @@ public class MonitorTableModel extends AbstractTableModel {
     private ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
 
     //watches the average of chol
-    private BigDecimal totalChol;
-    private BigDecimal totalAverageChol;
-    private CholCellRenderer cholAverageWatcher;
+    private MeasurementCellRenderer measurementAverageWatcher;
 
     public MonitorTableModel(ArrayList<MeasurementType> newTypes) {
         // list of types -> use the types to get access to all the subject lists
@@ -45,9 +39,6 @@ public class MonitorTableModel extends AbstractTableModel {
             addMeasurementType(newTypes.get(i));
         }
 
-        totalAverageChol = BigDecimal.ZERO;
-        totalChol = BigDecimal.ZERO;
-        cholAverageWatcher = new CholCellRenderer();
     }
 
     public void addMeasurementType(MeasurementType newType){
@@ -56,6 +47,7 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(listVlaues);
         monitoredData.add(listDates);
         columnNames.add(newType.getName());
+        measurementAverageWatcher = new MeasurementCellRenderer(columnNames.size()-1);
         columnNames.add("Date Measured");
 
         monitoredMeasurementSubjects.add(newType.getMonitorredSubjects());
@@ -102,7 +94,10 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredPatientID.remove(newPatientIndex);
 
         // need to catch condition for cholesterol (index = 0 => column for cholesterol)
-        totalChol = totalChol.subtract(new BigDecimal(monitoredData.get(1).get(newPatientIndex)));
+//        if (!monitoredData.get(1).get(newPatientIndex).equals("-")) {
+//            totalChol = totalChol.subtract(new BigDecimal(monitoredData.get(1).get(newPatientIndex)));
+//        }
+
         // loop through data columns
         for (int i = 0; i < monitoredData.size(); i++) {
             // this removes ALL data
@@ -113,8 +108,8 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public void updateMeasurements(PatientRecord newPatient, MeasurementRecording newMeasurement) {
         // obtain index to navigate inside table data
+//        measurementAverageWatcher.updateCholAverage(newMeasurement.getType().getAverage());
         int currentIndex = monitoredPatientID.indexOf(newPatient.getId());
-        BigDecimal oldValue;
 
         System.out.println("Column name size:" + columnNames.size());
         for (int i = 0; i < columnNames.size(); i++) {
@@ -123,16 +118,13 @@ public class MonitorTableModel extends AbstractTableModel {
             if (columnNames.get(i).equals(newMeasurement.getType().getName())) {
 
                 // where value cant be casted into big decimal consider??
-                if (!monitoredData.get(i).get(currentIndex).equals("-")) {
-                    oldValue = new BigDecimal(monitoredData.get(i).get(currentIndex));
-                } else oldValue = BigDecimal.ZERO;
+//                if (!monitoredData.get(i).get(currentIndex).equals("-")) {
+//                    oldValue = new BigDecimal(monitoredData.get(i).get(currentIndex));
+//                } else oldValue = BigDecimal.ZERO;
 
                 System.out.println("Replacing data");
                 monitoredData.get(i).remove(currentIndex);
                 monitoredData.get(i + 1).remove(currentIndex);
-
-                BigDecimal newValue = newMeasurement.getMeasurementValue();
-                updateNewCholAverage(oldValue, newValue);
 
                 monitoredData.get(i).add(currentIndex, newMeasurement.getMeasurementValue().toString());
                 monitoredData.get(i + 1).add(currentIndex, newMeasurement.getDateMeasured().toString());
@@ -144,13 +136,15 @@ public class MonitorTableModel extends AbstractTableModel {
     }
 
     // have to deal with cases where they have no cholesterol levels being updated?
-    private void updateNewCholAverage(BigDecimal oldValue, BigDecimal newValue){
-        totalChol= (totalChol.add(newValue)).subtract(oldValue);
-        totalAverageChol = totalChol.divide(new BigDecimal(monitoredPatientNames.size()),3, RoundingMode.CEILING);
-        // updates cholesterol average in renderer that observes all the data
-        cholAverageWatcher.updateCholAverage(totalAverageChol);
+//    private void updateNewCholAverage(BigDecimal oldValue, BigDecimal newValue){
+//        totalChol= (totalChol.add(newValue)).subtract(oldValue);
+//        totalAverageChol = totalChol.divide(new BigDecimal(monitoredPatientNames.size()),3, RoundingMode.CEILING);
+//        // updates cholesterol average in renderer that observes all the data
+//        cholAverageWatcher.updateCholAverage(totalAverageChol);
+//    }
+    public MeasurementCellRenderer getMeasurementRenderer(){
+        return measurementAverageWatcher;
     }
-
     public Object getValueAt(int row, int col) {
         return monitoredData.get(col).get(row);
     }
@@ -163,7 +157,10 @@ public class MonitorTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return columnNames.size();
     }
-
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return String.class;
+    }
     public int getRowCount() {
         // all columns should have same numbers of rows
         int rowCount = monitoredData.get(0).size();

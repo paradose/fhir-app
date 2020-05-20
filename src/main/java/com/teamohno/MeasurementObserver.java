@@ -27,9 +27,17 @@ public class MeasurementObserver extends Observer {
         System.out.println("Old state: " + lastState + ", new state " + newTotalcholVal);
         if (!(newTotalcholVal == lastState)){
             // send update to model
-            monitorredData.updateMeasurements(observerSubject.getState(), patientsNewChol);
 
             //... calculate new average
+            MeasurementType type = patientsNewChol.getType();
+            // fix big decimal ? not sure how we deal with decimal types
+            type.updateAverage(lastState.doubleValue(),newTotalcholVal.doubleValue());
+            monitorredData.getMeasurementRenderer().updateCholAverage(type.getAverage());
+
+
+            monitorredData.updateMeasurements(observerSubject.getState(), patientsNewChol);
+
+
 
             System.out.println("Observer spotted new chol val: " + patientsNewChol.getMeasurementValue());
         }
@@ -39,6 +47,9 @@ public class MeasurementObserver extends Observer {
 
         System.out.println("Observer updated");
         lastState = patientsNewChol.getMeasurementValue();
+
+        // set subjects chol value
+        observerSubject.getState().setMeasurementRecordings(patientsNewChol.getMeasurementValue(), patientsNewChol.getDateMeasured(), patientsNewChol.getType());
     }
 
     public void setObserverSubject(PatientSubject newSubject){

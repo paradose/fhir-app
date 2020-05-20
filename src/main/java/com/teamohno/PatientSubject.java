@@ -13,15 +13,16 @@ import java.util.Date;
 public class PatientSubject extends Subject {
     private PatientRecord patientState;
     private Server server;
-
+    private boolean changed;
     public PatientSubject(PatientRecord initialPatientData, Server inputServer){
         patientState = initialPatientData;
         server = inputServer;
+        changed=true;
     }
     public PatientRecord getState() {
         return patientState;
     }
-
+    public boolean getActive(){ return changed;}
     public void setState(PatientRecord patient) {
         patientState = patient;
     }
@@ -31,14 +32,19 @@ public class PatientSubject extends Subject {
         BigDecimal prevCholVal = patientState.getMeasurement(newType).getMeasurementValue();
 
         // testing
-// server
-        MeasurementRecording updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
+        if (changed) {
+            MeasurementRecording updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
+            if (updatedMeasurement.getMeasurementValue().equals(BigDecimal.ZERO) && prevCholVal.equals(BigDecimal.ZERO)){
+                changed=false;
+            }
+            System.out.println("Updated measurement value about to set: " + updatedMeasurement.getMeasurementValue());
+            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(),updatedMeasurement.getDateMeasured(), newType);
+            notifyObservers();
+        }
 //        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
-
+        // figure out how to remove unchanged states from measurementType calculation
         //sets the states chol measurement
-        System.out.println("Updated measurement value about to set: " + updatedMeasurement.getMeasurementValue());
-        patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(),updatedMeasurement.getDateMeasured(), newType);
-        notifyObservers();
+
     }
 
     // needs update X val to be created for extension - unless.....

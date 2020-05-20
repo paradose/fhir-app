@@ -33,6 +33,7 @@ public class Controller {
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
+
         // loop through all measurement types - pass through
 //        Cholesterol cholesterol = new Cholesterol();
         for (int i = 0; i < allTypes.size(); i++) {
@@ -53,7 +54,7 @@ public class Controller {
                 displaySelectedPatient(rowIndex);
             }
         });
-
+        myView.getMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable().getMeasurementRenderer());
         // initialise timer and periodic caller
         myTimer = new Timer();
         // passing in subject list (empty list at start) - gets called once
@@ -145,8 +146,10 @@ public class Controller {
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
 //                myModel.getMonitorTable().addMonitoredSubjects(newSubject, newType);
+                newType.updateAverage(0,newSubject.getState().getMeasurement(newType).getMeasurementValue().doubleValue());
                 newType.getMonitorredSubjects().add(newSubject);
 
+//                myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
                 // create observers (for measurement type...)**
                 MeasurementObserver newObserver = new MeasurementObserver(newSubject, myModel.getMonitorTable(), newType);
 
@@ -171,13 +174,16 @@ public class Controller {
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
             PatientSubject processSubject = myModel.getMonitorTable().getMonitoredSubjects(newType).get(selectedIndices[i]);
-
+            newType.updateAverage(processSubject.getState().getMeasurement(newType).getMeasurementValue().doubleValue(),0);
             // remove patient row's
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
+            // get old measurement value
 
+//            myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
             //remove processing subject + observer(?)
 //            myModel.getMonitorTable().removeMonitoredSubject(processSubject, newType);
             newType.getMonitorredSubjects().remove(processSubject);
+
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
