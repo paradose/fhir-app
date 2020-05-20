@@ -59,15 +59,15 @@ public class PatientRecord{
 
     public MeasurementRecording getMeasurement(MeasurementType newType){
         // make a default measurement object to return if no measurements
-        MeasurementRecording returnRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223232L), new Cholesterol());
+        MeasurementRecording returnRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223232L), newType);
         System.out.println("Size of measurement reocrding list: " + measurementRecordings.size());
         for (int i = 0; i < measurementRecordings.size(); i++) {
                 if(measurementRecordings.get(i).getType().type == newType.type){
                     returnRecording = measurementRecordings.get(i);
                 }
             }
-        if(returnRecording.equals(null)) {
-            System.out.println("Error: Patient doesn't have a recording for " + newType.getName());
+        if(returnRecording.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0) {
+            System.out.println("Patient doesn't have a recording for " + newType.getName());
         }
         return returnRecording;
     }
@@ -84,15 +84,6 @@ public class PatientRecord{
         }
     }
 
-    /*
-    public Cholesterol getCholesterolMeasurement() {
-        return cholesterolMeasurement;
-    }
-    public void setCholesterolMeasurement(BigDecimal newCholValue, Date newCholDate) {
-        this.cholesterolMeasurement.setCholesterolValue(newCholValue);
-        this.cholesterolMeasurement.setDateMeasured(newCholDate);
-    }
-    */
     public String toString(){
         return "Patient ID: " + id + ", " + firstName + " " + lastName + " ,"+ gender+", Address: "+address+", Birthdate: "+birthDate;
     }

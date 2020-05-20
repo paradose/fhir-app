@@ -33,7 +33,6 @@ public class Controller {
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
-
         // loop through all measurement types - pass through
 //        Cholesterol cholesterol = new Cholesterol();
         for (int i = 0; i < allTypes.size(); i++) {
@@ -64,6 +63,7 @@ public class Controller {
     public void storePracIdentifier() {
         String newPracIdentifier = myView.getPracIDfield().getText();
         boolean createPrac = false, clearExisting = false, foundIdentifier = false;
+        // if no identifier entered
         if (!newPracIdentifier.isEmpty()) {
             if (myModel.getStoredIdentifiers().size() > 0) {
                 String oldPracIdentifier = myModel.getLoggedInPractitioner().getPractitionerIdentifier();
@@ -73,8 +73,7 @@ public class Controller {
                     System.out.println("Current practitioner identifier is the same as the previous entered.");
                     createPrac = false;
                     clearExisting = false;
-                }
-                else {
+                } else {
                     clearExisting = true;
                     // search within stored identifiers
                     for (int i = 0; i < myModel.getStoredIdentifiers().size(); i++) {
@@ -93,19 +92,19 @@ public class Controller {
                 clearExisting = false;
             }
 
-            if(clearExisting){
+            if (clearExisting) {
                 // clear out existing subject lists - loop through all measurement types
-//                myModel.getMonitorTable().clearSubjectLists();
                 for (int i = 0; i < allTypes.size(); i++) {
-                    System.out.println("Clearing monitorred subjects");
                     allTypes.get(i).getMonitorredSubjects().clear();
-                    System.out.println("Size after clearing inside controlller:" + allTypes.get(i).getMonitorredSubjects().size());
+                    // update(clear) averages for types after clearing subject list
+                    allTypes.get(i).updateAverage();
                 }
                 // clear monitor table entries - loop through all measurement types
                 myModel.getMonitorTable().clearDataValues();
                 // clear patient list model
                 myModel.getPatientListModel().clear(); // can make this a method inside myModel/listModel (inside listmodel can fire -> update)
             }
+
             if (createPrac) {
                 PractitionerRecord newPrac = myModel.createPractitoner(newPracIdentifier);
                 myModel.getStoredIdentifiers().add(newPracIdentifier);
@@ -113,7 +112,7 @@ public class Controller {
                 myModel.setLoggedInPractitioner(newPrac);
                 updatePatientList(newPracIdentifier, true);
             }
-            if (foundIdentifier){
+            if (foundIdentifier) {
                 updatePatientList(newPracIdentifier, false);
             }
         }
@@ -145,45 +144,29 @@ public class Controller {
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
-//                myModel.getMonitorTable().addMonitoredSubjects(newSubject, newType);
-                newType.updateAverage(0,newSubject.getState().getMeasurement(newType).getMeasurementValue().doubleValue());
                 newType.getMonitorredSubjects().add(newSubject);
 
-//                myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
-                // create observers (for measurement type...)**
+                // create observers (for measurement type)
                 MeasurementObserver newObserver = new MeasurementObserver(newSubject, myModel.getMonitorTable(), newType);
-
-                //attach
                 newSubject.attach(newObserver);
-
-                //trigger scheduler - will schedule entire monitored subject list
-//                scheduleMonitor();
             }
-            // else if monitored but not this measurement -> add new measurement observer...?
             else{
                 System.out.println("Error attempting to monitor an already monitored patient+measurement combo.");
             }
         }
     }
 
-    // pass in measurement type
     public void stopMonitorSelectedPatients(MeasurementType newType) {
         // get selected indexes from JTable - only concern is if these indexes don't line up?
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
-            PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
             PatientSubject processSubject = myModel.getMonitorTable().getMonitoredSubjects(newType).get(selectedIndices[i]);
-            newType.updateAverage(processSubject.getState().getMeasurement(newType).getMeasurementValue().doubleValue(),0);
             // remove patient row's
             myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
-            // get old measurement value
-
-//            myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
-            //remove processing subject + observer(?)
-//            myModel.getMonitorTable().removeMonitoredSubject(processSubject, newType);
+            myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
             newType.getMonitorredSubjects().remove(processSubject);
-
+            newType.updateAverage();
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }

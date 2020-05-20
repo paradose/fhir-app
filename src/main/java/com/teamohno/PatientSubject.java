@@ -13,16 +13,16 @@ import java.util.Date;
 public class PatientSubject extends Subject {
     private PatientRecord patientState;
     private Server server;
-    private boolean changed;
+    private boolean active;
     public PatientSubject(PatientRecord initialPatientData, Server inputServer){
         patientState = initialPatientData;
         server = inputServer;
-        changed=true;
+        active = true;
     }
     public PatientRecord getState() {
         return patientState;
     }
-    public boolean getActive(){ return changed;}
+    public boolean getActive(){ return active;}
     public void setState(PatientRecord patient) {
         patientState = patient;
     }
@@ -31,26 +31,18 @@ public class PatientSubject extends Subject {
         String patientsId = patientState.getId();
         BigDecimal prevCholVal = patientState.getMeasurement(newType).getMeasurementValue();
 
-        // testing
-        if (changed) {
+        if(active) {
+            System.out.println("Comparing using big decimal -> found out previous is NOT zero: previous:" + prevCholVal.toString());
             MeasurementRecording updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
-            if (updatedMeasurement.getMeasurementValue().equals(BigDecimal.ZERO) && prevCholVal.equals(BigDecimal.ZERO)){
-                changed=false;
+//            if(updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0){ // assume real patient will ever receive a value of zero
+            if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0 && prevCholVal.compareTo(BigDecimal.ZERO) == 0) {
+                active = false;
             }
             System.out.println("Updated measurement value about to set: " + updatedMeasurement.getMeasurementValue());
-            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(),updatedMeasurement.getDateMeasured(), newType);
-            notifyObservers();
+            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
+            if (active) {
+                notifyObservers();
+            }
         }
-//        Cholesterol updatedTotalChol = server.retrieveCholVal(patientsId);
-        // figure out how to remove unchanged states from measurementType calculation
-        //sets the states chol measurement
-
     }
-
-    // needs update X val to be created for extension - unless.....
-    /* updateMeasurementVal(MeasurementType / name){
-        server.retrieveMeasurementVal(id, type)
-
-        .....
-    * */
 }

@@ -41,8 +41,9 @@ public class PeriodicMeasurementCall extends TimerTask {
 
         System.out.println("waited for " + frequency/1000 + " seconds.");
         for (int i = 0; i < patientSubjectList.size(); i++) {
-            patientSubjectList.get(i).updateMeasurementValue(type);
-
+            if(patientSubjectList.get(i).getActive()) {
+                patientSubjectList.get(i).updateMeasurementValue(type);
+            }
             // For testing
             System.out.println("calling for cholesterol of patient " + " name:" + patientSubjectList.get(i).getState().getFirstName());
         }

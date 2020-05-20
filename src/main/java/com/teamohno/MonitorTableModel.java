@@ -25,11 +25,11 @@ public class MonitorTableModel extends AbstractTableModel {
         // list of types -> use the types to get access to all the subject lists
         monitoredMeasurementSubjects = new ArrayList<>();
 
-        patientMeasurementTable = new ArrayList<ArrayList<String>>();
+        patientMeasurementTable = new ArrayList<>();
         monitoredPatientID = new ArrayList<String>();
         patientMeasurementTable.add(monitoredPatientID);
 
-        columnNames = new ArrayList<String>();
+        columnNames = new ArrayList<>();
         columnNames.add("Name");
 
         monitoredData = new ArrayList<ArrayList<String>>();
@@ -38,7 +38,6 @@ public class MonitorTableModel extends AbstractTableModel {
         for (int i = 0; i < newTypes.size(); i++) {
             addMeasurementType(newTypes.get(i));
         }
-
     }
 
     public void addMeasurementType(MeasurementType newType){
@@ -93,11 +92,6 @@ public class MonitorTableModel extends AbstractTableModel {
         // remove to track index
         monitoredPatientID.remove(newPatientIndex);
 
-        // need to catch condition for cholesterol (index = 0 => column for cholesterol)
-//        if (!monitoredData.get(1).get(newPatientIndex).equals("-")) {
-//            totalChol = totalChol.subtract(new BigDecimal(monitoredData.get(1).get(newPatientIndex)));
-//        }
-
         // loop through data columns
         for (int i = 0; i < monitoredData.size(); i++) {
             // this removes ALL data
@@ -108,7 +102,6 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public void updateMeasurements(PatientRecord newPatient, MeasurementRecording newMeasurement) {
         // obtain index to navigate inside table data
-//        measurementAverageWatcher.updateCholAverage(newMeasurement.getType().getAverage());
         int currentIndex = monitoredPatientID.indexOf(newPatient.getId());
 
         System.out.println("Column name size:" + columnNames.size());
@@ -116,11 +109,6 @@ public class MonitorTableModel extends AbstractTableModel {
             System.out.println("col i entry:" + columnNames.get(i));
             System.out.println("type name:" + newMeasurement.getType().getName());
             if (columnNames.get(i).equals(newMeasurement.getType().getName())) {
-
-                // where value cant be casted into big decimal consider??
-//                if (!monitoredData.get(i).get(currentIndex).equals("-")) {
-//                    oldValue = new BigDecimal(monitoredData.get(i).get(currentIndex));
-//                } else oldValue = BigDecimal.ZERO;
 
                 System.out.println("Replacing data");
                 monitoredData.get(i).remove(currentIndex);
@@ -135,13 +123,6 @@ public class MonitorTableModel extends AbstractTableModel {
         }
     }
 
-    // have to deal with cases where they have no cholesterol levels being updated?
-//    private void updateNewCholAverage(BigDecimal oldValue, BigDecimal newValue){
-//        totalChol= (totalChol.add(newValue)).subtract(oldValue);
-//        totalAverageChol = totalChol.divide(new BigDecimal(monitoredPatientNames.size()),3, RoundingMode.CEILING);
-//        // updates cholesterol average in renderer that observes all the data
-//        cholAverageWatcher.updateCholAverage(totalAverageChol);
-//    }
     public MeasurementCellRenderer getMeasurementRenderer(){
         return measurementAverageWatcher;
     }
@@ -189,20 +170,5 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public ArrayList<PatientSubject> getMonitoredSubjects(MeasurementType newType) {
         return newType.getMonitorredSubjects();
-    }
-
-    // put this inside monitor table!
-    public void addMonitoredSubjects(PatientSubject newSubject, MeasurementType newType) {
-        newType.getMonitorredSubjects().add(newSubject);
-    }
-    public void removeMonitoredSubject(PatientSubject newSubject, MeasurementType newType) {
-        newType.getMonitorredSubjects().remove(newSubject);
-    }
-
-    public void clearSubjectLists(){
-        //loop through for all types
-        for (int i = 0; i < monitoredMeasurementSubjects.size(); i++) {
-            monitoredMeasurementSubjects.get(i).clear();
-        }
     }
 }

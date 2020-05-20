@@ -20,36 +20,26 @@ public class MeasurementObserver extends Observer {
     @Override
     public void update() {
         System.out.println("Size of observer's subject list:" + measurementType.getMonitorredSubjects());
-        MeasurementRecording patientsNewChol = observerSubject.getState().getMeasurement(measurementType);
-        BigDecimal newTotalcholVal = patientsNewChol.getMeasurementValue();
+        MeasurementRecording patientsNewRecording = observerSubject.getState().getMeasurement(measurementType);
+        BigDecimal newTotalVal = patientsNewRecording.getMeasurementValue();
 
         //check first then set value
-        System.out.println("Old state: " + lastState + ", new state " + newTotalcholVal);
-        if (!(newTotalcholVal == lastState)){
+        System.out.println("Old state: " + lastState + ", new state " + newTotalVal);
+        if (newTotalVal.compareTo(lastState) != 0){
             // send update to model
+            monitorredData.updateMeasurements(observerSubject.getState(), patientsNewRecording);
 
-            //... calculate new average
-            MeasurementType type = patientsNewChol.getType();
-            // fix big decimal ? not sure how we deal with decimal types
-            type.updateAverage(lastState.doubleValue(),newTotalcholVal.doubleValue());
-            monitorredData.getMeasurementRenderer().updateCholAverage(type.getAverage());
+            //update average -> get renderer to change colour
+            measurementType.updateAverage();
+            monitorredData.getMeasurementRenderer().updateCholAverage(measurementType.getAverage());
 
-
-            monitorredData.updateMeasurements(observerSubject.getState(), patientsNewChol);
-
-
-
-            System.out.println("Observer spotted new chol val: " + patientsNewChol.getMeasurementValue());
+            System.out.println("Observer spotted new chol val: " + patientsNewRecording.getMeasurementValue());
         }
         else{
             System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + measurementType);
         }
-
         System.out.println("Observer updated");
-        lastState = patientsNewChol.getMeasurementValue();
-
-        // set subjects chol value
-        observerSubject.getState().setMeasurementRecordings(patientsNewChol.getMeasurementValue(), patientsNewChol.getDateMeasured(), patientsNewChol.getType());
+        lastState = patientsNewRecording.getMeasurementValue();
     }
 
     public void setObserverSubject(PatientSubject newSubject){

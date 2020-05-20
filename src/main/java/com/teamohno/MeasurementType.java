@@ -37,10 +37,21 @@ public abstract class MeasurementType {
         this.name = name;
     }
 
-    public void updateAverage(double oldValue, double newValue) {
-        measurementTotal  = measurementTotal-oldValue+newValue;
-        measurementAverage = measurementTotal/monitorredSubjects.size();
-        System.out.println(measurementAverage);
+//    public void updateAverage(double oldValue, double newValue) {
+    public void updateAverage(){
+        measurementTotal = 0;
+        if(getValidMonitored() > 1) {
+            for (int i = 0; i < monitorredSubjects.size(); i++) {
+                if (monitorredSubjects.get(i).getActive()) {
+                    measurementTotal += monitorredSubjects.get(i).getState().getMeasurement(this).getMeasurementValue().doubleValue();
+                }
+            }
+            measurementAverage = measurementTotal / getValidMonitored();
+            System.out.println(getName() + " average: " + measurementAverage);
+        }
+        else{
+            measurementAverage = Double.POSITIVE_INFINITY;
+        }
     }
     public double getAverage(){return measurementAverage;}
 

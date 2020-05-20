@@ -38,6 +38,6 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
 
     public void updateCholAverage(double average){
         cholAverage=average;
-        System.out.println("new average" + average);
+        System.out.println("new average: " + average);
     }
 }

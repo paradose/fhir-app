@@ -19,8 +19,6 @@ public class Model {
     private ArrayList<PractitionerRecord> storedPractitioners;
     private ArrayList<MeasurementType> allTypes;
 
-
-
     public Model(Server newServer) {
         myServer = newServer;
         allTypes = new ArrayList<>();
