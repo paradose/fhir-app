@@ -36,7 +36,7 @@ public class View extends JFrame{
     }
 
     public View(Model model) {
-        super("Title");
+        super("FHIR Patient Monitor");
 
         //Instantiating JList object
         patientJList = new JList(model.getPatientListModel());
@@ -52,7 +52,6 @@ public class View extends JFrame{
 
         // added to work around error from removing all monitored patients at once - look over when have time
         monitorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
 
         // instantiate the view
         setContentPane(mainParentPanel);

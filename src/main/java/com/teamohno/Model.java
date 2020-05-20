@@ -19,8 +19,8 @@ public class Model {
     private ArrayList<PractitionerRecord> storedPractitioners;
     private ArrayList<MeasurementType> allTypes;
 
-    public Model(Server newServer) {
-        myServer = newServer;
+    public Model() {
+        myServer =  new Server("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
         allTypes = new ArrayList<>();
 
         MeasurementType cholesterol = new Cholesterol();
@@ -39,25 +39,6 @@ public class Model {
     public PractitionerRecord createPractitoner(String newIdentifier){
         PractitionerRecord newPrac = new PractitionerRecord(newIdentifier, myServer);
         return newPrac;
-    }
-
-    public PractitionerRecord getPractitioner(String newIdentifier){
-        PractitionerRecord storedPrac = loggedInPractitioner;
-        boolean foundPrac = false;
-        // if found in existing
-        for (int i = 0; i < storedIdentifiers.size(); i++) {
-            if (storedIdentifiers.get(i).equals(newIdentifier)){
-                foundPrac = true;
-                // set logged in prac as well after finding
-                storedPrac = storedPractitioners.get(i);
-            }
-        }
-
-        if (!foundPrac){
-            storedPrac = createPractitoner(newIdentifier);
-            System.out.println("Could not find practitioner inside stored practitioners, created practitioner with identifier: " + newIdentifier);
-        }
-        return storedPrac;
     }
 
     public PractitionerRecord getLoggedInPractitioner(){
@@ -89,5 +70,13 @@ public class Model {
 
     public ArrayList<MeasurementType> getTypes(){
         return allTypes;
+    }
+
+    public Server getServer() {
+        return myServer;
+    }
+
+    public void setServer(Server myServer) {
+        this.myServer = myServer;
     }
 }

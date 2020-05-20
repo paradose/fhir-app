@@ -1,13 +1,12 @@
 package com.teamohno;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 public class MeasurementObserver extends Observer {
     private PatientSubject observerSubject;
     private BigDecimal lastState;
     private MonitorTableModel monitorredData;
-    private MeasurementType measurementType;
+    private MeasurementType type;
 
     // MeasurementObserver(subject, table, measurementName)
     public MeasurementObserver(PatientSubject patient, MonitorTableModel newModelTable, MeasurementType newType){
@@ -15,12 +14,12 @@ public class MeasurementObserver extends Observer {
         // sets last state as patients current cholesterol value
         lastState = patient.getState().getMeasurement(newType).getMeasurementValue();
         monitorredData = newModelTable;
-        measurementType = newType;
+        type = newType;
     }
     @Override
     public void update() {
-        System.out.println("Size of observer's subject list:" + measurementType.getMonitorredSubjects());
-        MeasurementRecording patientsNewRecording = observerSubject.getState().getMeasurement(measurementType);
+        System.out.println("Size of observer's subject list:" + type.getMonitorredSubjects());
+        MeasurementRecording patientsNewRecording = observerSubject.getState().getMeasurement(type);
         BigDecimal newTotalVal = patientsNewRecording.getMeasurementValue();
 
         //check first then set value
@@ -30,19 +29,15 @@ public class MeasurementObserver extends Observer {
             monitorredData.updateMeasurements(observerSubject.getState(), patientsNewRecording);
 
             //update average -> get renderer to change colour
-            measurementType.updateAverage();
-            monitorredData.getMeasurementRenderer().updateCholAverage(measurementType.getAverage());
+            type.updateAverage();
+            monitorredData.getMeasurementRenderer().updateCholAverage(type.getAverage());
 
             System.out.println("Observer spotted new chol val: " + patientsNewRecording.getMeasurementValue());
         }
         else{
-            System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + measurementType);
+            System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + type);
         }
         System.out.println("Observer updated");
         lastState = patientsNewRecording.getMeasurementValue();
-    }
-
-    public void setObserverSubject(PatientSubject newSubject){
-        observerSubject = newSubject;
     }
 }

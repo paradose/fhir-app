@@ -34,7 +34,6 @@ public class PatientSubject extends Subject {
         if(active) {
             System.out.println("Comparing using big decimal -> found out previous is NOT zero: previous:" + prevCholVal.toString());
             MeasurementRecording updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
-//            if(updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0){ // assume real patient will ever receive a value of zero
             if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0 && prevCholVal.compareTo(BigDecimal.ZERO) == 0) {
                 active = false;
             }

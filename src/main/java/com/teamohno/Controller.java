@@ -17,14 +17,10 @@ public class Controller {
     private PeriodicMeasurementCall myPeriodicCholesterol;
     private ArrayList<MeasurementType> allTypes;
 
-    public Controller(Model newModel, View newView, Server inputServer){
+    public Controller(Model newModel, View newView){
         myModel = newModel;
         myView = newView;
-        server = inputServer;
-    }
-
-    public void initView(){
-        //initialise view - set default text from model
+        server = newModel.getServer();
     }
 
     public void initController(){
@@ -36,7 +32,6 @@ public class Controller {
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
         // loop through all measurement types - pass through
-//        Cholesterol cholesterol = new Cholesterol();
         for (int i = 0; i < allTypes.size(); i++) {
             if(allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL){
                 int index = i;
@@ -116,15 +111,15 @@ public class Controller {
                 myModel.getStoredIdentifiers().add(newPracIdentifier);
                 myModel.getStoredPractitioners().add(newPrac);
                 myModel.setLoggedInPractitioner(newPrac);
-                updatePatientList(newPracIdentifier, true);
+                updatePatientList(true);
             }
             if (foundIdentifier) {
-                updatePatientList(newPracIdentifier, false);
+                updatePatientList(false);
             }
         }
     }
 
-    public void updatePatientList(String newIdentifier, boolean retrievePatientsFromServer){
+    public void updatePatientList(boolean retrievePatientsFromServer){
         if(retrievePatientsFromServer){
             myModel.getLoggedInPractitioner().retrievePractitionerPatients();
             for (int i = 0; i < myModel.getLoggedInPractitioner().getPractitionerPatients().size() ; i++) {
@@ -167,34 +162,41 @@ public class Controller {
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
-            PatientSubject processSubject = myModel.getMonitorTable().getMonitoredSubjects(newType).get(selectedIndices[i]);
+            PatientSubject processSubject = newType.getMonitorredSubjects().get(selectedIndices[i]);
             processSubject.getState().resetRecording(newType);
             // remove patient row's
-            myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
-            myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();
+            myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
+            myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
 
     // displays patient on patient display panel
     public void displaySelectedPatient(int patientIndex){
-        PatientSubject chosenMonitoredPatient = allTypes.get(0).getMonitorredSubjects().get(patientIndex);
-        PatientRecord chosenPatient = chosenMonitoredPatient.getState();
+        PatientRecord chosenPatient = null;
+        String currentPatientID =  myModel.getMonitorTable().getMonitoredPatientID().get(patientIndex);
+        ArrayList<PatientRecord> listPatients = myModel.getLoggedInPractitioner().getPractitionerPatients();
+        for (int i = 0; i < listPatients.size(); i++) {
+            if(listPatients.get(i).getId().equals(currentPatientID)){
+                chosenPatient = listPatients.get(i);
+            }
+        }
+        if(chosenPatient.equals(null)){
+            System.out.println("Error: patient doesn't exist.");
+        }
+
         myView.getPatientNameLabel().setText("Name: "+ chosenPatient.getFirstName() + " " + chosenPatient.getLastName());
         myView.getPatientBirthDateLabel().setText("BirthDate: " + chosenPatient.getBirthDate());
         myView.getPatientGenderLabel().setText("Gender: " + chosenPatient.getGender());
         myView.getPatientAddressLabel().setText( "Address: " + chosenPatient.getAddress());
     }
 
-    // pass in measurement type parameter
+    // called once
     public void scheduleMonitor() {
-            // implement an abstract parent class for measurementCalls - contains patientSubArray and measurementType, constructor involves both
-//        TimerTask measurementCall = new PeriodicMeasurementCall(patientSubArray);
         String currentFreq = myView.getFreqValueLabel().getText();
         myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
-
         myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
         myPeriodicCholesterol.setTurnedOn();
     }

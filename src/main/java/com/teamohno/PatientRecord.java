@@ -11,16 +11,13 @@ public class PatientRecord{
     private String gender;
     private String birthDate;
     private String address;
-//    private Cholesterol cholesterolMeasurement;
-        // pass this in model/controller before start getting patients....?
     private ArrayList<MeasurementRecording> measurementRecordings;
 
     public PatientRecord(String patientId, String patientFirstName, String patientLastName,String patientGender, String patientBirthDate, String patientAddress){
         id=patientId;
         firstName = patientFirstName;
         lastName = patientLastName;
-       // cholesterolMeasurement = new Cholesterol(BigDecimal.ZERO, null);
-        measurementRecordings = new ArrayList<MeasurementRecording>();
+        measurementRecordings = new ArrayList<>();
         gender = patientGender;
         birthDate = patientBirthDate;
         address = patientAddress;
@@ -71,6 +68,7 @@ public class PatientRecord{
         }
         return returnRecording;
     }
+
     public void setMeasurementRecordings(BigDecimal newValue, Date newDate, MeasurementType newType){
         for (int i = 0; i < measurementRecordings.size(); i++) {
             if(measurementRecordings.get(i).getType().type == newType.type){

@@ -19,7 +19,6 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         c.setForeground(Color.red);
         if (col == column) {
             if (value instanceof String) {
-
                 try {
                     double cholLevel = Double.parseDouble(value.toString());
                     if (cholLevel > (cholAverage)) {

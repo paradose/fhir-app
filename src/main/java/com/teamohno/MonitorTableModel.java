@@ -52,14 +52,10 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredMeasurementSubjects.add(newType.getMonitorredSubjects());
     }
 
-    public ArrayList<ArrayList<String>> getIndexPatientsMeasurement(){
-        return  patientMeasurementTable;
-    }
-
     public boolean addMonitorPatient(String newPatientID, String newPatientName, MeasurementType newType){
         // check subject list if monitorring
         boolean returnResult = false, monitorringThisType = false;
-        ArrayList<PatientSubject> subjectList = getMonitoredSubjects(newType);
+        ArrayList<PatientSubject> subjectList = newType.getMonitorredSubjects();
 
         for (int i = 0; i < subjectList.size(); i++) {
             if (subjectList.get(i).getState().getId().equals(newPatientID)){
@@ -126,6 +122,7 @@ public class MonitorTableModel extends AbstractTableModel {
     public MeasurementCellRenderer getMeasurementRenderer(){
         return measurementAverageWatcher;
     }
+
     public Object getValueAt(int row, int col) {
         // column index = for the list of names / measurements / dates
         // row index = for the value that column
@@ -156,10 +153,6 @@ public class MonitorTableModel extends AbstractTableModel {
         return rowCount;
     }
 
-    public ArrayList<ArrayList<String>> getMonitorData(){
-        return monitoredData;
-    }
-
     public void clearDataValues(){
         System.out.println("Clearing monitorred data in table");
         // loop all data columns
@@ -170,18 +163,7 @@ public class MonitorTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public ArrayList<PatientSubject> getMonitoredSubjects(MeasurementType newType) {
-        return newType.getMonitorredSubjects();
-    }
-
-    public String getValueForPatient(String patientID, MeasurementType newType){
-        String returnValue = "-";
-        for (int i = 0; i < columnNames.size(); i++) {
-            if(columnNames.get(i).equals(newType.getName())){
-                // i = index of column for this type
-                 returnValue = monitoredData.get(i).get(monitoredPatientID.indexOf(patientID));
-            }
-        }
-        return returnValue;
+    public ArrayList<String> getMonitoredPatientID() {
+        return monitoredPatientID;
     }
 }

@@ -37,7 +37,6 @@ public abstract class MeasurementType {
         this.name = name;
     }
 
-//    public void updateAverage(double oldValue, double newValue) {
     public void updateAverage(){
         measurementTotal = 0;
         if(getValidMonitored() > 1) {
@@ -55,10 +54,6 @@ public abstract class MeasurementType {
     }
     public double getAverage(){return measurementAverage;}
 
-    public ArrayList<PatientSubject> getMonitorredSubjects() {
-        return monitorredSubjects;
-    }
-
     public int getValidMonitored(){
         int numberOfValid = 0;
         for (int i=0;i<monitorredSubjects.size();i++){
@@ -67,5 +62,9 @@ public abstract class MeasurementType {
             }
         }
         return  numberOfValid;
+    }
+
+    public ArrayList<PatientSubject> getMonitorredSubjects() {
+        return monitorredSubjects;
     }
 }
