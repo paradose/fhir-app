@@ -19,14 +19,13 @@ import java.util.Date;
 import java.util.List;
 
 public class PractitionerRecord {
+    // Instance variables
     private String practitionerIdentifier;
     private ArrayList<String> practitionerIDs;
-
     private ArrayList<PatientRecord> practitionerPatients;
-    private ArrayList<String> patientsIds = new ArrayList<String>();
-
     private Server server;
 
+    // Constructor
     public PractitionerRecord(String inputIdentifier, Server inputServer){
         practitionerIdentifier = inputIdentifier;
         practitionerPatients = new ArrayList<PatientRecord>();
@@ -34,6 +33,7 @@ public class PractitionerRecord {
         practitionerIDs = server.retrievePractitionerIDs(inputIdentifier);
     }
 
+    // Accessors and mutators
     public String getPractitionerIdentifier() { return practitionerIdentifier; }
 
     public ArrayList<String> getPractitionerIDs(){ return practitionerIDs;
@@ -41,14 +41,13 @@ public class PractitionerRecord {
 
     public void setPractitionerIDs(ArrayList<String> newPracIDs){practitionerIDs = newPracIDs;}
 
-    public void retrievePractitionerPatients() {
-        practitionerPatients = server.retrievePractitionerPatients(practitionerIdentifier);
-    }
-
     public ArrayList<PatientRecord> getPractitionerPatients(){
         return practitionerPatients;
     }
 
-    // check existing practitioner (?)
+    // Access server to find patients
+    public void retrievePractitionerPatients() {
+        practitionerPatients = server.retrievePractitionerPatients(practitionerIdentifier);
+    }
 
 }

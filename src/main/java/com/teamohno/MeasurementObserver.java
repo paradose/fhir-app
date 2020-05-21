@@ -3,12 +3,13 @@ package com.teamohno;
 import java.math.BigDecimal;
 
 public class MeasurementObserver extends Observer {
+    // Instance variables
     private PatientSubject observerSubject;
     private BigDecimal lastState;
     private MonitorTableModel monitorredData;
     private MeasurementType type;
 
-    // MeasurementObserver(subject, table, measurementName)
+    // Constructor
     public MeasurementObserver(PatientSubject patient, MonitorTableModel newModelTable, MeasurementType newType){
         observerSubject = patient;
         // sets last state as patients current cholesterol value
@@ -16,6 +17,7 @@ public class MeasurementObserver extends Observer {
         monitorredData = newModelTable;
         type = newType;
     }
+
     @Override
     public void update() {
         System.out.println("Size of observer's total subject list:" + type.getMonitorredSubjects().size());
@@ -38,7 +40,8 @@ public class MeasurementObserver extends Observer {
         else{
             System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + type);
         }
-        System.out.println("Observer updated");
+        // Update observer state
         lastState = patientsNewRecording.getMeasurementValue();
+        System.out.println("Observer updated");
     }
 }

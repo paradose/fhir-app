@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class PatientRecord{
+    // Instance variables
     private String id;
     private String firstName;
     private String lastName;
@@ -13,6 +14,7 @@ public class PatientRecord{
     private String address;
     private ArrayList<MeasurementRecording> measurementRecordings;
 
+    // Constructor
     public PatientRecord(String patientId, String patientFirstName, String patientLastName,String patientGender, String patientBirthDate, String patientAddress){
         id=patientId;
         firstName = patientFirstName;
@@ -23,6 +25,7 @@ public class PatientRecord{
         address = patientAddress;
     }
 
+    // Accessors and Mutators
     public String getFirstName() {
         return firstName;
     }
@@ -47,6 +50,7 @@ public class PatientRecord{
         return address;
     }
 
+    // Add a type of measurement for a patient
     public void addMeasurementObject(ArrayList<MeasurementType> newList){
         for (int i = 0; i < newList.size(); i++) {
             MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ONE.negate(), new Date(2323223232L), newList.get(i));

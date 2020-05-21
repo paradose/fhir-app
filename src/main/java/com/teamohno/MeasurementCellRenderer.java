@@ -6,11 +6,15 @@ import java.awt.*;
 import java.math.BigDecimal;
 
 public class MeasurementCellRenderer extends DefaultTableCellRenderer {
+    // Instance variables
     private static double cholAverage = 0;
     private int column;
+
+    // Constructor
     public MeasurementCellRenderer(int measurementColumnNumber){
         column= measurementColumnNumber;
     }
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus, int row, int col) {

@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Timer;
 
 public class Controller {
+    //Instance variables
     private Model myModel;
     private Timer myTimer;
     private View myView;
@@ -17,21 +18,22 @@ public class Controller {
     private PeriodicMeasurementCall myPeriodicCholesterol;
     private ArrayList<MeasurementType> allTypes;
 
+    //Constructor
     public Controller(Model newModel, View newView){
         myModel = newModel;
         myView = newView;
         server = newModel.getServer();
     }
 
+    // Initialise the controller - attach listeners to view components
     public void initController(){
         allTypes = myModel.getTypes();
-        // need to decide where we make this...? -> if we had more types
 
-        //initialise controller - add listeners to UI elements
+        // Add listeners to UI elements
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
         myView.getUpdateFreqButton().addActionListener(e -> updateFrequency());
 
-        // loop through all measurement types - pass through
+        // loop through all measurement types - attach listeners for corresponding buttons, create periodic caller
         for (int i = 0; i < allTypes.size(); i++) {
             if(allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL){
                 int index = i;
@@ -50,10 +52,11 @@ public class Controller {
                 displaySelectedPatient(rowIndex);
             }
         });
+        // Set renderer for table
         myView.getMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable().getMeasurementRenderer());
-        // initialise timer and periodic caller
+
+        // initialise timer and schedule all periodic callers
         myTimer = new Timer();
-        // passing in subject list (empty list at start) - gets called once
         scheduleMonitor();
     }
 
@@ -164,7 +167,7 @@ public class Controller {
     }
 
     public void stopMonitorSelectedPatients(MeasurementType newType) {
-        // get selected indexes from JTable - only concern is if these indexes don't line up?
+        // get selected indexes from JTable
         int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {

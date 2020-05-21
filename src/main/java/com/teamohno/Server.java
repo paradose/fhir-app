@@ -10,12 +10,13 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Server {
-
+    // Instance variables
     private IGenericClient client;
     private FhirContext context;
     private String serverBase;
     private int entriesPerPage;
 
+    // Constructor
     public Server(String inputServerBase){
         context = FhirContext.forR4();
         client = context.newRestfulGenericClient(inputServerBase);
@@ -58,9 +59,8 @@ public class Server {
 
             if (!newList.contains(newID)) {
                 newList.add(newID);
-                System.out.println("Added new ID: " + newID);
             } else {
-                System.out.println(newID + " already inside");
+                System.out.println("Adding practitioner ID's for logged in prac, id: " + newID + " already inside current list.");
             }
         }
     }
@@ -90,7 +90,7 @@ public class Server {
             System.out.println("Practitioner doesn't have any existing id linked to them.");
         }
 
-        System.out.println("Searching using URL: " + patientsURL);
+        System.out.println("Searching for patients using URL: " + patientsURL);
         Bundle patientsBundle = client.search().byUrl(patientsURL)
                 .returnBundle(Bundle.class).execute();
 
@@ -144,10 +144,10 @@ public class Server {
             BigDecimal newValue = observation.getValueQuantity().getValue();
             newRecording.setMeasurementValue(newValue);
             newRecording.setDateMeasured(date);
-            System.out.println("Total value for " + observation.getValueQuantity().getValue());
+            System.out.println("Total " + newType.getName() + " value observed from server: " + observation.getValueQuantity().getValue());
             System.out.println(date);
         } catch (Exception e) {
-            System.out.println("no value available");
+            System.out.println("No " + newType.getName() + " value available for patient ID: " + patientId + " from server.");
         }
         return newRecording;
     }

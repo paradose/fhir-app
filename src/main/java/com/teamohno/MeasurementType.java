@@ -3,6 +3,7 @@ package com.teamohno;
 import java.util.ArrayList;
 
 public abstract class MeasurementType {
+    // Instance variables
     protected String fhirCode;
     protected String name;
     protected ArrayList<PatientSubject> monitorredSubjects;
@@ -13,6 +14,7 @@ public abstract class MeasurementType {
         CHOLESTEROL;
     }
 
+    // Constructor
     public MeasurementType(String newName, String newCode){
         this.fhirCode = newCode;
         this.name = newName;
@@ -21,6 +23,7 @@ public abstract class MeasurementType {
         measurementAverage = 0;
     }
 
+    // Accessors and Mutators
     public String getFhirCode() {
         return fhirCode;
     }
@@ -37,6 +40,13 @@ public abstract class MeasurementType {
         this.name = name;
     }
 
+    public ArrayList<PatientSubject> getMonitorredSubjects() {
+        return monitorredSubjects;
+    }
+
+    public double getAverage(){return measurementAverage;}
+
+    // Loops through valid subjects and calculates new average
     public void updateAverage(){
         measurementTotal = 0;
         if(getValidMonitored() > 1) {
@@ -52,8 +62,8 @@ public abstract class MeasurementType {
             measurementAverage = Double.POSITIVE_INFINITY;
         }
     }
-    public double getAverage(){return measurementAverage;}
 
+    // Checks number of valid subjects
     public int getValidMonitored(){
         int numberOfValid = 0;
         for (int i=0;i<monitorredSubjects.size();i++){
@@ -62,9 +72,5 @@ public abstract class MeasurementType {
             }
         }
         return  numberOfValid;
-    }
-
-    public ArrayList<PatientSubject> getMonitorredSubjects() {
-        return monitorredSubjects;
     }
 }

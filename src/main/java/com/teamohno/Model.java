@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Model {
+    // Instance Variables
     private MonitorTableModel myMonitorTableModel;
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
@@ -19,6 +20,7 @@ public class Model {
     private ArrayList<PractitionerRecord> storedPractitioners;
     private ArrayList<MeasurementType> allTypes;
 
+    // Constructor
     public Model() {
         myServer =  new Server("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
         allTypes = new ArrayList<>();
@@ -32,15 +34,21 @@ public class Model {
         storedPractitioners = new ArrayList<>();
     }
 
-    public MonitorTableModel getMonitorTable(){
-        return myMonitorTableModel;
-    }
-
+    // Create new practitioner object based on identifier
     public PractitionerRecord createPractitoner(String newIdentifier){
         PractitionerRecord newPrac = new PractitionerRecord(newIdentifier, myServer);
         return newPrac;
     }
 
+    // Updates based on logged in practitioner object stored
+    public void updatePatientNamesList(){
+        for (int i = 0; i < loggedInPractitioner.getPractitionerPatients().size(); i++) {
+            patientListModel.add(i, loggedInPractitioner.getPractitionerPatients().get(i).getFirstName() + " " +
+                    loggedInPractitioner.getPractitionerPatients().get(i).getLastName());
+        }
+    }
+
+    // Accessors and Mutators
     public PractitionerRecord getLoggedInPractitioner(){
         return loggedInPractitioner;
     }
@@ -49,23 +57,20 @@ public class Model {
         loggedInPractitioner = newPrac;
     }
 
-    public ArrayList<String> getStoredIdentifiers() {
-        return storedIdentifiers;
-    }
-
     public ArrayList<PractitionerRecord> getStoredPractitioners() {
         return storedPractitioners;
+    }
+
+    public ArrayList<String> getStoredIdentifiers() {
+        return storedIdentifiers;
     }
 
     public DefaultListModel getPatientListModel(){
         return patientListModel;
     }
 
-    public void updatePatientNamesList(){
-        for (int i = 0; i < loggedInPractitioner.getPractitionerPatients().size(); i++) {
-            patientListModel.add(i, loggedInPractitioner.getPractitionerPatients().get(i).getFirstName() + " " +
-                    loggedInPractitioner.getPractitionerPatients().get(i).getLastName());
-        }
+    public MonitorTableModel getMonitorTable(){
+        return myMonitorTableModel;
     }
 
     public ArrayList<MeasurementType> getTypes(){

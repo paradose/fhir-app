@@ -5,22 +5,19 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class MeasurementRecording {
+    // Instance variables
     private MeasurementType type;
     private BigDecimal measurementValue;
     private Date dateMeasured;
 
-
-    public MeasurementRecording(){
-        measurementValue = BigDecimal.ZERO;
-        dateMeasured = new Date();
-    }
-
+    // Constructor
     public MeasurementRecording(BigDecimal newValue, Date newDate, MeasurementType newType){
         measurementValue = newValue;
         dateMeasured = newDate;
         type = newType;
     }
 
+    //Accessors and Mutators
     public BigDecimal getMeasurementValue() {
         return measurementValue;
     }

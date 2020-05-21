@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Subject {
+    // Instance variables
     private List<Observer> observers = new ArrayList<Observer>();
 
     public void attach(Observer observer){
@@ -14,6 +15,7 @@ public abstract class Subject {
         observers.remove(observer);
     }
 
+    // Notifies all observers attached
     public void notifyObservers(){
         for (Observer observer:observers){
             observer.update();
