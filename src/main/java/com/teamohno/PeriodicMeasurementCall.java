@@ -13,11 +13,9 @@ public class PeriodicMeasurementCall extends TimerTask {
     // Instance Variables
     private MeasurementType type;
     private ArrayList<PatientSubject> patientSubjectList;
-    private boolean isTurnedOn;
 
     // Constructor
     public PeriodicMeasurementCall(MeasurementType typeMeasurements){
-        isTurnedOn = false;
         patientSubjectList = typeMeasurements.getMonitorredSubjects();
         type = typeMeasurements;
 
@@ -25,10 +23,6 @@ public class PeriodicMeasurementCall extends TimerTask {
     }
 
     // Accessors and Mutators
-    public void setTurnedOn(){isTurnedOn = true;}
-
-    public boolean getTurnedOn() {return isTurnedOn;}
-
     public void setFrequency(int newFreq){
         frequency = newFreq;
     }

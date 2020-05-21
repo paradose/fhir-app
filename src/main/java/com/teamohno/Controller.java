@@ -207,7 +207,6 @@ public class Controller {
         String currentFreq = myView.getFreqValueLabel().getText();
         myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
         myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
-        myPeriodicCholesterol.setTurnedOn();
     }
 
     public void updateFrequency(){
