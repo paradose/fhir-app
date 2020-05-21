@@ -49,7 +49,7 @@ public class PatientRecord{
 
     public void addMeasurementObject(ArrayList<MeasurementType> newList){
         for (int i = 0; i < newList.size(); i++) {
-            MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223232L), newList.get(i));
+            MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ONE.negate(), new Date(2323223232L), newList.get(i));
             measurementRecordings.add(newEmptyRecording);
         }
     }
@@ -86,7 +86,7 @@ public class PatientRecord{
         for (int i = 0; i < measurementRecordings.size(); i++) {
             if(measurementRecordings.get(i).getType().type == newType.type){
                 System.out.println("Type about to set is correct");
-                measurementRecordings.get(i).setMeasurementValue(BigDecimal.ZERO);
+                measurementRecordings.get(i).setMeasurementValue(BigDecimal.ONE.negate());
                 measurementRecordings.get(i).setDateMeasured(new Date(2323223232L));
             }
             else{

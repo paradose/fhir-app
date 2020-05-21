@@ -29,17 +29,17 @@ public class PatientSubject extends Subject {
 
     public void updateMeasurementValue(MeasurementType newType) {
         String patientsId = patientState.getId();
-        BigDecimal prevCholVal = patientState.getMeasurement(newType).getMeasurementValue();
+        MeasurementRecording updatedMeasurement;
 
-        if(active) {
-            System.out.println("Comparing using big decimal -> found out previous is NOT zero: previous:" + prevCholVal.toString());
-            MeasurementRecording updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
-            if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0 && prevCholVal.compareTo(BigDecimal.ZERO) == 0) {
+        // checks if initial value
+        if(active){
+            updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
+            if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO)==0){
                 active = false;
             }
-            System.out.println("Updated measurement value about to set: " + updatedMeasurement.getMeasurementValue());
-            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
-            if (active) {
+            else{
+                // updating subject state
+                patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
                 notifyObservers();
             }
         }

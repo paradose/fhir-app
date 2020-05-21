@@ -18,7 +18,8 @@ public class MeasurementObserver extends Observer {
     }
     @Override
     public void update() {
-        System.out.println("Size of observer's subject list:" + type.getMonitorredSubjects());
+        System.out.println("Size of observer's total subject list:" + type.getMonitorredSubjects().size());
+        System.out.println("Number of Valid subjects: " + type.getValidMonitored());
         MeasurementRecording patientsNewRecording = observerSubject.getState().getMeasurement(type);
         BigDecimal newTotalVal = patientsNewRecording.getMeasurementValue();
 
@@ -32,7 +33,7 @@ public class MeasurementObserver extends Observer {
             type.updateAverage();
             monitorredData.getMeasurementRenderer().updateCholAverage(type.getAverage());
 
-            System.out.println("Observer spotted new chol val: " + patientsNewRecording.getMeasurementValue());
+            System.out.println("Observer's new measurement value: " + patientsNewRecording.getMeasurementValue());
         }
         else{
             System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + type);

@@ -150,10 +150,16 @@ public class Controller {
                 // create observers (for measurement type)
                 MeasurementObserver newObserver = new MeasurementObserver(newSubject, myModel.getMonitorTable(), newType);
                 newSubject.attach(newObserver);
+                // gets initial values -> if has a value -> notify observer to update table
+                newSubject.updateMeasurementValue(newType);
             }
             else{
                 System.out.println("Error attempting to monitor an already monitored patient+measurement combo.");
             }
+            System.out.println("Before updating average - average value: " + newType.getAverage());
+            // updating initial average
+            newType.updateAverage();
+            System.out.println("Current average: " + newType.getAverage());
         }
     }
 
