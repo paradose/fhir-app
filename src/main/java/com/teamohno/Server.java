@@ -33,18 +33,18 @@ public class Server {
                 .returnBundle(Bundle.class)
                 .execute();
 
+        // processing first page in bundle
         addPracIDsToList(practitionerObjects, practitionerIDs);
         System.out.println("Size of practitioner bundle page: " + practitionerObjects.getEntry().size());
 
         while (practitionerObjects.getLink(IBaseBundle.LINK_NEXT) != null) {
-            // processing bundle before next page
 
             // get next page
             practitionerObjects = client
                     .loadPage()
                     .next(practitionerObjects)
                     .execute();
-            // process after next page
+            // process page
             addPracIDsToList(practitionerObjects, practitionerIDs);
             System.out.println("Number of practitioner objects found on next page: " + practitionerObjects.getEntry().size());
         }
@@ -52,7 +52,7 @@ public class Server {
         return practitionerIDs;
     }
 
-    // checks if practitioners id has already been added to list
+    // checks if practitioners id from bundle has already been added to list
     public void addPracIDsToList(Bundle newBundle, ArrayList<String> newList) {
         for (int i = 0; i < newBundle.getEntry().size(); i++) {
             Practitioner processingPrac = (Practitioner) newBundle.getEntry().get(i).getResource();
