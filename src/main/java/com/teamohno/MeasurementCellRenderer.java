@@ -5,12 +5,15 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.math.BigDecimal;
 
+/**
+ * observes table columns for cells that are above a value specified in the constructor
+ */
 public class MeasurementCellRenderer extends DefaultTableCellRenderer {
     // Instance variables
     private static double cholAverage = 0;
     private int column;
 
-    // Constructor
+    // Constructor, takes column number as input and observers this column
     public MeasurementCellRenderer(int measurementColumnNumber){
         column= measurementColumnNumber;
     }
@@ -38,7 +41,8 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         } else c.setForeground(Color.black);
         return c;
     }
-
+    // updates the measurements value, called from the controller/observer when
+    // patient is monitored or value is updated
     public void updateCholAverage(double average){
         cholAverage=average;
         System.out.println("new average: " + average);

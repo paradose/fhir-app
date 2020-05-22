@@ -37,6 +37,7 @@ public class MeasurementObserver extends Observer {
 
             System.out.println("Observer's new measurement value: " + patientsNewRecording.getMeasurementValue());
         }
+        // no change in measurement value
         else{
             System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + type);
         }

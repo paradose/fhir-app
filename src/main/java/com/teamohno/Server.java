@@ -23,7 +23,7 @@ public class Server {
         serverBase = inputServerBase;
         entriesPerPage = 100;
     }
-
+    // uses practitioners identifier to get an array of their ids
     public ArrayList<String> retrievePractitionerIDs(String practitionerIdentifier) {
         ArrayList<String> practitionerIDs = new ArrayList<String>();
         Bundle practitionerObjects = client.search()
@@ -52,6 +52,7 @@ public class Server {
         return practitionerIDs;
     }
 
+    // checks if practitioners id has already been added to list
     public void addPracIDsToList(Bundle newBundle, ArrayList<String> newList) {
         for (int i = 0; i < newBundle.getEntry().size(); i++) {
             Practitioner processingPrac = (Practitioner) newBundle.getEntry().get(i).getResource();
@@ -65,6 +66,7 @@ public class Server {
         }
     }
 
+    // gets patients for the particular practitioner, by using their ids and going through encounters.
     public ArrayList<PatientRecord> retrievePractitionerPatients(String practitionerIdentifier) {
         // used to find patients for each ID
         ArrayList<String> practitionerIds = retrievePractitionerIDs(practitionerIdentifier);
@@ -111,6 +113,7 @@ public class Server {
         return practitionerPatients;
     }
 
+    // gets patients information using their Id and returns it as a PatientRecord object.
     public PatientRecord retrievePatient(String id ){
         Patient newPatient = client.read()
                 .resource(Patient.class)
@@ -126,9 +129,11 @@ public class Server {
         return new PatientRecord(id,firstName,lastName,gender,birthDate,location);
     }
 
+    // retrieves patient's measurement value by taking in the type (which contains code) for URL get request.
+    // measurement value and date recorded & returned as a MeasurementRecording object.
     public MeasurementRecording retrieveMeasurement(String patientId, MeasurementType newType) {
         MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
-        // code for getting total cholesterol
+
         String measurementCode = newType.getFhirCode();
         try {
             String searchURL = serverBase+"Observation?code=" + measurementCode + "&subject=" + patientId;
@@ -152,6 +157,7 @@ public class Server {
         return newRecording;
     }
 
+    // checks if patient already exists in the list of Patients for a particular practitioner.
     public void addPatientToList(ArrayList<String> identifierList, ArrayList<PatientRecord> patientList, Bundle newBundle){
         // looping through bundle
         for (int i = 0; i < newBundle.getEntry().size(); i++) {
