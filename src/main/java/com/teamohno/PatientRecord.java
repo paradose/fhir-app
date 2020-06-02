@@ -13,6 +13,7 @@ public class PatientRecord{
     private String birthDate;
     private String address;
     private ArrayList<MeasurementRecording> measurementRecordings;
+    private ArrayList<MeasurementRecording[]> listLastRecordings;
 
     // Constructor
     public PatientRecord(String patientId, String patientFirstName, String patientLastName,String patientGender, String patientBirthDate, String patientAddress){
@@ -55,6 +56,9 @@ public class PatientRecord{
         for (int i = 0; i < newList.size(); i++) {
             MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ONE.negate(), new Date(2323223232L), newList.get(i));
             measurementRecordings.add(newEmptyRecording);
+
+            MeasurementRecording[] newLastRecording = new MeasurementRecording[5];
+            listLastRecordings.add(newLastRecording);
         }
     }
 
@@ -79,11 +83,26 @@ public class PatientRecord{
                 System.out.println("Type about to set is correct");
                 measurementRecordings.get(i).setMeasurementValue(newValue);
                 measurementRecordings.get(i).setDateMeasured(newDate);
+
+                // deal with the five
+//                listLastRecordings.get(i)[1] = new MeasurementRecording(newValue, newDate, newType);
+//                listLastRecordings.get(i)[1] = measurementRecordings.get(i);
             }
             else{
                 System.out.println("Type not matched");
             }
         }
+    }
+
+    public MeasurementRecording[] getLastRecordings(MeasurementType newType){
+        MeasurementRecording[] returningList = new MeasurementRecording[1];
+        for (int i = 0; i < measurementRecordings.size(); i++) {
+            if (measurementRecordings.get(i).getType().type == newType.type) {
+                returningList = listLastRecordings.get(i);
+            }
+        }
+
+        return returningList;
     }
 
     public void resetRecording(MeasurementType newType){

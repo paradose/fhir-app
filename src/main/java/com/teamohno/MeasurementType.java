@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public abstract class MeasurementType {
     // Instance variables
     protected String fhirCode;
+    protected String childCode;
+
     protected String name;
     protected ArrayList<PatientSubject> monitorredSubjects;
     protected Type type;
@@ -13,6 +15,8 @@ public abstract class MeasurementType {
     protected enum Type{
         CHOLESTEROL;
     }
+
+
 
     // Constructor
     public MeasurementType(String newName, String newCode){

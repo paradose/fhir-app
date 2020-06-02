@@ -22,6 +22,10 @@ public class MeasurementRecording {
         return measurementValue;
     }
 
+    public BigDecimal getMeasurementValue(String code) {
+        return BigDecimal.ZERO;
+    }
+
     public void setMeasurementValue(BigDecimal measurementValue) {
         this.measurementValue = measurementValue;
     }

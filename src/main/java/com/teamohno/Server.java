@@ -145,6 +145,18 @@ public class Server {
                     .execute();
             // gets latest observation
             Observation observation = (Observation) results.getEntry().get(0).getResource();
+
+            //check if observation has multiple components
+
+            /*
+            if observ.components.size > 1
+                loop through components
+                check measurementType.getChildCode == observation.getComponent(i).getCode
+                    store value
+            else
+
+             */
+
             Date date = observation.getIssued();
             BigDecimal newValue = observation.getValueQuantity().getValue();
             newRecording.setMeasurementValue(newValue);
