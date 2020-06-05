@@ -33,7 +33,7 @@ public class MeasurementObserver extends Observer {
 
             //update average -> get renderer to change colour
             type.updateAverage();
-            monitorredData.getMeasurementRenderer().updateCholAverage(type.getAverage());
+            monitorredData.getMeasurementRenderer().updateCellValue(type.getAverage());
 
             System.out.println("Observer's new measurement value: " + patientsNewRecording.getMeasurementValue());
         }

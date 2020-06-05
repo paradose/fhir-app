@@ -1,6 +1,7 @@
 package com.teamohno;
 
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.nio.channels.MulticastChannel;
 import java.util.ArrayList;
 
@@ -14,16 +15,17 @@ public class MonitorTableModel extends AbstractTableModel {
     protected ArrayList<ArrayList<String>> patientMeasurementTable;
     protected ArrayList<String> monitoredPatientID;
     protected ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
-
+    protected Color observedCellColour;
     // watches the average value
     protected MeasurementCellRenderer measurementAverageWatcher;
 
     // Constructor
-    public MonitorTableModel(ArrayList<MeasurementType> newTypes) {
+    public MonitorTableModel(ArrayList<MeasurementType> newTypes, Color colour) {
         // list of types -> use the types to get access to all the subject lists
         monitoredMeasurementSubjects = new ArrayList<>();
         patientMeasurementTable = new ArrayList<>();
         monitoredPatientID = new ArrayList<>();
+        observedCellColour =colour;
         patientMeasurementTable.add(monitoredPatientID);
 
         columnNames = new ArrayList<>();
@@ -44,7 +46,7 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(listDates);
         columnNames.add(newType.getName());
         // Storing current column index for the measurement
-        measurementAverageWatcher = new MeasurementCellRenderer(columnNames.size() - 1);
+        measurementAverageWatcher = new MeasurementCellRenderer(columnNames.size() - 1,observedCellColour);
         columnNames.add("Date Measured");
         monitoredMeasurementSubjects.add(newType.getMonitorredSubjects());
     }

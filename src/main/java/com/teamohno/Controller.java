@@ -187,7 +187,7 @@ public class Controller {
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();
             myModel.getMonitorTable(newType.getType()).removePatientFromTable(selectedIndices[i]);
-            myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateCholAverage(newType.getAverage());
+            myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateCellValue(newType.getAverage());
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }

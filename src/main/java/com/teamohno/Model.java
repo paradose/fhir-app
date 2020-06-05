@@ -1,6 +1,7 @@
 package com.teamohno;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Model {
@@ -25,13 +26,13 @@ public class Model {
 //        cholType.add(cholesterol);
 //        cholMonitorTableModel = new MonitorTableModel(cholType);
         allTypes.add(cholesterol);
-        cholMonitorTableModel = new MonitorTableModel(allTypes);
+        cholMonitorTableModel = new MonitorTableModel(allTypes, Color.RED);
 
         MeasurementType sbp = new SystolicBP();
         MeasurementType dbp = new DiastolicBP();
         bpType.add(sbp);
         bpType.add(dbp);
-        bpMonitorTableModel = new MonitorTableModel(bpType);
+        bpMonitorTableModel = new MonitorTableModel(bpType, Color.MAGENTA);
 
         patientListModel = new DefaultListModel();
         storedIdentifiers = new ArrayList<>();
