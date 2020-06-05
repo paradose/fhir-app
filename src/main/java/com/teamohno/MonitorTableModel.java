@@ -1,21 +1,22 @@
 package com.teamohno;
 
 import javax.swing.table.AbstractTableModel;
+import java.nio.channels.MulticastChannel;
 import java.util.ArrayList;
 
 public class MonitorTableModel extends AbstractTableModel {
     // Table array - containts lists (columns) of data
-    private ArrayList<ArrayList<String>> monitoredData;
-    private ArrayList<String> columnNames;
-    private ArrayList<String> monitoredPatientNames;
+    protected ArrayList<ArrayList<String>> monitoredData;
+    protected ArrayList<String> columnNames;
+    protected ArrayList<String> monitoredPatientNames;
 
     // used to track index of patient that are being monitored within table
-    private ArrayList<ArrayList<String>> patientMeasurementTable;
-    private ArrayList<String> monitoredPatientID;
-    private ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
+    protected ArrayList<ArrayList<String>> patientMeasurementTable;
+    protected ArrayList<String> monitoredPatientID;
+    protected ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
 
     // watches the average value
-    private MeasurementCellRenderer measurementAverageWatcher;
+    protected MeasurementCellRenderer measurementAverageWatcher;
 
     // Constructor
     public MonitorTableModel(ArrayList<MeasurementType> newTypes) {
@@ -68,14 +69,17 @@ public class MonitorTableModel extends AbstractTableModel {
             monitoredPatientNames.add(newPatientName);
         }
         if(!monitorringThisType){
+            // add (potentially) multiple values first
             for (int i = 0; i < columnNames.size(); i++) {
-                if(columnNames.get(i).equals(newType.getName())){
+                if(columnNames.get(i).equals(newType.getName())) {
                     monitoredData.get(i).add("-");
-                    monitoredData.get(i + 1).add("-");
-                    fireTableDataChanged();
-                    returnResult = true;
+                    // add date
+                    monitoredData.get(i+1).add("-");
                 }
             }
+
+            fireTableDataChanged();
+            returnResult = true;
         }
         return returnResult;
     }

@@ -1,33 +1,37 @@
 package com.teamohno;
 
-import ca.uhn.fhir.rest.gclient.StringClientParam;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
-
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Model {
     // Instance Variables
-    private MonitorTableModel myMonitorTableModel;
+    private MonitorTableModel cholMonitorTableModel, bpMonitorTableModel;
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
     private Server myServer;
     private ArrayList<String> storedIdentifiers;
     private ArrayList<PractitionerRecord> storedPractitioners;
-    private ArrayList<MeasurementType> allTypes;
+    // need to fix what is passed in for tables
+    private ArrayList<MeasurementType> allTypes, cholType, bpType;
 
     // Constructor
     public Model() {
         myServer =  new Server("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
+//        cholType = new ArrayList<>();
+        bpType = new ArrayList<>();
         allTypes = new ArrayList<>();
 
         MeasurementType cholesterol = new Cholesterol();
+//        cholType.add(cholesterol);
+//        cholMonitorTableModel = new MonitorTableModel(cholType);
         allTypes.add(cholesterol);
-        myMonitorTableModel = new MonitorTableModel(allTypes);
+        cholMonitorTableModel = new MonitorTableModel(allTypes);
+
+        MeasurementType sbp = new SystolicBP();
+        MeasurementType dbp = new DiastolicBP();
+        bpType.add(sbp);
+        bpType.add(dbp);
+        bpMonitorTableModel = new MonitorTableModel(bpType);
 
         patientListModel = new DefaultListModel();
         storedIdentifiers = new ArrayList<>();
@@ -69,12 +73,30 @@ public class Model {
         return patientListModel;
     }
 
-    public MonitorTableModel getMonitorTable(){
-        return myMonitorTableModel;
+    public MonitorTableModel getMonitorTable(MeasurementType.Type type){
+        MonitorTableModel tableModel = null;
+        if(type == MeasurementType.Type.CHOLESTEROL){
+            tableModel = cholMonitorTableModel;
+        }
+        else if(type == MeasurementType.Type.BLOODPRESSURE){
+            tableModel = bpMonitorTableModel;
+        }
+        return tableModel;
     }
 
-    public ArrayList<MeasurementType> getTypes(){
+    public ArrayList<MeasurementType> getTypes() {
         return allTypes;
+    }
+
+        public ArrayList<MeasurementType> getTypes(MeasurementType.Type type){
+        ArrayList<MeasurementType> listTypes = new ArrayList<>();
+        if(type == MeasurementType.Type.CHOLESTEROL){
+            listTypes = cholType;
+        }
+        else if (type == MeasurementType.Type.BLOODPRESSURE){
+            listTypes = bpType;
+        }
+        return listTypes;
     }
 
     public Server getServer() {

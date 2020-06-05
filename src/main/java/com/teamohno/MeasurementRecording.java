@@ -10,6 +10,11 @@ public class MeasurementRecording {
     private BigDecimal measurementValue;
     private Date dateMeasured;
 
+    public MeasurementRecording(){
+        measurementValue = BigDecimal.ZERO;
+        dateMeasured = new Date(232322323L);
+    }
+
     // Constructor
     public MeasurementRecording(BigDecimal newValue, Date newDate, MeasurementType newType){
         measurementValue = newValue;
@@ -44,5 +49,16 @@ public class MeasurementRecording {
 
     public void setType(MeasurementType type) {
         this.type = type;
+    }
+
+    public String toString(){
+        String returnStr = "Measurement: " + type.getName() + ", Value: " + measurementValue + ", Date: " + dateMeasured;
+        return returnStr;
+    }
+
+    public void cloneRecording(MeasurementRecording newRecording){
+        measurementValue = newRecording.getMeasurementValue();
+        dateMeasured = newRecording.getDateMeasured();
+        type = newRecording.getType();
     }
 }

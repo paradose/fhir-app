@@ -133,6 +133,7 @@ public class Server {
     // measurement value and date recorded & returned as a MeasurementRecording object.
     public MeasurementRecording retrieveMeasurement(String patientId, MeasurementType newType) {
         MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
+        BigDecimal newValue = BigDecimal.ONE.negate();
 
         String measurementCode = newType.getFhirCode();
         try {
@@ -147,23 +148,26 @@ public class Server {
             Observation observation = (Observation) results.getEntry().get(0).getResource();
 
             //check if observation has multiple components
+            if(observation.getComponent().size() > 1){
+            // loop through components
+                for (int i = 0; i < observation.getComponent().size(); i++) {
+                    //  Check child code matches with observation component code in server
+                    if(observation.getComponent().get(i).getCode().getCodingFirstRep().getCode() == newType.getChildCode()){
+                        newValue = observation.getComponent().get(i).getValueQuantity().getValue();
+                    }
+                }
+            }
+            else {
+                newValue = observation.getValueQuantity().getValue();
+            }
+            Date newDate = observation.getIssued();
 
-            /*
-            if observ.components.size > 1
-                loop through components
-                check measurementType.getChildCode == observation.getComponent(i).getCode
-                    store value
-            else
-
-             */
-
-            Date date = observation.getIssued();
-            BigDecimal newValue = observation.getValueQuantity().getValue();
             newRecording.setMeasurementValue(newValue);
-            newRecording.setDateMeasured(date);
-            System.out.println("Total " + newType.getName() + " value observed from server: " + observation.getValueQuantity().getValue());
-            System.out.println(date);
-        } catch (Exception e) {
+            newRecording.setDateMeasured(newDate);
+            System.out.println("Total " + newType.getName() + " value observed from server: " + newValue);
+            System.out.println("Date of observation retrieved: " + newDate);
+        }
+        catch (Exception e) {
             System.out.println("No " + newType.getName() + " value available for patient ID: " + patientId + " from server.");
         }
         return newRecording;

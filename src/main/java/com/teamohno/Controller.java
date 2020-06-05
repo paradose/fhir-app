@@ -4,9 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Timer;
 
 public class Controller {
@@ -16,7 +14,7 @@ public class Controller {
     private View myView;
     private Server server;
     private PeriodicMeasurementCall myPeriodicCholesterol;
-    private ArrayList<MeasurementType> allTypes;
+    private ArrayList<MeasurementType> allTypes, bpTypes, cholTypes;
 
     //Constructor
     public Controller(Model newModel, View newView){
@@ -28,6 +26,8 @@ public class Controller {
     // Initialise the controller - attach listeners to view components
     public void initController(){
         allTypes = myModel.getTypes();
+//        bpTypes = myModel.getTypes(MeasurementType.Type.BLOODPRESSURE);
+//        cholTypes = myModel.getTypes(MeasurementType.Type.CHOLESTEROL);
 
         // Add listeners to UI elements
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
@@ -41,19 +41,21 @@ public class Controller {
                 myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(allTypes.get(index)));
                 myPeriodicCholesterol = new PeriodicMeasurementCall(allTypes.get(index));
             }
+
+
         }
 
         // adds mouse listener to monitor table
-        myView.getMonitorTable().addMouseListener(new MouseAdapter() {
+        myView.getCholMonitorTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                int rowIndex = myView.getMonitorTable().getSelectedRow();
+                int rowIndex = myView.getCholMonitorTable().getSelectedRow();
                 displaySelectedPatient(rowIndex);
             }
         });
-        // Set renderer for table
-        myView.getMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable().getMeasurementRenderer());
+        // Set renderer for table (temporary - need to fix)
+        myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).getMeasurementRenderer());
 
         // initialise timer and schedule all periodic callers
         myTimer = new Timer();
@@ -104,7 +106,15 @@ public class Controller {
                     currentType.updateAverage();
                 }
                 // clear monitor table entries - loop through all measurement types
-                myModel.getMonitorTable().clearDataValues();
+
+                // need to implement type
+//                for (int i = 0; i < allTypes.size(); i++) {
+//
+//                }
+
+                //temporary
+                myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).clearDataValues();
+
                 // clear patient list model
                 myModel.getPatientListModel().clear(); // can make this a method inside myModel/listModel (inside listmodel can fire -> update)
             }
@@ -144,14 +154,14 @@ public class Controller {
             PatientRecord processPatient = myModel.getLoggedInPractitioner().getPractitionerPatients().get(selectedIndices[i]);
 
             // add patients to monitorTable's indexArray - if haven't monitored returns false
-            if (myModel.getMonitorTable().addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType)) {
+            if (myModel.getMonitorTable(newType.getType()).addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType)) {
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
                 newType.getMonitorredSubjects().add(newSubject);
 
                 // create observers (for measurement type)
-                MeasurementObserver newObserver = new MeasurementObserver(newSubject, myModel.getMonitorTable(), newType);
+                MeasurementObserver newObserver = new MeasurementObserver(newSubject, myModel.getMonitorTable(newType.getType()), newType);
                 newSubject.attach(newObserver);
                 // gets initial values -> if has a value -> notify observer to update table
                 newSubject.updateMeasurementValue(newType);
@@ -168,7 +178,7 @@ public class Controller {
 
     public void stopMonitorSelectedPatients(MeasurementType newType) {
         // get selected indexes from JTable
-        int[] selectedIndices = myView.getMonitorTable().getSelectedRows();
+        int[] selectedIndices = myView.getCholMonitorTable().getSelectedRows();
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientSubject processSubject = newType.getMonitorredSubjects().get(selectedIndices[i]);
@@ -176,16 +186,16 @@ public class Controller {
             // remove patient row's
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();
-            myModel.getMonitorTable().removePatientFromTable(selectedIndices[i]);
-            myModel.getMonitorTable().getMeasurementRenderer().updateCholAverage(newType.getAverage());
+            myModel.getMonitorTable(newType.getType()).removePatientFromTable(selectedIndices[i]);
+            myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateCholAverage(newType.getAverage());
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
 
-    // displays patient on patient display panel
+    // displays patient on patient display panel - configure for only cholesterol?
     public void displaySelectedPatient(int patientIndex){
         PatientRecord chosenPatient = null;
-        String currentPatientID =  myModel.getMonitorTable().getMonitoredPatientID().get(patientIndex);
+        String currentPatientID =  myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).getMonitoredPatientID().get(patientIndex);
         ArrayList<PatientRecord> listPatients = myModel.getLoggedInPractitioner().getPractitionerPatients();
         for (int i = 0; i < listPatients.size(); i++) {
             if(listPatients.get(i).getId().equals(currentPatientID)){
