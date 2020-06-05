@@ -38,11 +38,20 @@ public class PatientSubject extends Subject {
     public void updateMeasurementValue(MeasurementType newType) {
         String patientsId = patientState.getId();
         MeasurementRecording updatedMeasurement;
+
+        for (int i = 0; i < patientState.getLastRecordings(newType).size(); i++) {
+            System.out.println("last 5: " + patientState.getLastRecordings(newType).get(i).toString());
+        }
+
         // checks if initial value
         if(active){
             updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
+
+            // testing - increments value +1 each iteration
+//            patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE));
+//            updatedMeasurement = patientState.getMeasurement(newType);
             if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO)==0){
-                // if the value hasn't been changed from zero inside the server -> turn subject to inactive
+//                 if the value hasn't been changed from zero inside the server -> turn subject to inactive
                 active = false;
             }
             else{

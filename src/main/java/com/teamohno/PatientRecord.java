@@ -2,6 +2,7 @@ package com.teamohno;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class PatientRecord{
@@ -13,7 +14,7 @@ public class PatientRecord{
     private String birthDate;
     private String address;
     private ArrayList<MeasurementRecording> measurementRecordings;
-    private ArrayList<MeasurementRecording[]> listLastRecordings;
+    private ArrayList<ArrayList<MeasurementRecording>> listLastRecordings;
 
     // Constructor
     public PatientRecord(String patientId, String patientFirstName, String patientLastName,String patientGender, String patientBirthDate, String patientAddress){
@@ -21,6 +22,7 @@ public class PatientRecord{
         firstName = patientFirstName;
         lastName = patientLastName;
         measurementRecordings = new ArrayList<>();
+        listLastRecordings = new ArrayList<>();
         gender = patientGender;
         birthDate = patientBirthDate;
         address = patientAddress;
@@ -54,14 +56,14 @@ public class PatientRecord{
     // Add a type of measurement for a patient
     public void addMeasurementObject(ArrayList<MeasurementType> newList){
         for (int i = 0; i < newList.size(); i++) {
-            MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ONE.negate(), new Date(2323223232L), newList.get(i));
+            MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223231L), newList.get(i));
             measurementRecordings.add(newEmptyRecording);
-
-            MeasurementRecording[] newLastRecording = new MeasurementRecording[5];
+            ArrayList<MeasurementRecording> newLastRecording = new ArrayList<>();
             listLastRecordings.add(newLastRecording);
         }
     }
 
+    //gets current measurement recording
     public MeasurementRecording getMeasurement(MeasurementType newType){
         // make a default measurement object to return if no measurements
         MeasurementRecording returnRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223232L), newType);
@@ -84,9 +86,12 @@ public class PatientRecord{
                 measurementRecordings.get(i).setMeasurementValue(newValue);
                 measurementRecordings.get(i).setDateMeasured(newDate);
 
-                // deal with the five
-//                listLastRecordings.get(i)[1] = new MeasurementRecording(newValue, newDate, newType);
-//                listLastRecordings.get(i)[1] = measurementRecordings.get(i);
+                MeasurementRecording newRecording = new MeasurementRecording();
+                newRecording.cloneRecording(measurementRecordings.get(i));
+                listLastRecordings.get(i).add(0, measurementRecordings.get(i));
+                if(listLastRecordings.get(i).size() > newType.getNumberStoredRecordings()) {
+                    listLastRecordings.get(i).remove(newType.getNumberStoredRecordings());
+                }
             }
             else{
                 System.out.println("Type not matched");
@@ -94,14 +99,13 @@ public class PatientRecord{
         }
     }
 
-    public MeasurementRecording[] getLastRecordings(MeasurementType newType){
-        MeasurementRecording[] returningList = new MeasurementRecording[1];
+    public ArrayList<MeasurementRecording> getLastRecordings(MeasurementType newType){
+        ArrayList<MeasurementRecording> returningList = new ArrayList<>();
         for (int i = 0; i < measurementRecordings.size(); i++) {
             if (measurementRecordings.get(i).getType().type == newType.type) {
                 returningList = listLastRecordings.get(i);
             }
         }
-
         return returningList;
     }
 

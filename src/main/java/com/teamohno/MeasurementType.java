@@ -10,13 +10,13 @@ public abstract class MeasurementType {
     protected String name;
     protected ArrayList<PatientSubject> monitorredSubjects;
     protected Type type;
+    protected int numberStoredRecordings;
     private double measurementAverage;
     private double measurementTotal;
     protected enum Type{
-        CHOLESTEROL;
+        CHOLESTEROL,
+        BLOODPRESSURE;
     }
-
-
 
     // Constructor
     public MeasurementType(String newName, String newCode){
@@ -25,9 +25,11 @@ public abstract class MeasurementType {
         this.monitorredSubjects = new ArrayList<>();
         measurementTotal = 0;
         measurementAverage = 0;
+        childCode = "n/a";
     }
 
     // Accessors and Mutators
+
     public String getFhirCode() {
         return fhirCode;
     }
@@ -35,6 +37,10 @@ public abstract class MeasurementType {
     public void setFhirCode(String fhirCode) {
         this.fhirCode = fhirCode;
     }
+
+    public String getChildCode(){return childCode;}
+
+    public void setChildCode(String newChildCode){this.childCode = newChildCode;}
 
     public String getName() {
         return name;
@@ -44,9 +50,15 @@ public abstract class MeasurementType {
         this.name = name;
     }
 
+    public Type getType(){return type;}
+
     public ArrayList<PatientSubject> getMonitorredSubjects() {
         return monitorredSubjects;
     }
+
+    public int getNumberStoredRecordings(){return numberStoredRecordings;}
+
+    public void setNumberStoredRecordings(int newNumber){this.numberStoredRecordings = newNumber;}
 
     public double getAverage(){return measurementAverage;}
 
