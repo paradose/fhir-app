@@ -56,7 +56,12 @@ public class PatientSubject extends Subject {
             }
             else{
                 // updating subject state
-                patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
+                if (newType.getComponentSize() > 0){
+                    patientState.getMeasurement(newType).cloneRecording(updatedMeasurement);
+                }
+                else {
+                    patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
+                }
                 notifyObservers();
             }
         }
