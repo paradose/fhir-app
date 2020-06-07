@@ -9,12 +9,11 @@ import java.awt.*;
  */
 public class MeasurementCellRenderer extends DefaultTableCellRenderer {
     // Instance variables
-    private double observedValue = 0;
+    private double minimumValue = 0;
     private int column;
     private Color cellColour;
     // Constructor, takes column number as input and observers this column
     public MeasurementCellRenderer(int measurementColumnNumber, Color colour){
-
         column= measurementColumnNumber;
         cellColour = colour;
     }
@@ -28,8 +27,8 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         if (col == column) {
             if (value instanceof String) {
                 try {
-                    double cholLevel = Double.parseDouble(value.toString());
-                    if (cholLevel > (observedValue)) {
+                    double observedValue = Double.parseDouble(value.toString());
+                    if (observedValue > (minimumValue)) {
                         c.setForeground(cellColour);
                     } else {
                         c.setForeground(Color.black);
@@ -44,8 +43,8 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
     }
     // updates the measurements value, called from the controller/observer when
     // patient is monitored or value is updated
-    public void updateCellValue(double value){
-        observedValue =value;
-        System.out.println("new average: " + value);
+    public void updateMinColouredValue(double value){
+        minimumValue = value;
+        System.out.println("new minimum: " + value);
     }
 }

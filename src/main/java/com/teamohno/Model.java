@@ -1,5 +1,7 @@
 package com.teamohno;
 
+import org.hl7.fhir.r4.model.Measure;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,21 +20,17 @@ public class Model {
     // Constructor
     public Model() {
         myServer =  new Server("https://fhir.monash.edu/hapi-fhir-jpaserver/fhir/");
-//        cholType = new ArrayList<>();
+        cholType = new ArrayList<>();
         bpType = new ArrayList<>();
         allTypes = new ArrayList<>();
 
         MeasurementType cholesterol = new Cholesterol();
-//        cholType.add(cholesterol);
-//        cholMonitorTableModel = new MonitorTableModel(cholType);
-        allTypes.add(cholesterol);
-        cholMonitorTableModel = new MonitorTableModel(allTypes, Color.RED);
+        addTypeToSystem(cholesterol);
+        MeasurementType bp = new BloodPressure();
+        addTypeToSystem(bp);
 
-        MeasurementType sbp = new SystolicBP();
-        MeasurementType dbp = new DiastolicBP();
-        bpType.add(sbp);
-        bpType.add(dbp);
-        bpMonitorTableModel = new MonitorTableModel(bpType, Color.MAGENTA);
+        cholMonitorTableModel = new MonitorTableModel(cholType, Color.RED);
+        bpMonitorTableModel = new MultipleMonitorTableModel(bp, Color.MAGENTA);
 
         patientListModel = new DefaultListModel();
         storedIdentifiers = new ArrayList<>();
@@ -85,11 +83,17 @@ public class Model {
         return tableModel;
     }
 
-    public ArrayList<MeasurementType> getTypes() {
+    // can create a new method to add different types to other tables
+    public void addTypeToSystem(MeasurementType newType){
+        allTypes.add(newType);
+        getTableTypes(newType.type).add(newType);
+    }
+
+    public ArrayList<MeasurementType> getAllTypes() {
         return allTypes;
     }
 
-        public ArrayList<MeasurementType> getTypes(MeasurementType.Type type){
+    public ArrayList<MeasurementType> getTableTypes(MeasurementType.Type type){
         ArrayList<MeasurementType> listTypes = new ArrayList<>();
         if(type == MeasurementType.Type.CHOLESTEROL){
             listTypes = cholType;

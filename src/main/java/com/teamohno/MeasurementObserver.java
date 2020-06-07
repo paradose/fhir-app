@@ -1,19 +1,19 @@
 package com.teamohno;
 
-import java.math.BigDecimal;
+import java.util.Date;
 
 public class MeasurementObserver extends Observer {
     // Instance variables
     private PatientSubject observerSubject;
-    private BigDecimal lastState;
+    private Date lastState;
     private MonitorTableModel monitorredData;
     private MeasurementType type;
 
     // Constructor
     public MeasurementObserver(PatientSubject patient, MonitorTableModel newModelTable, MeasurementType newType){
         observerSubject = patient;
-        // sets last state as patients current cholesterol value
-        lastState = patient.getState().getMeasurement(newType).getMeasurementValue();
+        // sets last state as patients current measurement recorded date
+        lastState = patient.getState().getMeasurement(newType).getDateMeasured();
         monitorredData = newModelTable;
         type = newType;
     }
@@ -23,17 +23,19 @@ public class MeasurementObserver extends Observer {
         System.out.println("Size of observer's total subject list:" + type.getMonitorredSubjects().size());
         System.out.println("Number of Valid subjects: " + type.getValidMonitored());
         MeasurementRecording patientsNewRecording = observerSubject.getState().getMeasurement(type);
-        BigDecimal newTotalVal = patientsNewRecording.getMeasurementValue();
+        Date newState = patientsNewRecording.getDateMeasured();
 
-        //check first then set value
-        System.out.println("Old state: " + lastState + ", new state " + newTotalVal);
-        if (newTotalVal.compareTo(lastState) != 0){
+        //check if date of new recording after old state date
+        if (newState.compareTo(lastState) > 0){
+            System.out.println("Old state: " + lastState + ", new state " + newState);
             // send update to model
             monitorredData.updateMeasurements(observerSubject.getState(), patientsNewRecording);
 
             //update average -> get renderer to change colour
             type.updateAverage();
-            monitorredData.getMeasurementRenderer().updateCellValue(type.getAverage());
+
+            // is used for cholesterol - not blood pressure
+            monitorredData.getMeasurementRenderer().updateMinColouredValue(type.getAverage());
 
             System.out.println("Observer's new measurement value: " + patientsNewRecording.getMeasurementValue());
         }
@@ -42,7 +44,7 @@ public class MeasurementObserver extends Observer {
             System.out.println("Patient " + observerSubject.getState().getId() + " has no change in " + type);
         }
         // Update observer state
-        lastState = patientsNewRecording.getMeasurementValue();
+        lastState = patientsNewRecording.getDateMeasured();
         System.out.println("Observer updated");
     }
 }

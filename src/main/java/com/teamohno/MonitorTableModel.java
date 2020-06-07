@@ -2,7 +2,6 @@ package com.teamohno;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
-import java.nio.channels.MulticastChannel;
 import java.util.ArrayList;
 
 public class MonitorTableModel extends AbstractTableModel {
@@ -17,15 +16,24 @@ public class MonitorTableModel extends AbstractTableModel {
     protected ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
     protected Color observedCellColour;
     // watches the average value
-    protected MeasurementCellRenderer measurementAverageWatcher;
+    protected MeasurementCellRenderer measurementMinWatcher;
 
     // Constructor
+    public MonitorTableModel(){
+        createTable();
+    }
     public MonitorTableModel(ArrayList<MeasurementType> newTypes, Color colour) {
-        // list of types -> use the types to get access to all the subject lists
+//         list of types -> use the types to get access to all the subject lists
+        createTable();
+        this.setObservedCellColour(colour);
+        for (int i = 0; i < newTypes.size(); i++) {
+            addMeasurementType(newTypes.get(i));
+        }
+    }
+    public void createTable(){
         monitoredMeasurementSubjects = new ArrayList<>();
         patientMeasurementTable = new ArrayList<>();
         monitoredPatientID = new ArrayList<>();
-        observedCellColour =colour;
         patientMeasurementTable.add(monitoredPatientID);
 
         columnNames = new ArrayList<>();
@@ -34,9 +42,6 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData = new ArrayList<>();
         monitoredPatientNames = new ArrayList<>();
         monitoredData.add(monitoredPatientNames);
-        for (int i = 0; i < newTypes.size(); i++) {
-            addMeasurementType(newTypes.get(i));
-        }
     }
 
     public void addMeasurementType(MeasurementType newType){
@@ -46,7 +51,7 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(listDates);
         columnNames.add(newType.getName());
         // Storing current column index for the measurement
-        measurementAverageWatcher = new MeasurementCellRenderer(columnNames.size() - 1,observedCellColour);
+        measurementMinWatcher = new MeasurementCellRenderer(columnNames.size() - 1,observedCellColour);
         columnNames.add("Date Measured");
         monitoredMeasurementSubjects.add(newType.getMonitorredSubjects());
     }
@@ -72,19 +77,25 @@ public class MonitorTableModel extends AbstractTableModel {
         }
         if(!monitorringThisType){
             // add (potentially) multiple values first
-            for (int i = 0; i < columnNames.size(); i++) {
-                if(columnNames.get(i).equals(newType.getName())) {
-                    monitoredData.get(i).add("-");
-                    // add date
-                    monitoredData.get(i+1).add("-");
+            if(newType.getComponentSize() > 0){
+                addComponentNames();
+            }
+            else {
+                for (int i = 0; i < columnNames.size(); i++) {
+                    if (columnNames.get(i).equals(newType.getName())) {
+                        monitoredData.get(i).add("-");
+                        // add date
+                        monitoredData.get(i + 1).add("-");
+                    }
                 }
             }
-
             fireTableDataChanged();
             returnResult = true;
         }
         return returnResult;
     }
+
+    protected void addComponentNames(){}
 
     public void removePatientFromTable(int newPatientIndex){
         // remove to track index
@@ -114,8 +125,19 @@ public class MonitorTableModel extends AbstractTableModel {
     }
 
     public MeasurementCellRenderer getMeasurementRenderer(){
-        return measurementAverageWatcher;
+        return measurementMinWatcher;
     }
+
+    public MeasurementCellRenderer getMeasurementRenderer(int columnIndex){
+        return measurementMinWatcher;
+    }
+
+    public void setMinColouredValue(double newValue, int column){
+        getMeasurementRenderer().updateMinColouredValue(newValue);
+    }
+
+    public Color getObservedCellColour(){return observedCellColour;}
+    public void setObservedCellColour(Color c){observedCellColour = c;}
 
     public Object getValueAt(int row, int col) {
         // column index = for the list of names / measurements / dates

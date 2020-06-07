@@ -34,6 +34,15 @@ public class View extends JFrame {
     private JScrollPane monitorBPScrollPane;
     private JButton stopMonitorBPButton;
     private JPanel frequencyPanel;
+    private JTextField dbpMinField;
+    private JTextField sbpMinField;
+    private JButton updateDbpMinButton;
+    private JButton updateSbpMinButton;
+    private JPanel bloodPressureMinPanel;
+    private JLabel dbpMinLabel;
+    private JLabel sbpMinLabel;
+    private JLabel dbpMinVal;
+    private JLabel sbpMinVal;
 
     private DefaultListModel listModel;
     private JTable cholMonitorTable, bpMonitorTable;
@@ -92,9 +101,14 @@ public class View extends JFrame {
         this.patientJList = patientJList;
     }
 
+    public JPanel getDisplayPatient() {
+        return displayPatient;
+    }
+
     public JButton getUpdateFreqButton() {
         return updateFreqButton;
     }
+
 
     public JButton getMonitorCholButton() {
         return monitorCholButton;
@@ -104,13 +118,36 @@ public class View extends JFrame {
         return stopMonitorButton;
     }
 
-    public JPanel getDisplayPatient() {
-        return displayPatient;
-    }
-
     public JTable getCholMonitorTable() {
         return cholMonitorTable;
     }
+
+
+    public JButton getMonitorBPButton() {
+        return monitorBPButton;
+    }
+
+    public JButton getStopMonitorBPButton() { return stopMonitorBPButton; }
+
+    public JTable getBpMonitorTable() {
+        return bpMonitorTable;
+    }
+
+    // could replace with just one?
+    public JButton getUpdateDbpMinButton(){return updateDbpMinButton;}
+    public JButton getUpdateSbpMinButton(){return updateSbpMinButton;}
+
+    public JTextField getDbpMinField() {
+        return dbpMinField;
+    }
+
+    public JTextField getSbpMinField() {
+        return sbpMinField;
+    }
+
+    public JLabel getDbpMinLabel(){return dbpMinVal;}
+
+    public JLabel getSbpMinLabel(){return sbpMinVal;}
 
     public JLabel getFreqValueLabel() {
         return freqValueLabel;

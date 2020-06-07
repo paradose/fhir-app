@@ -13,7 +13,7 @@ public class Controller {
     private Timer myTimer;
     private View myView;
     private Server server;
-    private PeriodicMeasurementCall myPeriodicCholesterol;
+    private PeriodicMeasurementCall myPeriodicCholesterol, myPeriodicBP;
     private ArrayList<MeasurementType> allTypes, bpTypes, cholTypes;
 
     //Constructor
@@ -25,9 +25,8 @@ public class Controller {
 
     // Initialise the controller - attach listeners to view components
     public void initController(){
-        allTypes = myModel.getTypes();
-//        bpTypes = myModel.getTypes(MeasurementType.Type.BLOODPRESSURE);
-//        cholTypes = myModel.getTypes(MeasurementType.Type.CHOLESTEROL);
+        allTypes = myModel.getAllTypes();
+        cholTypes = myModel.getTableTypes(MeasurementType.Type.CHOLESTEROL);
 
         // Add listeners to UI elements
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
@@ -35,27 +34,47 @@ public class Controller {
 
         // loop through all measurement types - attach listeners for corresponding buttons, create periodic caller
         for (int i = 0; i < allTypes.size(); i++) {
-            if(allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL){
+            if (allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL) {
                 int index = i;
                 myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(allTypes.get(index)));
                 myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(allTypes.get(index)));
                 myPeriodicCholesterol = new PeriodicMeasurementCall(allTypes.get(index));
+
+                // adds mouse listener to monitor table
+                myView.getCholMonitorTable().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        super.mouseClicked(e);
+                        int rowIndex = myView.getCholMonitorTable().getSelectedRow();
+                        displaySelectedPatient(rowIndex, allTypes.get(index));
+                    }
+                });
             }
+            //temporary for bp
+            if (allTypes.get(i).type == MeasurementType.Type.BLOODPRESSURE) {
+                int index = i;
+                bpTypes = myModel.getTableTypes(MeasurementType.Type.BLOODPRESSURE);
+                myView.getMonitorBPButton().addActionListener(e -> monitorSelectedPatients(bpTypes.get(0)));
+                myView.getStopMonitorBPButton().addActionListener(e -> stopMonitorSelectedPatients(bpTypes.get(0)));
+                myPeriodicBP = new PeriodicMeasurementCall(bpTypes.get(0));
 
+                myView.getBpMonitorTable().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        super.mouseClicked(e);
+                        int rowIndex = myView.getBpMonitorTable().getSelectedRow();
+                        displaySelectedPatient(rowIndex, allTypes.get(index));
+                    }
+                });
 
+                myView.getUpdateDbpMinButton().addActionListener(e -> updateMinValue(1, allTypes.get(index)));
+                myView.getUpdateSbpMinButton().addActionListener(e -> updateMinValue(2, allTypes.get(index)));
+            }
         }
-
-        // adds mouse listener to monitor table
-        myView.getCholMonitorTable().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                int rowIndex = myView.getCholMonitorTable().getSelectedRow();
-                displaySelectedPatient(rowIndex);
-            }
-        });
         // Set renderer for table (temporary - need to fix)
         myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).getMeasurementRenderer());
+        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).getMeasurementRenderer(1));
+        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).getMeasurementRenderer(2));
 
         // initialise timer and schedule all periodic callers
         myTimer = new Timer();
@@ -105,15 +124,11 @@ public class Controller {
                     // update(clear) averages for types after clearing subject list
                     currentType.updateAverage();
                 }
-                // clear monitor table entries - loop through all measurement types
-
-                // need to implement type
-//                for (int i = 0; i < allTypes.size(); i++) {
-//
-//                }
 
                 //temporary
+                // loop through all stored types
                 myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).clearDataValues();
+                myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).clearDataValues();
 
                 // clear patient list model
                 myModel.getPatientListModel().clear(); // can make this a method inside myModel/listModel (inside listmodel can fire -> update)
@@ -136,7 +151,8 @@ public class Controller {
         if(retrievePatientsFromServer){
             myModel.getLoggedInPractitioner().retrievePractitionerPatients();
             for (int i = 0; i < myModel.getLoggedInPractitioner().getPractitionerPatients().size() ; i++) {
-                myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).addMeasurementObject(allTypes);
+                myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).initialiseMeasurements(allTypes);
+                myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).initialiseMeasurements(bpTypes);
             }
             System.out.println("Update patient list: accessing server.");
         }
@@ -178,7 +194,13 @@ public class Controller {
 
     public void stopMonitorSelectedPatients(MeasurementType newType) {
         // get selected indexes from JTable
-        int[] selectedIndices = myView.getCholMonitorTable().getSelectedRows();
+        int[] selectedIndices = null;
+        if(newType.type == MeasurementType.Type.CHOLESTEROL) {
+            selectedIndices = myView.getCholMonitorTable().getSelectedRows();
+        }
+        else if (newType.type == MeasurementType.Type.BLOODPRESSURE){
+            selectedIndices = myView.getBpMonitorTable().getSelectedRows();
+        }
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientSubject processSubject = newType.getMonitorredSubjects().get(selectedIndices[i]);
@@ -187,15 +209,15 @@ public class Controller {
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();
             myModel.getMonitorTable(newType.getType()).removePatientFromTable(selectedIndices[i]);
-            myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateCellValue(newType.getAverage());
+            myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateMinColouredValue(newType.getAverage());
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }
 
     // displays patient on patient display panel - configure for only cholesterol?
-    public void displaySelectedPatient(int patientIndex){
+    public void displaySelectedPatient(int patientIndex, MeasurementType newType){
         PatientRecord chosenPatient = null;
-        String currentPatientID =  myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).getMonitoredPatientID().get(patientIndex);
+        String currentPatientID =  myModel.getMonitorTable(newType.type).getMonitoredPatientID().get(patientIndex);
         ArrayList<PatientRecord> listPatients = myModel.getLoggedInPractitioner().getPractitionerPatients();
         for (int i = 0; i < listPatients.size(); i++) {
             if(listPatients.get(i).getId().equals(currentPatientID)){
@@ -217,6 +239,7 @@ public class Controller {
         String currentFreq = myView.getFreqValueLabel().getText();
         myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
         myTimer.scheduleAtFixedRate(myPeriodicCholesterol, 0, 1);
+        myTimer.scheduleAtFixedRate(myPeriodicBP, 0, 1);
     }
 
     public void updateFrequency(){
@@ -240,10 +263,37 @@ public class Controller {
             }
         }
         else if (inputFrequency.isEmpty()) {
+            // only need one periodic class to do this - since frequency is currently static
             myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
         }
         else{
             System.out.println("Error: frequency value is not numeric");
+        }
+    }
+
+    public void updateMinValue(int newColumnIndex, MeasurementType newType){
+        String columnName = myModel.getMonitorTable(newType.type).getColumnName(newColumnIndex);
+        String input = "-1.0";
+        if(columnName.equals("Systolic Blood Pressure")){
+            input = myView.getSbpMinField().getText();
+        }
+        else if(columnName.equals("Diastolic Blood Pressure")){
+            input = myView.getDbpMinField().getText();
+        }
+        if(StringUtils.isNumeric(input)){
+            double newValue = Double.parseDouble(input);
+            if(newValue > 0.0) {
+                if(newColumnIndex == 1){
+                    myView.getDbpMinLabel().setText(input);
+                    myView.getDbpMinField().setText("");
+                }
+                else if (newColumnIndex == 2){
+                    myView.getSbpMinLabel().setText(input);
+                    myView.getSbpMinField().setText("");
+                }
+                myModel.getMonitorTable(newType.type).setMinColouredValue(newValue, newColumnIndex);
+                myModel.getMonitorTable(newType.type).fireTableDataChanged();
+            }
         }
     }
 }
