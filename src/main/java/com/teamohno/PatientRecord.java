@@ -54,12 +54,13 @@ public class PatientRecord{
     }
 
     // Add a type of measurement for a patient
-    public void addMeasurementObject(ArrayList<MeasurementType> newList){
+    public void initialiseMeasurements(ArrayList<MeasurementType> newList){
         for (int i = 0; i < newList.size(); i++) {
             MeasurementRecording newEmptyRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223231L), newList.get(i));
             measurementRecordings.add(newEmptyRecording);
             ArrayList<MeasurementRecording> newLastRecording = new ArrayList<>();
             listLastRecordings.add(newLastRecording);
+            System.out.println("Created object for type: " + newEmptyRecording.getType().getName());
         }
     }
 

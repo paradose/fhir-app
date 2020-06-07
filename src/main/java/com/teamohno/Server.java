@@ -152,17 +152,23 @@ public class Server {
             // loop through components
                 for (int i = 0; i < observation.getComponent().size(); i++) {
                     //  Check child code matches with observation component code in server
-                    if(observation.getComponent().get(i).getCode().getCodingFirstRep().getCode() == newType.getChildCode()){
-                        newValue = observation.getComponent().get(i).getValueQuantity().getValue();
+                    String currChildCode = observation.getComponent().get(i).getCode().getCodingFirstRep().getCode();
+                    for (int j = 0; j < newType.getListChildCode().size(); j++) {
+                        // iterator...!
+                        if(newType.getListChildCode().get(j).equals(currChildCode)){
+                            newValue = observation.getComponent().get(i).getValueQuantity().getValue();
+                            newRecording.setMeasurementValue(newValue, currChildCode);
+                            //Set so that it won't be considered inactive?? [temporary]
+                            newRecording.setMeasurementValue(BigDecimal.ONE);
+                        }
                     }
                 }
             }
             else {
                 newValue = observation.getValueQuantity().getValue();
+                newRecording.setMeasurementValue(newValue);
             }
             Date newDate = observation.getIssued();
-
-            newRecording.setMeasurementValue(newValue);
             newRecording.setDateMeasured(newDate);
             System.out.println("Total " + newType.getName() + " value observed from server: " + newValue);
             System.out.println("Date of observation retrieved: " + newDate);

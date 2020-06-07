@@ -5,7 +5,11 @@ import java.util.ArrayList;
 public abstract class MeasurementType {
     // Instance variables
     protected String fhirCode;
-    protected String childCode;
+
+//    protected String childCode;
+
+    protected ArrayList<String> listChildCode;
+    protected ArrayList<String> childTypeNames;
 
     protected String name;
     protected ArrayList<PatientSubject> monitorredSubjects;
@@ -25,10 +29,30 @@ public abstract class MeasurementType {
         this.monitorredSubjects = new ArrayList<>();
         measurementTotal = 0;
         measurementAverage = 0;
-        childCode = "n/a";
+//        childCode = "n/a";
+
+        listChildCode = new ArrayList<>();
+        childTypeNames = new ArrayList<>();
     }
 
     // Accessors and Mutators
+    public ArrayList<String> getChildTypeNames(){return childTypeNames;}
+    public void addChildCode(String newCode){
+        listChildCode.add(newCode);}
+    public ArrayList<String> getListChildCode(){return listChildCode;}
+    public int getIndexChild(String childCode){
+        int index = -1;
+        for (int i = 0; i < listChildCode.size(); i++) {
+            if(listChildCode.get(i).equals(childCode)){
+                index = i;
+            }
+        }
+        if(index == -1){
+            System.out.println("Error this type does not contain the child code: " + childCode);
+        }
+        return index;
+    }
+    public int getComponentSize(){return getListChildCode().size();}
 
     public String getFhirCode() {
         return fhirCode;
@@ -38,9 +62,9 @@ public abstract class MeasurementType {
         this.fhirCode = fhirCode;
     }
 
-    public String getChildCode(){return childCode;}
-
-    public void setChildCode(String newChildCode){this.childCode = newChildCode;}
+    // don't need(?)
+//    public String getChildCode(){return childCode;}
+//    public void setChildCode(String newChildCode){this.childCode = newChildCode;}
 
     public String getName() {
         return name;
