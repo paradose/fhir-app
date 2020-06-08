@@ -43,6 +43,8 @@ public class View extends JFrame {
     private JLabel sbpMinLabel;
     private JLabel dbpMinVal;
     private JLabel sbpMinVal;
+    private JButton displayCholChartButton;
+    private JButton displaySystolicGraphButton;
 
     private DefaultListModel listModel;
     private JTable cholMonitorTable, bpMonitorTable;
@@ -92,6 +94,14 @@ public class View extends JFrame {
     public JButton getUpdatePracButton() {
         return updatePracButton;
     }
+    public JButton getDisplayChartButton(){
+        return displayCholChartButton;
+    }
+
+    public JButton getDisplaySystolicGraphButton(){
+        return displaySystolicGraphButton;
+    }
+
 
     public JList getPatientJList() {
         return patientJList;
