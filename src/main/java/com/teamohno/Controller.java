@@ -100,8 +100,8 @@ public class Controller {
         scheduleMonitor();
     }
 
-    public void initView(){
-        // take in initial data
+    public void initModel(){
+        // Set initial minimums
         myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).setMinColouredValue(75, 0);
         myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).setMinColouredValue(120, 1);
         myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).fireTableDataChanged();
@@ -177,7 +177,7 @@ public class Controller {
         if(retrievePatientsFromServer){
             myModel.getLoggedInPractitioner().retrievePractitionerPatients();
             for (int i = 0; i < myModel.getLoggedInPractitioner().getPractitionerPatients().size() ; i++) {
-                myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).initialiseMeasurements(allTypes);
+                myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).initialiseMeasurements(cholTypes);
                 myModel.getLoggedInPractitioner().getPractitionerPatients().get(i).initialiseMeasurements(bpTypes);
             }
             System.out.println("Update patient list: accessing server.");
