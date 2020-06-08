@@ -3,11 +3,13 @@ package com.teamohno;
 import org.hl7.fhir.r4.model.Measure;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 
 public class Model {
     // Instance Variables
+    private HistoricalTableModel histTableModel;
     private MonitorTableModel cholMonitorTableModel, bpMonitorTableModel;
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
@@ -31,10 +33,15 @@ public class Model {
 
         cholMonitorTableModel = new MonitorTableModel(cholType, Color.RED);
         bpMonitorTableModel = new MultipleMonitorTableModel(bp, Color.MAGENTA);
+        histTableModel = new HistoricalTableModel();
 
         patientListModel = new DefaultListModel();
         storedIdentifiers = new ArrayList<>();
         storedPractitioners = new ArrayList<>();
+    }
+
+    public AbstractTableModel getHistTableModel(){
+        return histTableModel;
     }
 
     // Create new practitioner object based on identifier

@@ -10,5 +10,6 @@ public class Main {
 
         // Add listeners to view objects
         c.initController();
+        c.initView();
     }
 }

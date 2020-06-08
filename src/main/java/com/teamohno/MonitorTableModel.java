@@ -11,12 +11,13 @@ public class MonitorTableModel extends AbstractTableModel {
     protected ArrayList<String> monitoredPatientNames;
 
     // used to track index of patient that are being monitored within table
-    protected ArrayList<ArrayList<String>> patientMeasurementTable;
     protected ArrayList<String> monitoredPatientID;
+
     protected ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
-    protected Color observedCellColour;
+
     // watches the average value
     protected MeasurementCellRenderer measurementMinWatcher;
+    protected Color observedCellColour;
 
     // Constructor
     public MonitorTableModel(){
@@ -32,9 +33,7 @@ public class MonitorTableModel extends AbstractTableModel {
     }
     public void createTable(){
         monitoredMeasurementSubjects = new ArrayList<>();
-        patientMeasurementTable = new ArrayList<>();
         monitoredPatientID = new ArrayList<>();
-        patientMeasurementTable.add(monitoredPatientID);
 
         columnNames = new ArrayList<>();
         columnNames.add("Name");
@@ -125,10 +124,6 @@ public class MonitorTableModel extends AbstractTableModel {
     }
 
     public MeasurementCellRenderer getMeasurementRenderer(){
-        return measurementMinWatcher;
-    }
-
-    public MeasurementCellRenderer getMeasurementRenderer(int columnIndex){
         return measurementMinWatcher;
     }
 

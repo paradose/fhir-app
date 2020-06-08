@@ -5,19 +5,17 @@ import java.util.ArrayList;
 
 public class MultipleMonitorTableModel extends MonitorTableModel {
     private MeasurementType type;
-    private ArrayList<MeasurementCellRenderer> childCellRenderers;
+    private MultipleTypeCellRenderer childCellRenderer;
 
     public MultipleMonitorTableModel(MeasurementType newType, Color c){
         super();
-        childCellRenderers = new ArrayList<>();
         setObservedCellColour(c);
         type = newType;
 
         this.addMeasurementType(newType);
-//        MeasurementCellRenderer measurementMinWatcher1 = new MeasurementCellRenderer(1, this.getObservedCellColour());
-//        childCellRenderers.add(measurementMinWatcher1);
-//        MeasurementCellRenderer measurementMinWatcher2 = new MeasurementCellRenderer(2, this.getObservedCellColour());
-//        childCellRenderers.add(measurementMinWatcher2);
+
+        // pass in indexes - set default
+        childCellRenderer = new MultipleTypeCellRenderer(observedCellColour, newType.getComponentSize());
     }
 
     public void addMeasurementType(MeasurementType newType) {
@@ -25,9 +23,6 @@ public class MultipleMonitorTableModel extends MonitorTableModel {
             ArrayList<String> listVlaues = new ArrayList<>();
             monitoredData.add(listVlaues);
             columnNames.add(newType.getChildTypeNames().get(i));
-            // Storing current column index for the measurement
-            measurementMinWatcher = new MeasurementCellRenderer(columnNames.size() - 1, this.getObservedCellColour());
-            childCellRenderers.add(measurementMinWatcher);
         }
         // add date after type here
         ArrayList<String> listDates = new ArrayList<>();
@@ -80,11 +75,11 @@ public class MultipleMonitorTableModel extends MonitorTableModel {
         fireTableDataChanged();
     }
 
-    public MeasurementCellRenderer getMeasurementRenderer(int columnIndex){
-        return childCellRenderers.get(columnIndex - 1);
+    public MeasurementCellRenderer getMeasurementRenderer(){
+        return childCellRenderer;
     }
 
     public void setMinColouredValue(double newValue, int column){
-        getMeasurementRenderer(column).updateMinColouredValue(newValue);
+        childCellRenderer.updateMinColouredValue(newValue, column);
     }
 }

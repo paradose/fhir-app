@@ -2,6 +2,7 @@ package com.teamohno;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.table.AbstractTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class Controller {
 
     // Initialise the controller - attach listeners to view components
     public void initController(){
+        // Add high SBP patients
+//        myView.getAddPanelButton().addActionListener(e -> ());
+
         allTypes = myModel.getAllTypes();
         cholTypes = myModel.getTableTypes(MeasurementType.Type.CHOLESTEROL);
 
@@ -73,12 +77,22 @@ public class Controller {
         }
         // Set renderer for table (temporary - need to fix)
         myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).getMeasurementRenderer());
-        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).getMeasurementRenderer(1));
-        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).getMeasurementRenderer(2));
+        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).getMeasurementRenderer());
+
+        // add table for SBP
+        AbstractTableModel histTableModel = myModel.getHistTableModel();
+        myView.createHistTablePanel(histTableModel);
 
         // initialise timer and schedule all periodic callers
         myTimer = new Timer();
         scheduleMonitor();
+    }
+
+    public void initView(){
+        // take in initial data
+        myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).setMinColouredValue(75, 0);
+        myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).setMinColouredValue(120, 1);
+        myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).fireTableDataChanged();
     }
 
     public void storePracIdentifier() {
@@ -273,7 +287,7 @@ public class Controller {
 
     public void updateMinValue(int newColumnIndex, MeasurementType newType){
         String columnName = myModel.getMonitorTable(newType.type).getColumnName(newColumnIndex);
-        String input = "-1.0";
+        String input = "-1";
         if(columnName.equals("Systolic Blood Pressure")){
             input = myView.getSbpMinField().getText();
         }
@@ -281,8 +295,8 @@ public class Controller {
             input = myView.getDbpMinField().getText();
         }
         if(StringUtils.isNumeric(input)){
-            double newValue = Double.parseDouble(input);
-            if(newValue > 0.0) {
+            int newValue = Integer.parseInt(input);
+            if(newValue > 0) {
                 if(newColumnIndex == 1){
                     myView.getDbpMinLabel().setText(input);
                     myView.getDbpMinField().setText("");
@@ -291,7 +305,8 @@ public class Controller {
                     myView.getSbpMinLabel().setText(input);
                     myView.getSbpMinField().setText("");
                 }
-                myModel.getMonitorTable(newType.type).setMinColouredValue(newValue, newColumnIndex);
+                // passing in data columns ( exclude first name column )
+                myModel.getMonitorTable(newType.type).setMinColouredValue(newValue, newColumnIndex - 1);
                 myModel.getMonitorTable(newType.type).fireTableDataChanged();
             }
         }

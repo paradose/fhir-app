@@ -9,10 +9,12 @@ import java.awt.*;
  */
 public class MeasurementCellRenderer extends DefaultTableCellRenderer {
     // Instance variables
-    private double minimumValue = 0;
-    private int column;
-    private Color cellColour;
+    protected double minimumValue = 0;
+    protected int column;
+    protected Color cellColour;
     // Constructor, takes column number as input and observers this column
+    public MeasurementCellRenderer(Color colour){cellColour = colour;}
+
     public MeasurementCellRenderer(int measurementColumnNumber, Color colour){
         column= measurementColumnNumber;
         cellColour = colour;
@@ -24,21 +26,29 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         Component c = super.getTableCellRendererComponent(table, value,
                 isSelected, hasFocus, row, col);
         c.setForeground(Color.black);
-        if (col == column) {
-            if (value instanceof String) {
-                try {
-                    double observedValue = Double.parseDouble(value.toString());
-                    if (observedValue > (minimumValue)) {
-                        c.setForeground(cellColour);
-                    } else {
+
+        // while checked all columns necessary
+        // get column to check here
+        first();
+        do {
+            System.out.println("Checking for column : " + col + ", seeing if matches with existing column: " + column);
+            if (col == column) {
+                if (value instanceof String) {
+                    try {
+                        double observedValue = Double.parseDouble(value.toString());
+                        if (observedValue > (minimumValue)) {
+                            c.setForeground(cellColour);
+                        } else {
+                            c.setForeground(Color.black);
+                        }
+                    } catch (Exception e) {
+                        // column isnt an BigDecimal
                         c.setForeground(Color.black);
                     }
-                }catch (Exception e){
-                    // column isnt an BigDecimal
-                    c.setForeground(Color.black);
                 }
             }
-        } else c.setForeground(Color.black);
+            next();
+        } while (hasNextColumn());
         return c;
     }
     // updates the measurements value, called from the controller/observer when
@@ -47,4 +57,10 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         minimumValue = value;
         System.out.println("new minimum: " + value);
     }
+
+    public boolean hasNextColumn(){return false;}
+
+    public void next(){}
+
+    public void first(){}
 }
