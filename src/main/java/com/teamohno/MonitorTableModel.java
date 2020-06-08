@@ -1,5 +1,10 @@
 package com.teamohno;
 
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.util.ArrayList;
@@ -18,6 +23,8 @@ public class MonitorTableModel extends AbstractTableModel {
     // watches the average value
     protected MeasurementCellRenderer measurementMinWatcher;
 
+    protected ArrayList<JFreeChart> charts;
+    protected DefaultCategoryDataset measurementData;
     // Constructor
     public MonitorTableModel(){
         createTable();
@@ -89,6 +96,7 @@ public class MonitorTableModel extends AbstractTableModel {
                     }
                 }
             }
+
             fireTableDataChanged();
             returnResult = true;
         }
@@ -100,7 +108,9 @@ public class MonitorTableModel extends AbstractTableModel {
     public void removePatientFromTable(int newPatientIndex){
         // remove to track index
         monitoredPatientID.remove(newPatientIndex);
-
+        // need to make this specific to measurememt
+        if (measurementData !=null)
+        measurementData.removeValue("Cholesterol",monitoredPatientNames.get(newPatientIndex));
         // loop through data columns
         for (int i = 0; i < monitoredData.size(); i++) {
             // this removes ALL data
@@ -119,6 +129,8 @@ public class MonitorTableModel extends AbstractTableModel {
 
                 monitoredData.get(i).add(currentIndex, newMeasurement.getMeasurementValue().toString());
                 monitoredData.get(i + 1).add(currentIndex, newMeasurement.getDateMeasured().toString());
+                if (measurementData !=null)
+                measurementData.setValue(newMeasurement.getMeasurementValue().intValue(), newMeasurement.getType().getName(), monitoredPatientNames.get(currentIndex));
             }
             fireTableDataChanged();
         }
@@ -138,6 +150,22 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public Color getObservedCellColour(){return observedCellColour;}
     public void setObservedCellColour(Color c){observedCellColour = c;}
+
+    // gets initial measurements of monitored patients and sets to dataset for chart
+    public DefaultCategoryDataset getMonitoredMeasurements(MeasurementType selectedType) {
+        DefaultCategoryDataset dod = new DefaultCategoryDataset();
+//        for (int i = 0; i < columnNames.size(); i++) {
+//            if (columnNames.get(i).equals(selectedType.getName())){
+        for (int j=0;j<monitoredMeasurementSubjects.get(0).size();j++){
+            PatientSubject processSubject = monitoredMeasurementSubjects.get(0).get(j);
+            int value = processSubject.getState().getMeasurement(selectedType).getMeasurementValue().intValue();
+            String subjectFirstName = processSubject.getState().getFirstName();
+            String subjectLastName = processSubject.getState().getLastName();
+            dod.setValue(value, selectedType.getName(), subjectFirstName +" "+ subjectLastName);
+        }
+        return dod;
+    }
+
 
     public Object getValueAt(int row, int col) {
         // column index = for the list of names / measurements / dates
@@ -181,5 +209,23 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public ArrayList<String> getMonitoredPatientID() {
         return monitoredPatientID;
+    }
+
+    public void addChart(MeasurementType measurementType, JFreeChart measurementChart, DefaultCategoryDataset chartData){
+
+        measurementData = chartData;
+
+        CategoryPlot plot = measurementChart.getCategoryPlot();
+        plot.setRangeGridlinePaint(Color.black);
+
+        ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", measurementChart);
+        chartFrm.setVisible(true);
+        chartFrm.setSize(450, 350);
+
+//            ChartPanel chartPanel = new ChartPanel(jchart);
+//            JPanel panel = myView.getCholChartPanel();
+//            panel.add(chartPanel, BorderLayout.CENTER);
+//            panel.validate();
+//            myView.getCholChartPanel().updateUI();
     }
 }
