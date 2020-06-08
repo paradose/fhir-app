@@ -1,12 +1,23 @@
 package com.teamohno;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
+import javax.swing.*;
+import java.awt.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Timer;
+
 
 public class Controller {
     //Instance variables
@@ -38,12 +49,12 @@ public class Controller {
 
         // loop through all measurement types - attach listeners for corresponding buttons, create periodic caller
         for (int i = 0; i < allTypes.size(); i++) {
-            if (allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL) {
+            if(allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL){
                 int index = i;
                 myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(allTypes.get(index)));
                 myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(allTypes.get(index)));
+                myView.getDisplayChartButton().addActionListener(e -> displayChart(allTypes.get(index)));
                 myPeriodicCholesterol = new PeriodicMeasurementCall(allTypes.get(index));
-
                 // adds mouse listener to monitor table
                 myView.getCholMonitorTable().addMouseListener(new MouseAdapter() {
                     @Override
@@ -60,6 +71,7 @@ public class Controller {
                 bpTypes = myModel.getTableTypes(MeasurementType.Type.BLOODPRESSURE);
                 myView.getMonitorBPButton().addActionListener(e -> monitorSelectedPatients(bpTypes.get(0)));
                 myView.getStopMonitorBPButton().addActionListener(e -> stopMonitorSelectedPatients(bpTypes.get(0)));
+
                 myPeriodicBP = new PeriodicMeasurementCall(bpTypes.get(0));
 
                 myView.getBpMonitorTable().addMouseListener(new MouseAdapter() {
@@ -311,4 +323,20 @@ public class Controller {
             }
         }
     }
+    // gets data of currently monitored patients  from table of current measurements and sets it as default display
+    private void displayChart(MeasurementType chartType) {
+        DefaultCategoryDataset initialData = myModel.getMonitorTable(chartType.getType()).getMonitoredMeasurements(chartType);
+        JFreeChart jchart = ChartFactory.createBarChart(chartType.getName()+" Levels", "Monitored Patients",
+                chartType.getName()+" Levels", initialData, PlotOrientation.VERTICAL, true, true, false);
+        myModel.getMonitorTable(chartType.getType()).addChart(chartType,jchart,initialData);
+    }
+
+    // gets last 5 values from table of Systolic Pressure and sets it as default
+    public void displayXYgraph(MeasurementType chartType){
+
+    }
+
 }
+
+
+
