@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 
 public class View extends JFrame {
@@ -45,6 +46,10 @@ public class View extends JFrame {
     private JLabel sbpMinVal;
     private JButton displayCholChartButton;
     private JButton displaySystolicGraphButton;
+    private JButton displayHistoricMonitorButton;
+    private JLabel histMonLabel;
+    private JScrollPane historicalScrollPane;
+    private JPanel historicalMonitorPanel;
 
     private DefaultListModel listModel;
     private JTable cholMonitorTable, bpMonitorTable;
@@ -83,6 +88,13 @@ public class View extends JFrame {
         setVisible(true);
     }
 
+    public void createHistTablePanel(AbstractTableModel newTableModel){
+        JTable patientTable = new JTable(newTableModel);
+        // configure dimensions
+        patientTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
+        historicalScrollPane.setViewportView(patientTable);
+    }
+
     public JTextField getPracIDfield() {
         return pracIDfield;
     }
@@ -107,19 +119,11 @@ public class View extends JFrame {
         return patientJList;
     }
 
-    public void setPatientJList(JList patientJList) {
-        this.patientJList = patientJList;
-    }
-
-    public JPanel getDisplayPatient() {
-        return displayPatient;
-    }
-
     public JButton getUpdateFreqButton() {
         return updateFreqButton;
     }
 
-
+    // Cholesterol
     public JButton getMonitorCholButton() {
         return monitorCholButton;
     }
@@ -132,7 +136,7 @@ public class View extends JFrame {
         return cholMonitorTable;
     }
 
-
+    // Blood Pressure
     public JButton getMonitorBPButton() {
         return monitorBPButton;
     }

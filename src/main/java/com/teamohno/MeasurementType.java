@@ -6,8 +6,6 @@ public abstract class MeasurementType {
     // Instance variables
     protected String fhirCode;
 
-//    protected String childCode;
-
     protected ArrayList<String> listChildCode;
     protected ArrayList<String> childTypeNames;
 
@@ -17,6 +15,9 @@ public abstract class MeasurementType {
     protected int numberStoredRecordings;
     private double measurementAverage;
     private double measurementTotal;
+
+    // current minimum value (for child values)
+
     protected enum Type{
         CHOLESTEROL,
         BLOODPRESSURE;

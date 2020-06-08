@@ -37,7 +37,7 @@ public class Controller {
 
     // Initialise the controller - attach listeners to view components
     public void initController(){
-        // Add high SBP patients
+        // Add ALL high SBP patients
 //        myView.getAddPanelButton().addActionListener(e -> ());
 
         allTypes = myModel.getAllTypes();

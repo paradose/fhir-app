@@ -86,16 +86,28 @@ public class PatientRecord{
                 System.out.println("Type about to set is correct");
                 measurementRecordings.get(i).setMeasurementValue(newValue);
                 measurementRecordings.get(i).setDateMeasured(newDate);
+            }
+            else{
+                System.out.println("Type not matched");
+            }
+        }
+    }
 
+    // push current into history list - parameter - MeasurementType
+    public void pushNewRecordingHistory(MeasurementType newType){
+        for (int i = 0; i < measurementRecordings.size(); i++) {
+            if(measurementRecordings.get(i).getType().type == newType.type){
+                // shuffle history -> move outside
                 MeasurementRecording newRecording = new MeasurementRecording();
                 newRecording.cloneRecording(measurementRecordings.get(i));
                 listLastRecordings.get(i).add(0, measurementRecordings.get(i));
                 if(listLastRecordings.get(i).size() > newType.getNumberStoredRecordings()) {
                     listLastRecordings.get(i).remove(newType.getNumberStoredRecordings());
                 }
+                //
             }
             else{
-                System.out.println("Type not matched");
+                System.out.println("Error attempting to push new recording to history for patient: No recording of this type: " + newType.getName());
             }
         }
     }

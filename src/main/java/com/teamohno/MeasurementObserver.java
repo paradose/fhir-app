@@ -28,6 +28,9 @@ public class MeasurementObserver extends Observer {
         //check if date of new recording after old state date
         if (newState.compareTo(lastState) > 0){
             System.out.println("Old state: " + lastState + ", new state " + newState);
+            // push new recording into history
+            observerSubject.getState().pushNewRecordingHistory(type);
+
             // send update to model
             monitorredData.updateMeasurements(observerSubject.getState(), patientsNewRecording);
 
