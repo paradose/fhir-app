@@ -310,10 +310,12 @@ public class Controller {
             int newValue = Integer.parseInt(input);
             if(newValue > 0) {
                 if(newColumnIndex == 1){
+                    newType.setMinimumValue(newValue, Constants.MeasurementType.DIASTOLIC_BP);
                     myView.getDbpMinLabel().setText(input);
                     myView.getDbpMinField().setText("");
                 }
                 else if (newColumnIndex == 2){
+                    newType.setMinimumValue(newValue, Constants.MeasurementType.SYSTOLIC_BP);
                     myView.getSbpMinLabel().setText(input);
                     myView.getSbpMinField().setText("");
                 }

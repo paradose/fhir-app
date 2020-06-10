@@ -31,7 +31,6 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         // get column to check here
         first();
         do {
-            System.out.println("Checking for column : " + col + ", seeing if matches with existing column: " + column);
             if (col == column) {
                 if (value instanceof String) {
                     try {

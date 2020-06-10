@@ -60,22 +60,22 @@ public class PatientRecord{
             measurementRecordings.add(newEmptyRecording);
             ArrayList<MeasurementRecording> newLastRecording = new ArrayList<>();
             listLastRecordings.add(newLastRecording);
-            System.out.println("Created object for type: " + newEmptyRecording.getType().getName());
         }
     }
 
     //gets current measurement recording
     public MeasurementRecording getMeasurement(MeasurementType newType){
         // make a default measurement object to return if no measurements
-        MeasurementRecording returnRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223232L), newType);
+        MeasurementRecording returnRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223231L), newType);
         System.out.println("Size of measurement reocrding list: " + measurementRecordings.size());
         for (int i = 0; i < measurementRecordings.size(); i++) {
                 if(measurementRecordings.get(i).getType().type == newType.type){
                     returnRecording = measurementRecordings.get(i);
                 }
             }
+
         if(returnRecording.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0) {
-            System.out.println("Patient doesn't have a recording for " + newType.getName());
+            System.out.println("Current reading for this patient's " + newType.getName() + " is zero.");
         }
         return returnRecording;
     }
@@ -96,18 +96,13 @@ public class PatientRecord{
     // push current into history list - parameter - MeasurementType
     public void pushNewRecordingHistory(MeasurementType newType){
         for (int i = 0; i < measurementRecordings.size(); i++) {
-            if(measurementRecordings.get(i).getType().type == newType.type){
+            if(measurementRecordings.get(i).getType().type.equals(newType.type)){
                 // shuffle history -> move outside
-                MeasurementRecording newRecording = new MeasurementRecording();
-                newRecording.cloneRecording(measurementRecordings.get(i));
                 listLastRecordings.get(i).add(0, measurementRecordings.get(i));
                 if(listLastRecordings.get(i).size() > newType.getNumberStoredRecordings()) {
                     listLastRecordings.get(i).remove(newType.getNumberStoredRecordings());
                 }
                 //
-            }
-            else{
-                System.out.println("Error attempting to push new recording to history for patient: No recording of this type: " + newType.getName());
             }
         }
     }
@@ -127,7 +122,7 @@ public class PatientRecord{
             if(measurementRecordings.get(i).getType().type == newType.type){
                 System.out.println("Type about to set is correct");
                 measurementRecordings.get(i).setMeasurementValue(BigDecimal.ONE.negate());
-                measurementRecordings.get(i).setDateMeasured(new Date(2323223232L));
+                measurementRecordings.get(i).setDateMeasured(new Date(2323223231L));
             }
             else{
                 System.out.println("Type not matched");

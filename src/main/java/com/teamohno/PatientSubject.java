@@ -39,8 +39,9 @@ public class PatientSubject extends Subject {
         String patientsId = patientState.getId();
         MeasurementRecording updatedMeasurement;
 
+        System.out.println("size last recordings: " + patientState.getLastRecordings(newType).size());
         for (int i = 0; i < patientState.getLastRecordings(newType).size(); i++) {
-            System.out.println("last 5: " + patientState.getLastRecordings(newType).get(i).toString());
+            System.out.println("last historic: " + patientState.getLastRecordings(newType).get(i).toString());
         }
 
         // checks if initial value
@@ -53,6 +54,7 @@ public class PatientSubject extends Subject {
             if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO)==0){
 //                 if the value hasn't been changed from zero inside the server -> turn subject to inactive
                 active = false;
+                System.out.println("Patient set inactive!");
             }
             else{
                 // updating subject state

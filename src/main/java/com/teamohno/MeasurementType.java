@@ -8,6 +8,9 @@ public abstract class MeasurementType {
 
     protected ArrayList<String> listChildCode;
     protected ArrayList<String> childTypeNames;
+    protected ArrayList<Constants.MeasurementType> childTypes;
+
+//    protected AbstractMeasurementList childComponents;
 
     protected String name;
     protected ArrayList<PatientSubject> monitorredSubjects;
@@ -16,7 +19,9 @@ public abstract class MeasurementType {
     private double measurementAverage;
     private double measurementTotal;
 
+
     // current minimum value (for child values)
+    protected ArrayList<Integer> minimumValues;
 
     protected enum Type{
         CHOLESTEROL,
@@ -30,16 +35,21 @@ public abstract class MeasurementType {
         this.monitorredSubjects = new ArrayList<>();
         measurementTotal = 0;
         measurementAverage = 0;
-//        childCode = "n/a";
 
         listChildCode = new ArrayList<>();
         childTypeNames = new ArrayList<>();
+        childTypes = new ArrayList<>();
+        minimumValues = new ArrayList<>();
     }
 
     // Accessors and Mutators
     public ArrayList<String> getChildTypeNames(){return childTypeNames;}
-    public void addChildCode(String newCode){
-        listChildCode.add(newCode);}
+    public void addChildType(String newCode, String newName, Constants.MeasurementType newType){
+        listChildCode.add(newCode);
+        childTypeNames.add(newName);
+        childTypes.add(newType);
+        minimumValues.add(0);
+    }
     public ArrayList<String> getListChildCode(){return listChildCode;}
     public int getIndexChild(String childCode){
         int index = -1;
@@ -54,6 +64,24 @@ public abstract class MeasurementType {
         return index;
     }
     public int getComponentSize(){return getListChildCode().size();}
+    public void setMinimumValue(int newValue, Constants.MeasurementType newType){
+        int index = childTypes.indexOf(newType);
+        if(index == -1){
+            System.out.println("Error: could not find this measurement type");
+        }
+        minimumValues.set(index, newValue);
+    }
+    public int getMinVal(Constants.MeasurementType newType){
+        int retMin = -1;
+        int index = childTypes.indexOf(newType);
+        if(index == -1){
+            System.out.println("Error: could not find this measurement type");
+        }
+        retMin = minimumValues.get(index);
+        return retMin;
+    }
+
+//    public AbstractMeasurementList getChildComponents(){return childComponents;}
 
     public String getFhirCode() {
         return fhirCode;
@@ -62,10 +90,6 @@ public abstract class MeasurementType {
     public void setFhirCode(String fhirCode) {
         this.fhirCode = fhirCode;
     }
-
-    // don't need(?)
-//    public String getChildCode(){return childCode;}
-//    public void setChildCode(String newChildCode){this.childCode = newChildCode;}
 
     public String getName() {
         return name;
