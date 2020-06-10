@@ -16,7 +16,8 @@ public class MeasurementRecording {
 
     public MeasurementRecording(){
         measurementValue = BigDecimal.ZERO;
-        dateMeasured = new Date(232322323L);
+        dateMeasured = new Date(2323223231L);
+        System.out.println("date created: " + dateMeasured);
         childValues = new ArrayList<>();
     }
 
@@ -28,10 +29,8 @@ public class MeasurementRecording {
 
         childValues = new ArrayList<>();
         // initialise component values
-        if(newType.getComponentSize()>0){
-            for (int i = 0; i < newType.getComponentSize(); i++) {
-                childValues.add(BigDecimal.ZERO);
-            }
+        for (int i = 0; i < newType.getComponentSize(); i++) {
+            childValues.add(BigDecimal.ZERO);
         }
     }
 
@@ -70,6 +69,7 @@ public class MeasurementRecording {
         String returnStr = "Measurement: " + type.getName() + ", Value: " + measurementValue + ", Date: " + dateMeasured;
         if(childValues.size() >0){
             returnStr += ", child components: ";
+            System.out.println("size child values: " + childValues.size());
             for (int i = 0; i < childValues.size(); i++) {
                 returnStr += type.getChildTypeNames().get(i) + " value: " + childValues.get(i) + " ";
             }
@@ -84,7 +84,7 @@ public class MeasurementRecording {
 
         // Clone child values(?)
         for (int i = 0; i < newRecording.getType().getComponentSize(); i++) {
-            childValues.set(i, newRecording.childValues.get(i));
+            this.childValues.set(i, newRecording.childValues.get(i));
         }
     }
 }
