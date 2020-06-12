@@ -85,6 +85,8 @@ public class Controller {
 
                 myView.getUpdateDbpMinButton().addActionListener(e -> updateMinValue(1, allTypes.get(index)));
                 myView.getUpdateSbpMinButton().addActionListener(e -> updateMinValue(2, allTypes.get(index)));
+                // displays textual monitor.
+                myView.getHistMonButton().addActionListener(e -> displayHighPatients(bpTypes.get(0)) );
             }
         }
         // Set renderer for table (temporary - need to fix)
@@ -331,6 +333,28 @@ public class Controller {
         JFreeChart jchart = ChartFactory.createBarChart(chartType.getName()+" Levels", "Monitored Patients",
                 chartType.getName()+" Levels", initialData, PlotOrientation.VERTICAL, true, true, false);
         myModel.getMonitorTable(chartType.getType()).addChart(chartType,jchart,initialData);
+    }
+
+    private void displayHighPatients(MeasurementType textualType){
+        // gets monitored subjects from monitor table
+        ArrayList<PatientSubject> monitoredSubjects = textualType.getMonitorredSubjects();
+        double setMinValue =  myModel.getMonitorTable(textualType.getType()).getMeasurementRenderer().getMinValue();
+        myModel.getHistorialMonitorTable(textualType.getType()).clearDataValues();
+        // check their state / whether above chol, could be in measurement recording but just testing for now
+        for (PatientSubject subjectCheck: monitoredSubjects){
+            double patientsCurrentMeasurement = subjectCheck.getState().getMeasurement(textualType)
+                    .getMeasurementValue("8480-6").doubleValue();
+            if (patientsCurrentMeasurement>setMinValue){
+                // adds the patient subject to historical
+                HistoricalTableModel typeHistory =  myModel.getHistorialMonitorTable(textualType.getType());
+                typeHistory.addPatient(subjectCheck);
+                // attach model
+                subjectCheck.attach(new TextualObserver(subjectCheck, typeHistory, textualType ));
+            }
+        }
+
+        // add them to HistoricalTableModel.
+
     }
 
     // gets last 5 values from table of Systolic Pressure and sets it as default

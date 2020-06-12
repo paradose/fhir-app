@@ -33,7 +33,7 @@ public class Model {
 
         cholMonitorTableModel = new MonitorTableModel(cholType, Color.RED);
         bpMonitorTableModel = new MultipleMonitorTableModel(bp, Color.MAGENTA);
-        histTableModel = new HistoricalTableModel();
+        histTableModel = new HistoricalTableModel(bp);
 
         patientListModel = new DefaultListModel();
         storedIdentifiers = new ArrayList<>();
@@ -88,6 +88,14 @@ public class Model {
             tableModel = bpMonitorTableModel;
         }
         return tableModel;
+    }
+
+    public HistoricalTableModel getHistorialMonitorTable(MeasurementType.Type type){
+        HistoricalTableModel historicalTableModel = null;
+        if (type == MeasurementType.Type.BLOODPRESSURE){
+            historicalTableModel = histTableModel;
+        }
+        return historicalTableModel;
     }
 
     // can create a new method to add different types to other tables
