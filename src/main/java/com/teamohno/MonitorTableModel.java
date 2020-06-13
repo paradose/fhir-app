@@ -24,7 +24,6 @@ public class MonitorTableModel extends AbstractTableModel {
     protected MeasurementCellRenderer measurementMinWatcher;
     protected Color observedCellColour;
 
-    protected ArrayList<JFreeChart> charts;
     protected DefaultCategoryDataset measurementData;
     // Constructor
     public MonitorTableModel(){
@@ -129,7 +128,8 @@ public class MonitorTableModel extends AbstractTableModel {
                 monitoredData.get(i).add(currentIndex, newMeasurement.getMeasurementValue().toString());
                 monitoredData.get(i + 1).add(currentIndex, newMeasurement.getDateMeasured().toString());
                 if (measurementData !=null)
-                measurementData.setValue(newMeasurement.getMeasurementValue().intValue(), newMeasurement.getType().getName(), monitoredPatientNames.get(currentIndex));
+                    // updates the value in the chart with new value
+                    measurementData.setValue(newMeasurement.getMeasurementValue().intValue(), newMeasurement.getType().getName(), monitoredPatientNames.get(currentIndex));
             }
             fireTableDataChanged();
         }
@@ -217,10 +217,5 @@ public class MonitorTableModel extends AbstractTableModel {
         chartFrm.setVisible(true);
         chartFrm.setSize(450, 350);
 
-//            ChartPanel chartPanel = new ChartPanel(jchart);
-//            JPanel panel = myView.getCholChartPanel();
-//            panel.add(chartPanel, BorderLayout.CENTER);
-//            panel.validate();
-//            myView.getCholChartPanel().updateUI();
     }
 }
