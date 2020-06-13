@@ -87,6 +87,7 @@ public class Controller {
                 myView.getUpdateSbpMinButton().addActionListener(e -> updateMinValue(2, allTypes.get(index)));
                 // displays textual monitor.
                 myView.getHistMonButton().addActionListener(e -> displayHighPatients(bpTypes.get(0)) );
+                myView.getDisplaySystolicGraphButton().addActionListener(e -> displayXYgraph(bpTypes.get(0)));
             }
         }
         // Set renderer for table (temporary - need to fix)
@@ -359,7 +360,8 @@ public class Controller {
 
     // gets last 5 values from table of Systolic Pressure and sets it as default
     public void displayXYgraph(MeasurementType chartType){
-
+        // dataset is a collection os XYSeries which will represent each patient.
+        myModel.getHistorialMonitorTable(chartType.getType()).addChart();
     }
 
 }
