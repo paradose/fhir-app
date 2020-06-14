@@ -237,8 +237,15 @@ public class Controller {
             // remove patient row's
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();
+
+            // remove from historical table if there is one
+            if (myModel.getHistorialMonitorTable(newType.getType()) != null){
+                String patientId = myModel.getMonitorTable(newType.getType()).getMonitoredPatientID().get(selectedIndices[i]);
+                myModel.getHistorialMonitorTable(newType.getType()).removePatient(patientId);
+            }
             myModel.getMonitorTable(newType.getType()).removePatientFromTable(selectedIndices[i]);
             myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateMinColouredValue(newType.getAverage());
+
         }
         // if no more patients monitored - scheduler runs but no patients to process
     }

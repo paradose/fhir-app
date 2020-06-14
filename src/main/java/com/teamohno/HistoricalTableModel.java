@@ -7,6 +7,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -58,6 +60,7 @@ public class HistoricalTableModel extends AbstractTableModel {
         monitoredPatientNames = new ArrayList<>();
         monitoredLastRecordings = new ArrayList<>();
         subjects = new ArrayList<>();
+        recordingChartData = createDataSet();
         monitoredData.add(monitoredPatientNames);
         monitoredData.add(monitoredLastRecordings);
     }
@@ -98,17 +101,38 @@ public class HistoricalTableModel extends AbstractTableModel {
         monitoredPatientNames.add(patientSubject.getState().getFirstName() + patientSubject.getState().getLastName());
         monitoredLastRecordings.add(lastRecordingsToString(lastRecordings,"8480-6"));
         monitoredPatientID.add(patientSubject.getState().getId());
+        PatientRecord monitoredPatient = patientSubject.getState();
+        XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
+        for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
+            newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)
+                    .get(i-1).getMeasurementValue("8480-6").doubleValue());
+        }
+        recordingChartData.addSeries(newPatient);
+
         fireTableDataChanged();
     }
 
-    public void removePatient(PatientSubject patientSubject){
-        int index = subjects.indexOf(patientSubject);
-        subjects.remove(patientSubject);
+    public void removePatient(String patientId){
+        int index = monitoredPatientID.indexOf(patientId);
+        if (index!=-1) {
+            recordingChartData.removeSeries(recordingChartData.getSeries(monitoredPatientNames.get(index)));
+            for (int i = 0; i < monitoredData.size(); i++) {
+                // this removes ALL data
+                monitoredData.get(i).remove(index);
+            }
+            subjects.remove(index);
+            monitoredPatientID.remove(index);
+
+            fireTableDataChanged();
+        }
     }
 
-    public void updateHistory(ArrayList<MeasurementRecording> lastRecordings, PatientRecord newRecord){
+    public boolean updateHistory(ArrayList<MeasurementRecording> lastRecordings, PatientRecord newRecord){
         // gets index in table
         int patientIndex = monitoredPatientID.indexOf(newRecord.getId());
+
+        if(patientIndex == -1) return false;
+
         String newTextualRecording = lastRecordingsToString(lastRecordings, "8480-6");
         monitoredData.get(1).remove(patientIndex);
         monitoredData.get(1).add(patientIndex,newTextualRecording);
@@ -117,26 +141,27 @@ public class HistoricalTableModel extends AbstractTableModel {
         if (graphMonitor) {
             recordingChartData.removeSeries(recordingChartData.getSeries(newRecord.getFirstName() + newRecord.getLastName()));
             XYSeries updatedPatient = new XYSeries(newRecord.getFirstName() + newRecord.getLastName());
-            for (int i = 0; i < newRecord.getLastRecordings(historicalType).size(); i++) {
+            for (int i = 1; i < newRecord.getLastRecordings(historicalType).size()+1; i++) {
                 updatedPatient.add(i, newRecord.getLastRecordings(historicalType)
-                        .get(i).getMeasurementValue("8480-6").doubleValue());
+                        .get(i-1).getMeasurementValue("8480-6").doubleValue());
             }
             recordingChartData.addSeries(updatedPatient);
         }
         fireTableDataChanged();
         System.out.println("Historical Table is being Updated !");
+        return true;
     }
 
     // need an extra function that converts last recordings to data values for xy graph
-    //some reason setting default size of recording as 0?
+
     public XYSeriesCollection createDataSet(){
         XYSeriesCollection dataset = new XYSeriesCollection();
         for (PatientSubject monitoredSubject: subjects){
             PatientRecord monitoredPatient = monitoredSubject.getState();
             XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
-            for (int i=0; i<monitoredPatient.getLastRecordings(historicalType).size(); i++){
+            for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
                 newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)
-                        .get(i).getMeasurementValue("8480-6").doubleValue());
+                        .get(i-1).getMeasurementValue("8480-6").doubleValue());
             }
             dataset.addSeries(newPatient);
         }
@@ -161,8 +186,12 @@ public class HistoricalTableModel extends AbstractTableModel {
                 recordingChartData,
                PlotOrientation.VERTICAL,
                 true,true,false);
-
-        ChartFrame chartFrm = new ChartFrame( "Systolic" + " Levels", measurementGraph);
+        NumberAxis domain = (NumberAxis) measurementGraph.getXYPlot().getDomainAxis();
+        domain.setRange(1.0,5.0);
+        domain.setTickUnit(new NumberTickUnit(1.0));
+        domain.setVerticalTickLabels(true);
+//        domain.setRange(0.00, 1.00);
+        ChartFrame chartFrm = new ChartFrame( "Systolic Blood" + " Levels", measurementGraph);
         chartFrm.setSize(450, 350);
         chartFrm.setVisible(true);
 
