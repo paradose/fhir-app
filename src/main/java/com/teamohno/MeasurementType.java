@@ -1,5 +1,7 @@
 package com.teamohno;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.util.ArrayList;
 
 public abstract class MeasurementType {
@@ -10,11 +12,9 @@ public abstract class MeasurementType {
     protected ArrayList<String> childTypeNames;
     protected ArrayList<Constants.MeasurementType> childTypes;
 
-//    protected AbstractMeasurementList childComponents;
-
     protected String name;
     protected ArrayList<PatientSubject> monitorredSubjects;
-    protected Type type;
+    protected Constants.MeasurementType type;
     protected int numberStoredRecordings;
     private double measurementAverage;
     private double measurementTotal;
@@ -22,11 +22,6 @@ public abstract class MeasurementType {
 
     // current minimum value (for child values)
     protected ArrayList<Integer> minimumValues;
-
-    protected enum Type{
-        CHOLESTEROL,
-        BLOODPRESSURE;
-    }
 
     // Constructor
     public MeasurementType(String newName, String newCode){
@@ -50,16 +45,17 @@ public abstract class MeasurementType {
         childTypes.add(newType);
         minimumValues.add(0);
     }
+    public ArrayList<Constants.MeasurementType> getChildTypes(){return childTypes;}
     public ArrayList<String> getListChildCode(){return listChildCode;}
-    public int getIndexChild(String childCode){
+    public int getIndexChild(Constants.MeasurementType childType){
         int index = -1;
-        for (int i = 0; i < listChildCode.size(); i++) {
-            if(listChildCode.get(i).equals(childCode)){
+        for (int i = 0; i < childTypes.size(); i++) {
+            if(childTypes.get(i).equals(childType)){
                 index = i;
             }
         }
         if(index == -1){
-            System.out.println("Error this type does not contain the child code: " + childCode);
+            System.out.println("Error this type does not contain the child code: " + childType);
         }
         return index;
     }
@@ -99,7 +95,7 @@ public abstract class MeasurementType {
         this.name = name;
     }
 
-    public Type getType(){return type;}
+    public Constants.MeasurementType getType(){return type;}
 
     public ArrayList<PatientSubject> getMonitorredSubjects() {
         return monitorredSubjects;

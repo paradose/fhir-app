@@ -61,12 +61,12 @@ public class MultipleMonitorTableModel extends MonitorTableModel {
             for (int j = 0; j < newMeasurement.getType().getComponentSize(); j++) {
                 // current name
                 String currentName = newMeasurement.getType().getChildTypeNames().get(j);
-                String currentCode = newMeasurement.getType().getListChildCode().get(j);
+                Constants.MeasurementType currentType = newMeasurement.getType().getChildTypes().get(j);
                 System.out.println("measurment type name: " + currentName);
                 System.out.println("column name: " + columnNames.get(i));
-                System.out.println("value: " + newMeasurement.getMeasurementValue(currentCode).toString());
+                System.out.println("value: " + newMeasurement.getMeasurementValue(currentType).toString());
                 if(columnNames.get(i).equals(currentName)){
-                    monitoredData.get(i).set(currentIndex, newMeasurement.getMeasurementValue(currentCode).toString());
+                    monitoredData.get(i).set(currentIndex, newMeasurement.getMeasurementValue(currentType).toString());
                 }
             }
         }

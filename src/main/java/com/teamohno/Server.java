@@ -156,8 +156,9 @@ public class Server {
                     for (int j = 0; j < newType.getListChildCode().size(); j++) {
                         // iterator...!
                         if(newType.getListChildCode().get(j).equals(currChildCode)){
+                            Constants.MeasurementType currentType = newType.getChildTypes().get(j);
                             newValue = observation.getComponent().get(i).getValueQuantity().getValue();
-                            newRecording.setMeasurementValue(newValue, currChildCode);
+                            newRecording.setMeasurementValue(newValue, currentType);
                             //Set so that it won't be considered inactive?? [temporary]
                             newRecording.setMeasurementValue(BigDecimal.ONE);
                         }

@@ -1,7 +1,5 @@
 package com.teamohno;
 
-import org.hl7.fhir.r4.model.Measure;
-
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -79,20 +77,20 @@ public class Model {
         return patientListModel;
     }
 
-    public MonitorTableModel getMonitorTable(MeasurementType.Type type){
+    public MonitorTableModel getMonitorTable(Constants.MeasurementType type){
         MonitorTableModel tableModel = null;
-        if(type == MeasurementType.Type.CHOLESTEROL){
+        if(type == Constants.MeasurementType.CHOLESTEROL){
             tableModel = cholMonitorTableModel;
         }
-        else if(type == MeasurementType.Type.BLOODPRESSURE){
+        else if(type == Constants.MeasurementType.BLOOD_PRESSURE){
             tableModel = bpMonitorTableModel;
         }
         return tableModel;
     }
 
-    public HistoricalTableModel getHistorialMonitorTable(MeasurementType.Type type){
+    public HistoricalTableModel getHistorialMonitorTable(Constants.MeasurementType type){
         HistoricalTableModel historicalTableModel = null;
-        if (type == MeasurementType.Type.BLOODPRESSURE){
+        if (type == Constants.MeasurementType.BLOOD_PRESSURE){
             historicalTableModel = histTableModel;
         }
         return historicalTableModel;
@@ -108,12 +106,12 @@ public class Model {
         return allTypes;
     }
 
-    public ArrayList<MeasurementType> getTableTypes(MeasurementType.Type type){
+    public ArrayList<MeasurementType> getTableTypes(Constants.MeasurementType type){
         ArrayList<MeasurementType> listTypes = new ArrayList<>();
-        if(type == MeasurementType.Type.CHOLESTEROL){
+        if(type == Constants.MeasurementType.CHOLESTEROL){
             listTypes = cholType;
         }
-        else if (type == MeasurementType.Type.BLOODPRESSURE){
+        else if (type == Constants.MeasurementType.BLOOD_PRESSURE){
             listTypes = bpType;
         }
         return listTypes;

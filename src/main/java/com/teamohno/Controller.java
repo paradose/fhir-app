@@ -41,7 +41,7 @@ public class Controller {
 //        myView.getAddPanelButton().addActionListener(e -> ());
 
         allTypes = myModel.getAllTypes();
-        cholTypes = myModel.getTableTypes(MeasurementType.Type.CHOLESTEROL);
+        cholTypes = myModel.getTableTypes(Constants.MeasurementType.CHOLESTEROL);
 
         // Add listeners to UI elements
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
@@ -49,7 +49,7 @@ public class Controller {
 
         // loop through all measurement types - attach listeners for corresponding buttons, create periodic caller
         for (int i = 0; i < allTypes.size(); i++) {
-            if(allTypes.get(i).type == MeasurementType.Type.CHOLESTEROL){
+            if(allTypes.get(i).type == Constants.MeasurementType.CHOLESTEROL){
                 int index = i;
                 myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(allTypes.get(index)));
                 myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(allTypes.get(index)));
@@ -66,9 +66,9 @@ public class Controller {
                 });
             }
             //temporary for bp
-            if (allTypes.get(i).type == MeasurementType.Type.BLOODPRESSURE) {
+            if (allTypes.get(i).type == Constants.MeasurementType.BLOOD_PRESSURE) {
                 int index = i;
-                bpTypes = myModel.getTableTypes(MeasurementType.Type.BLOODPRESSURE);
+                bpTypes = myModel.getTableTypes(Constants.MeasurementType.BLOOD_PRESSURE);
                 myView.getMonitorBPButton().addActionListener(e -> monitorSelectedPatients(bpTypes.get(0)));
                 myView.getStopMonitorBPButton().addActionListener(e -> stopMonitorSelectedPatients(bpTypes.get(0)));
 
@@ -91,8 +91,8 @@ public class Controller {
             }
         }
         // Set renderer for table (temporary - need to fix)
-        myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).getMeasurementRenderer());
-        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).getMeasurementRenderer());
+        myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.CHOLESTEROL).getMeasurementRenderer());
+        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).getMeasurementRenderer());
 
         // add table for SBP
         AbstractTableModel histTableModel = myModel.getHistTableModel();
@@ -105,9 +105,9 @@ public class Controller {
 
     public void initModel(){
         // Set initial minimums
-        myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).setMinColouredValue(75, 0);
-        myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).setMinColouredValue(120, 1);
-        myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).fireTableDataChanged();
+        myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(75, 0);
+        myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(120, 1);
+        myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).fireTableDataChanged();
     }
 
     public void storePracIdentifier() {
@@ -156,8 +156,8 @@ public class Controller {
 
                 //temporary
                 // loop through all stored types
-                myModel.getMonitorTable(MeasurementType.Type.CHOLESTEROL).clearDataValues();
-                myModel.getMonitorTable(MeasurementType.Type.BLOODPRESSURE).clearDataValues();
+                myModel.getMonitorTable(Constants.MeasurementType.CHOLESTEROL).clearDataValues();
+                myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).clearDataValues();
 
                 // clear patient list model
                 myModel.getPatientListModel().clear(); // can make this a method inside myModel/listModel (inside listmodel can fire -> update)
@@ -224,10 +224,10 @@ public class Controller {
     public void stopMonitorSelectedPatients(MeasurementType newType) {
         // get selected indexes from JTable
         int[] selectedIndices = null;
-        if(newType.type == MeasurementType.Type.CHOLESTEROL) {
+        if(newType.type == Constants.MeasurementType.CHOLESTEROL) {
             selectedIndices = myView.getCholMonitorTable().getSelectedRows();
         }
-        else if (newType.type == MeasurementType.Type.BLOODPRESSURE){
+        else if (newType.type == Constants.MeasurementType.BLOOD_PRESSURE){
             selectedIndices = myView.getBpMonitorTable().getSelectedRows();
         }
 
@@ -351,7 +351,7 @@ public class Controller {
         // check their state / whether above chol, could be in measurement recording but just testing for now
         for (PatientSubject subjectCheck: monitoredSubjects){
             double patientsCurrentMeasurement = subjectCheck.getState().getMeasurement(textualType)
-                    .getMeasurementValue("8480-6").doubleValue();
+                    .getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue();
             if (patientsCurrentMeasurement>setMinValue){
                 // adds the patient subject to historical
                 HistoricalTableModel typeHistory =  myModel.getHistorialMonitorTable(textualType.getType());

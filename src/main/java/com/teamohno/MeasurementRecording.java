@@ -42,11 +42,11 @@ public class MeasurementRecording {
         this.measurementValue = newMeasurementValue;
     }
 
-    public BigDecimal getMeasurementValue(String childCode) {
-        return childValues.get(type.getIndexChild(childCode));
+    public BigDecimal getMeasurementValue(Constants.MeasurementType newChildType) {
+        return childValues.get(type.getIndexChild(newChildType));
     }
-    public void setMeasurementValue(BigDecimal newMeasurementValue, String childCode){
-        childValues.set(type.getIndexChild(childCode), newMeasurementValue);
+    public void setMeasurementValue(BigDecimal newMeasurementValue, Constants.MeasurementType newChildType){
+        childValues.set(type.getIndexChild(newChildType), newMeasurementValue);
     }
 
     public Date getDateMeasured() {

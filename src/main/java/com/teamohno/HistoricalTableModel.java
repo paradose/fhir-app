@@ -99,13 +99,13 @@ public class HistoricalTableModel extends AbstractTableModel {
         subjects.add(patientSubject);
         ArrayList<MeasurementRecording> lastRecordings = patientSubject.getState().getLastRecordings(historicalType);
         monitoredPatientNames.add(patientSubject.getState().getFirstName() + patientSubject.getState().getLastName());
-        monitoredLastRecordings.add(lastRecordingsToString(lastRecordings,"8480-6"));
+        monitoredLastRecordings.add(lastRecordingsToString(lastRecordings, Constants.MeasurementType.SYSTOLIC_BP));
         monitoredPatientID.add(patientSubject.getState().getId());
         PatientRecord monitoredPatient = patientSubject.getState();
         XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
         for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
             newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)
-                    .get(i-1).getMeasurementValue("8480-6").doubleValue());
+                    .get(i-1).getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue());
         }
         recordingChartData.addSeries(newPatient);
 
@@ -133,7 +133,7 @@ public class HistoricalTableModel extends AbstractTableModel {
 
         if(patientIndex == -1) return false;
 
-        String newTextualRecording = lastRecordingsToString(lastRecordings, "8480-6");
+        String newTextualRecording = lastRecordingsToString(lastRecordings, Constants.MeasurementType.SYSTOLIC_BP);
         monitoredData.get(1).remove(patientIndex);
         monitoredData.get(1).add(patientIndex,newTextualRecording);
 
@@ -143,7 +143,7 @@ public class HistoricalTableModel extends AbstractTableModel {
             XYSeries updatedPatient = new XYSeries(newRecord.getFirstName() + newRecord.getLastName());
             for (int i = 1; i < newRecord.getLastRecordings(historicalType).size()+1; i++) {
                 updatedPatient.add(i, newRecord.getLastRecordings(historicalType)
-                        .get(i-1).getMeasurementValue("8480-6").doubleValue());
+                        .get(i-1).getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue());
             }
             recordingChartData.addSeries(updatedPatient);
         }
@@ -161,17 +161,17 @@ public class HistoricalTableModel extends AbstractTableModel {
             XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
             for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
                 newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)
-                        .get(i-1).getMeasurementValue("8480-6").doubleValue());
+                        .get(i-1).getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue());
             }
             dataset.addSeries(newPatient);
         }
         return dataset;
     }
     // need to test that this is being called by altering dates.
-    public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings, String childCode){
+    public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings, Constants.MeasurementType childType){
         String returnString = "";
         for (MeasurementRecording lastRecording : lastRecordings){
-            returnString += lastRecording.getMeasurementValue(childCode).toString() + " " + lastRecording.getDateMeasured() + ", ";
+            returnString += lastRecording.getMeasurementValue(childType).toString() + " " + lastRecording.getDateMeasured() + ", ";
         }
         return returnString;
     }
