@@ -200,6 +200,9 @@ public class Controller {
 
             // add patients to monitorTable's indexArray - if haven't monitored returns false
             if (myModel.getMonitorTable(newType.getType()).addMonitorPatient(processPatient.getId(), processPatient.getFirstName() + " " + processPatient.getLastName(), newType)) {
+                if(!processPatient.getMeasurement(newType).getDateMeasured().equals(2323223231L)) {
+                    myModel.getMonitorTable(newType.getType()).updateMeasurements(processPatient, processPatient.getMeasurement(newType));
+                }
 
                 // add patient to subjectArray and attach server for requests
                 PatientSubject newSubject = new PatientSubject(processPatient, server);
@@ -233,7 +236,7 @@ public class Controller {
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientSubject processSubject = newType.getMonitorredSubjects().get(selectedIndices[i]);
-            processSubject.getState().resetRecording(newType);
+//            processSubject.getState().resetRecording(newType);
             // remove patient row's
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();

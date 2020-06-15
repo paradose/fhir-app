@@ -7,6 +7,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class MonitorTableModel extends AbstractTableModel {

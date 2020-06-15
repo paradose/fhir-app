@@ -171,7 +171,7 @@ public class HistoricalTableModel extends AbstractTableModel {
     public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings, Constants.MeasurementType childType){
         String returnString = "";
         for (MeasurementRecording lastRecording : lastRecordings){
-            returnString += lastRecording.getMeasurementValue(childType).toString() + " " + lastRecording.getDateMeasured() + ", ";
+            returnString += lastRecording.getMeasurementValue(childType).toString() + " " + lastRecording.getDateMeasured() + "\n";
         }
         return returnString;
     }
