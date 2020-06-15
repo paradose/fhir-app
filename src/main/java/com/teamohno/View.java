@@ -69,13 +69,13 @@ public class View extends JFrame {
         patientListScrollPane.setViewportView(patientJList);
 
         //Creating a JTable and adding it to the scroll pane
-        cholMonitorTable = new JTable(model.getMonitorTable(MeasurementType.Type.CHOLESTEROL));
+        cholMonitorTable = new JTable(model.getMonitorTable(Constants.MeasurementType.CHOLESTEROL));
         cholMonitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorScrollPane.setViewportView(cholMonitorTable);
         cholMonitorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //Creating a JTable and adding it to the scroll pane
-        bpMonitorTable = new JTable(model.getMonitorTable(MeasurementType.Type.BLOODPRESSURE));
+        bpMonitorTable = new JTable(model.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE));
         bpMonitorTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         monitorBPScrollPane.setViewportView(bpMonitorTable);
         bpMonitorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

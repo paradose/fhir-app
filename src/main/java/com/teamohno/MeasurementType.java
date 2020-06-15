@@ -1,7 +1,5 @@
 package com.teamohno;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 import java.util.ArrayList;
 
 public abstract class MeasurementType {
