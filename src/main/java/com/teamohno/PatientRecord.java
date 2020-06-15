@@ -95,14 +95,15 @@ public class PatientRecord{
 
     // push current into history list - parameter - MeasurementType
     public void pushNewRecordingHistory(MeasurementType newType){
-        for (int i = 0; i < measurementRecordings.size(); i++) {
+        for (int i = measurementRecordings.size() - 1; i >= 0; i--) {
             if(measurementRecordings.get(i).getType().type.equals(newType.type)){
-                // shuffle history -> move outside
-                listLastRecordings.get(i).add(0, measurementRecordings.get(i));
+                MeasurementRecording newRecording = new MeasurementRecording(newType);
+                newRecording.cloneRecording(measurementRecordings.get(i));
+                // shuffle history -> add new recording at the end
+                listLastRecordings.get(i).add(newRecording);
                 if(listLastRecordings.get(i).size() > newType.getNumberStoredRecordings()) {
-                    listLastRecordings.get(i).remove(newType.getNumberStoredRecordings());
+                    listLastRecordings.get(i).remove(0);
                 }
-                //
             }
         }
     }

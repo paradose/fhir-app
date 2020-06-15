@@ -39,18 +39,15 @@ public class PatientSubject extends Subject {
         String patientsId = patientState.getId();
         MeasurementRecording updatedMeasurement;
 
-        System.out.println("size last recordings: " + patientState.getLastRecordings(newType).size());
+        System.out.println("Size of historic recordings: " + patientState.getLastRecordings(newType).size());
         for (int i = 0; i < patientState.getLastRecordings(newType).size(); i++) {
-            System.out.println("last historic: " + patientState.getLastRecordings(newType).get(i).toString());
+            System.out.println(i + "th recording: " + patientState.getLastRecordings(newType).get(i).toString());
         }
 
         // checks if initial value
+//        /*
         if(active){
             updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
-
-            // testing - increments value +1 each iteration
-//            patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE));
-//            updatedMeasurement = patientState.getMeasurement(newType);
             if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO)==0){
 //                 if the value hasn't been changed from zero inside the server -> turn subject to inactive
                 active = false;
@@ -59,6 +56,10 @@ public class PatientSubject extends Subject {
             else{
                 // updating subject state
                 if (newType.getComponentSize() > 0){
+                    for (int i = 0; i < newType.getChildTypes().size(); i++) {
+                        patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE), newType.getChildTypes().get(i));
+                        updatedMeasurement = patientState.getMeasurement(newType);
+                    }
                     patientState.getMeasurement(newType).cloneRecording(updatedMeasurement);
                 }
                 else {
@@ -67,5 +68,20 @@ public class PatientSubject extends Subject {
                 notifyObservers();
             }
         }
+//         */
+
+//        /* For testing - uncomment this for the incremental recordings - also comment out the MeasurementObservers if-else statement to update **
+        updatedMeasurement = patientState.getMeasurement(newType);
+        patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE));
+        if (newType.getComponentSize() > 0){
+            for (int i = 0; i < newType.getChildTypes().size(); i++) {
+                patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE), newType.getChildTypes().get(i));
+            }
+        }
+        else {
+            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
+        }
+        notifyObservers();
+//         */
     }
 }

@@ -27,8 +27,6 @@ public class MeasurementObserver extends Observer {
         Date newState = patientsNewRecording.getDateMeasured();
 
         //check if date of new recording after old state date
-        System.out.println("new state: " + newState);
-        System.out.printf("old state: " + lastState);
         if (newState.compareTo(lastState) > 0){
             System.out.println("Old state: " + lastState + ", new state " + newState);
             // push new recording into history

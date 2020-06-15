@@ -14,11 +14,14 @@ public class MeasurementRecording {
     // consider making another object for these.. so they can have code/values stored together - and have methods such as "getValue(childCode) ?"
     private ArrayList<BigDecimal> childValues;
 
-    public MeasurementRecording(){
+    public MeasurementRecording(MeasurementType newType){
         measurementValue = BigDecimal.ZERO;
         dateMeasured = new Date(2323223231L);
         System.out.println("date created: " + dateMeasured);
         childValues = new ArrayList<>();
+        for (int i = 0; i < newType.getComponentSize(); i++) {
+            childValues.add(BigDecimal.ZERO);
+        }
     }
 
     // Constructor
