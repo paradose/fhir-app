@@ -32,21 +32,19 @@ public class HistoricalTableModel extends AbstractTableModel {
     // used to track index of patient that are being monitored within table
     private ArrayList<String> monitoredPatientID;
     private ArrayList<PatientSubject> subjects;
-    private String childCode;
+    private  Constants.MeasurementType childType;
     private XYSeriesCollection recordingChartData;
     private boolean graphMonitor;
-    public HistoricalTableModel(){
-        createTable();
-    }
 
     public HistoricalTableModel(MeasurementType type){
         this.historicalType = type;
+        this.childType = null;
         createTable();
     }
 
-    public HistoricalTableModel(MeasurementType type, String childCode){
+    public HistoricalTableModel(MeasurementType type,  Constants.MeasurementType childType){
         this.historicalType = type;
-        this.childCode = childCode;
+        this.childType = childType;
         createTable();
     }
 
@@ -97,25 +95,29 @@ public class HistoricalTableModel extends AbstractTableModel {
     }
 
     public void addPatient(PatientSubject patientSubject){
+        // adds to list of subjects
         subjects.add(patientSubject);
+        // all the information in the table. ids used to access indexing.
         ArrayList<MeasurementRecording> lastRecordings = patientSubject.getState().getLastRecordings(historicalType);
         monitoredPatientNames.add(patientSubject.getState().getFirstName() + patientSubject.getState().getLastName());
-        monitoredLastRecordings.add(lastRecordingsToString(lastRecordings, Constants.MeasurementType.SYSTOLIC_BP));
+        monitoredLastRecordings.add(lastRecordingsToString(lastRecordings));
         monitoredPatientID.add(patientSubject.getState().getId());
         PatientRecord monitoredPatient = patientSubject.getState();
+
+        // creates a new XY series for the patient (data series) and adds it to the existing set.
         XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
+        // gets date index (5 being the latest) and assigns it to measurement value.
         for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
             newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)
-                    .get(i-1).getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue());
+                    .get(i-1).getMeasurementValue(childType).doubleValue());
         }
         recordingChartData.addSeries(newPatient);
-
         fireTableDataChanged();
     }
 
     public void removePatient(String patientId){
         int index = monitoredPatientID.indexOf(patientId);
-        if (index!=-1) {
+        if (index!=-1) { // makes sure that patient is in the table.
             recordingChartData.removeSeries(recordingChartData.getSeries(monitoredPatientNames.get(index)));
             for (int i = 0; i < monitoredData.size(); i++) {
                 // this removes ALL data
@@ -123,7 +125,6 @@ public class HistoricalTableModel extends AbstractTableModel {
             }
             subjects.remove(index);
             monitoredPatientID.remove(index);
-
             fireTableDataChanged();
         }
     }
@@ -134,7 +135,7 @@ public class HistoricalTableModel extends AbstractTableModel {
 
         if(patientIndex == -1) return false;
 
-        String newTextualRecording = lastRecordingsToString(lastRecordings, Constants.MeasurementType.SYSTOLIC_BP);
+        String newTextualRecording = lastRecordingsToString(lastRecordings);
         monitoredData.get(1).remove(patientIndex);
         monitoredData.get(1).add(patientIndex,newTextualRecording);
 
@@ -144,7 +145,7 @@ public class HistoricalTableModel extends AbstractTableModel {
             XYSeries updatedPatient = new XYSeries(newRecord.getFirstName() + newRecord.getLastName());
             for (int i = 1; i < newRecord.getLastRecordings(historicalType).size()+1; i++) {
                 updatedPatient.add(i, newRecord.getLastRecordings(historicalType)
-                        .get(i-1).getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue());
+                        .get(i-1).getMeasurementValue(childType).doubleValue());
             }
             recordingChartData.addSeries(updatedPatient);
         }
@@ -162,14 +163,14 @@ public class HistoricalTableModel extends AbstractTableModel {
             XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
             for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
                 newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)
-                        .get(i-1).getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue());
+                        .get(i-1).getMeasurementValue(childType).doubleValue());
             }
             dataset.addSeries(newPatient);
         }
         return dataset;
     }
     // need to test that this is being called by altering dates.
-    public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings, Constants.MeasurementType childType){
+    public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings){
         String returnString = "<html>";
         for (MeasurementRecording lastRecording : lastRecordings){
             returnString += lastRecording.getMeasurementValue(childType).toString() + " " + lastRecording.getDateMeasured() + "<br>";
@@ -181,8 +182,9 @@ public class HistoricalTableModel extends AbstractTableModel {
     public void addChart(){
         recordingChartData = createDataSet();
         graphMonitor = true;
+        String measurementName = childType.toString();
         JFreeChart measurementGraph = ChartFactory.createXYLineChart(
-                "Systolic",
+                measurementName + " Graph",
                 "Time",
                 "Levels",
                 recordingChartData,
@@ -192,24 +194,25 @@ public class HistoricalTableModel extends AbstractTableModel {
         domain.setRange(1.0,5.0);
         domain.setTickUnit(new NumberTickUnit(1.0));
         domain.setVerticalTickLabels(true);
-//        domain.setRange(0.00, 1.00);
-        ChartFrame chartFrm = new ChartFrame( "Systolic Blood" + " Levels", measurementGraph);
+        ChartFrame chartFrm = new ChartFrame( childType.toString() + " Levels", measurementGraph);
         chartFrm.setSize(450, 350);
         chartFrm.setVisible(true);
 
     }
 
     public void clearDataValues(){
-        System.out.println("Clearing monitorred data in table");
+        System.out.println("Clearing monitored data in Textual Model");
         // loop all data columns
         for (int i = 0; i < monitoredData.size(); i++) {
             monitoredData.get(i).clear();
         }
         monitoredPatientID.clear();
         subjects.clear();
-        // need to clear the dataset as well. ****
+        // clearing the graph data set.
         recordingChartData.removeAllSeries();
         fireTableDataChanged();
     }
-
+    public Constants.MeasurementType getChildType(){
+        return childType;
+    }
 }

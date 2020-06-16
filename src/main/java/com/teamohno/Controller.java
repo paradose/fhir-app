@@ -1,20 +1,15 @@
 package com.teamohno;
 
+//import com.sun.org.apache.bcel.internal.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import javax.swing.*;
-import java.awt.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Timer;
 
@@ -95,7 +90,7 @@ public class Controller {
         myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).getMeasurementRenderer());
 
         // add table for SBP
-        AbstractTableModel histTableModel = myModel.getHistTableModel();
+        AbstractTableModel histTableModel = myModel.getHistoricalMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE);
         myView.createHistTablePanel(histTableModel);
 
         // initialise timer and schedule all periodic callers
@@ -242,9 +237,9 @@ public class Controller {
             newType.updateAverage();
 
             // remove from historical table if there is one
-            if (myModel.getHistorialMonitorTable(newType.getType()) != null){
+            if (myModel.getHistoricalMonitorTable(newType.getType()) != null){
                 String patientId = myModel.getMonitorTable(newType.getType()).getMonitoredPatientID().get(selectedIndices[i]);
-                myModel.getHistorialMonitorTable(newType.getType()).removePatient(patientId);
+                myModel.getHistoricalMonitorTable(newType.getType()).removePatient(patientId);
             }
             myModel.getMonitorTable(newType.getType()).removePatientFromTable(selectedIndices[i]);
             myModel.getMonitorTable(newType.getType()).getMeasurementRenderer().updateMinColouredValue(newType.getAverage());
@@ -350,14 +345,15 @@ public class Controller {
         // gets monitored subjects from monitor table
         ArrayList<PatientSubject> monitoredSubjects = textualType.getMonitorredSubjects();
         double setMinValue =  myModel.getMonitorTable(textualType.getType()).getMeasurementRenderer().getMinValue();
-        myModel.getHistorialMonitorTable(textualType.getType()).clearDataValues();
+        myModel.getHistoricalMonitorTable(textualType.getType()).clearDataValues();
+        Constants.MeasurementType childType = myModel.getHistoricalMonitorTable(textualType.getType()).getChildType();
         // check their state / whether above chol, could be in measurement recording but just testing for now
         for (PatientSubject subjectCheck: monitoredSubjects){
             double patientsCurrentMeasurement = subjectCheck.getState().getMeasurement(textualType)
-                    .getMeasurementValue(Constants.MeasurementType.SYSTOLIC_BP).doubleValue();
+                    .getMeasurementValue(childType).doubleValue();
             if (patientsCurrentMeasurement>setMinValue){
                 // adds the patient subject to historical
-                HistoricalTableModel typeHistory =  myModel.getHistorialMonitorTable(textualType.getType());
+                HistoricalTableModel typeHistory =  myModel.getHistoricalMonitorTable(textualType.getType());
                 typeHistory.addPatient(subjectCheck);
                 // attach model
                 subjectCheck.attach(new TextualObserver(subjectCheck, typeHistory, textualType ));
@@ -371,7 +367,7 @@ public class Controller {
     // gets last 5 values from table of Systolic Pressure and sets it as default
     public void displayXYgraph(MeasurementType chartType){
         // dataset is a collection os XYSeries which will represent each patient.
-        myModel.getHistorialMonitorTable(chartType.getType()).addChart();
+        myModel.getHistoricalMonitorTable(chartType.getType()).addChart();
     }
 
 }

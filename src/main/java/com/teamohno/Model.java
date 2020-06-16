@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Model {
     // Instance Variables
-    private HistoricalTableModel histTableModel;
+    private HistoricalTableModel systolicHistTableModel;
     private MonitorTableModel cholMonitorTableModel, bpMonitorTableModel;
     private DefaultListModel patientListModel;
     private PractitionerRecord loggedInPractitioner;
@@ -31,15 +31,11 @@ public class Model {
 
         cholMonitorTableModel = new MonitorTableModel(cholType, Color.RED);
         bpMonitorTableModel = new MultipleMonitorTableModel(bp, Color.MAGENTA);
-        histTableModel = new HistoricalTableModel(bp);
+        systolicHistTableModel = new HistoricalTableModel(bp,Constants.MeasurementType.SYSTOLIC_BP);
 
         patientListModel = new DefaultListModel();
         storedIdentifiers = new ArrayList<>();
         storedPractitioners = new ArrayList<>();
-    }
-
-    public AbstractTableModel getHistTableModel(){
-        return histTableModel;
     }
 
     // Create new practitioner object based on identifier
@@ -88,10 +84,10 @@ public class Model {
         return tableModel;
     }
 
-    public HistoricalTableModel getHistorialMonitorTable(Constants.MeasurementType type){
+    public HistoricalTableModel getHistoricalMonitorTable(Constants.MeasurementType type){
         HistoricalTableModel historicalTableModel = null;
         if (type == Constants.MeasurementType.BLOOD_PRESSURE){
-            historicalTableModel = histTableModel;
+            historicalTableModel = systolicHistTableModel;
         }
         return historicalTableModel;
     }
