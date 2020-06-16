@@ -91,6 +91,8 @@ public class View extends JFrame {
     public void createHistTablePanel(AbstractTableModel newTableModel){
         JTable patientTable = new JTable(newTableModel);
         // configure dimensions
+        patientTable.setShowGrid(true);
+        patientTable.setRowHeight(90);
         patientTable.setPreferredScrollableViewportSize(new Dimension(400, 100));
         historicalScrollPane.setViewportView(patientTable);
     }

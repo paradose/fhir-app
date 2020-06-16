@@ -170,10 +170,11 @@ public class HistoricalTableModel extends AbstractTableModel {
     }
     // need to test that this is being called by altering dates.
     public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings, Constants.MeasurementType childType){
-        String returnString = "";
+        String returnString = "<html>";
         for (MeasurementRecording lastRecording : lastRecordings){
-            returnString += lastRecording.getMeasurementValue(childType).toString() + " " + lastRecording.getDateMeasured() + "\n";
+            returnString += lastRecording.getMeasurementValue(childType).toString() + " " + lastRecording.getDateMeasured() + "<br>";
         }
+        returnString+="</html>";
         return returnString;
     }
 
