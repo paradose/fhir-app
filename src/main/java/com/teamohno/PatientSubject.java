@@ -56,10 +56,10 @@ public class PatientSubject extends Subject {
             else{
                 // updating subject state
                 if (newType.getComponentSize() > 0){
-                    for (int i = 0; i < newType.getChildTypes().size(); i++) {
-                        patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE), newType.getChildTypes().get(i));
-                        updatedMeasurement = patientState.getMeasurement(newType);
-                    }
+//                    for (int i = 0; i < newType.getChildTypes().size(); i++) {
+//                        patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE), newType.getChildTypes().get(i));
+//                        updatedMeasurement = patientState.getMeasurement(newType);
+//                    }
                     patientState.getMeasurement(newType).cloneRecording(updatedMeasurement);
                 }
                 else {
@@ -71,17 +71,17 @@ public class PatientSubject extends Subject {
 //         */
 
 //        /* For testing - uncomment this for the incremental recordings - also comment out the MeasurementObservers if-else statement to update **
-        updatedMeasurement = patientState.getMeasurement(newType);
-        patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE));
-        if (newType.getComponentSize() > 0){
-            for (int i = 0; i < newType.getChildTypes().size(); i++) {
-                patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE), newType.getChildTypes().get(i));
-            }
-        }
-        else {
-            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
-        }
-        notifyObservers();
-//         */
+//        updatedMeasurement = patientState.getMeasurement(newType);
+//        patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE));
+//        if (newType.getComponentSize() > 0){
+//            for (int i = 0; i < newType.getChildTypes().size(); i++) {
+//                patientState.getMeasurement(newType).setMeasurementValue(patientState.getMeasurement(newType).getMeasurementValue().add(BigDecimal.ONE), newType.getChildTypes().get(i));
+//            }
+//        }
+//        else {
+//            patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
+//        }
+//        notifyObservers();
+////         */
     }
 }

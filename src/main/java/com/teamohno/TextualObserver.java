@@ -22,20 +22,17 @@ public class TextualObserver extends Observer {
 
     @Override
     public void update() {
-        // this should be their history
-//        ArrayList<MeasurementRecording> patientsNewRecordings = observerSubject.getState().getLastRecordings(type);
-        MeasurementRecording patientsNewRecording = observerSubject.getState().getMeasurement(type);
+//         this should be their history
+        ArrayList<MeasurementRecording> patientsNewRecordings = observerSubject.getState().getLastRecordings(type);
+        MeasurementRecording patientsLatestRecording = patientsNewRecordings.get(patientsNewRecordings.size()-1);
         //check if date of new recording after old state date
-        Date newState = patientsNewRecording.getDateMeasured();
-
-        //check if date of new recording after old state date
-//        if (newState.compareTo(lastState) > 0){
-
-//            if (lastState != patientsNewRecordings) {
-            // push new recording into history
+        Date newState = patientsLatestRecording.getDateMeasured();
+        // this wont work with incremental testing unless we can change the dates ?? which i have not figured out.
+        // otherwise comment out if statement,
+        if (newState.compareTo(lastState) > 0){
             monitorredData.updateHistory(observerSubject.getState().getLastRecordings(type),observerSubject.getState());
             lastState = newState;
-//        }
+        }
     }
 
 }
