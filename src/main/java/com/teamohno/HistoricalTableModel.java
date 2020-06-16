@@ -63,6 +63,7 @@ public class HistoricalTableModel extends AbstractTableModel {
         recordingChartData = createDataSet();
         monitoredData.add(monitoredPatientNames);
         monitoredData.add(monitoredLastRecordings);
+        this.fireTableDataChanged();
     }
 
     public Object getValueAt(int row, int col) {
@@ -205,6 +206,8 @@ public class HistoricalTableModel extends AbstractTableModel {
         }
         monitoredPatientID.clear();
         subjects.clear();
+        // need to clear the dataset as well. ****
+        recordingChartData.removeAllSeries();
         fireTableDataChanged();
     }
 
