@@ -21,33 +21,30 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class HistoricalTableModel extends AbstractTableModel {
-    // Table array - containts lists (columns) of data
-    private ArrayList<ArrayList<String>> monitoredData;
-    private ArrayList<String> columnNames;
-    private ArrayList<String> monitoredPatientNames;
+public class HistoricalTableModel extends MonitorTableModel {
+    // Instance Variables
     private MeasurementType historicalType;
     private ArrayList<String> monitoredLastRecordings;
     private JFreeChart recordingsGraph;
-    // used to track index of patient that are being monitored within table
-    private ArrayList<String> monitoredPatientID;
     private ArrayList<PatientSubject> subjects;
     private  Constants.MeasurementType childType;
     private XYSeriesCollection recordingChartData;
     private boolean graphMonitor;
 
+    // Constructors
     public HistoricalTableModel(MeasurementType type){
+        super();
         this.historicalType = type;
         this.childType = null;
-        createTable();
     }
 
     public HistoricalTableModel(MeasurementType type,  Constants.MeasurementType childType){
+        super();
         this.historicalType = type;
         this.childType = childType;
-        createTable();
     }
 
+    @Override
     public void createTable(){
         monitoredPatientID = new ArrayList<>();
         graphMonitor = false;
@@ -62,36 +59,6 @@ public class HistoricalTableModel extends AbstractTableModel {
         monitoredData.add(monitoredPatientNames);
         monitoredData.add(monitoredLastRecordings);
         this.fireTableDataChanged();
-    }
-
-    public Object getValueAt(int row, int col) {
-        // column index = for the list of names / measurements / dates
-        // row index = for the value that column
-        return monitoredData.get(col).get(row);
-    }
-
-    @Override
-    public String getColumnName(int column) {
-        return columnNames.get(column);
-    }
-
-    public int getColumnCount() {
-        return columnNames.size();
-    }
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return String.class;
-    }
-    public int getRowCount() {
-        // all columns should have same numbers of rows - observing patient name column to avoid issues
-        int rowCount = monitoredData.get(0).size();
-        for (int i = 1; i < monitoredData.size() ; i++) {
-            if (rowCount != monitoredData.get(i).size()) {
-                System.out.println("Error: col " + i + " contains different amount of elements to col 0");
-                rowCount = -1;
-            }
-        }
-        return rowCount;
     }
 
     public void addPatient(PatientSubject patientSubject){
