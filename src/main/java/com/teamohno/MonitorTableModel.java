@@ -11,33 +11,34 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class MonitorTableModel extends AbstractTableModel {
+    // Instance Variables
+
     // Table array - containts lists (columns) of data
     protected ArrayList<ArrayList<String>> monitoredData;
     protected ArrayList<String> columnNames;
     protected ArrayList<String> monitoredPatientNames;
-
     // used to track index of patient that are being monitored within table
     protected ArrayList<String> monitoredPatientID;
-
+    // Arraylist of subject list(s)
     protected ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
-
-    // watches the average value
+    // Renderer watches the average value
     protected MeasurementCellRenderer measurementMinWatcher;
     protected Color observedCellColour;
-
     protected DefaultCategoryDataset measurementData;
+
     // Constructor
     public MonitorTableModel(){
         createTable();
     }
+
     public MonitorTableModel(ArrayList<MeasurementType> newTypes, Color colour) {
-//         list of types -> use the types to get access to all the subject lists
         createTable();
         this.setObservedCellColour(colour);
         for (int i = 0; i < newTypes.size(); i++) {
             addMeasurementType(newTypes.get(i));
         }
     }
+
     public void createTable(){
         monitoredMeasurementSubjects = new ArrayList<>();
         monitoredPatientID = new ArrayList<>();
@@ -50,6 +51,7 @@ public class MonitorTableModel extends AbstractTableModel {
         monitoredData.add(monitoredPatientNames);
     }
 
+    // Accessors and Mutators
     public void addMeasurementType(MeasurementType newType){
         ArrayList<String> listVlaues = new ArrayList<>();
         ArrayList<String> listDates = new ArrayList<>();
@@ -102,6 +104,7 @@ public class MonitorTableModel extends AbstractTableModel {
         return returnResult;
     }
 
+    // Used by when measurement type has multiple components
     protected void addComponentNames(){}
 
     public void removePatientFromTable(int newPatientIndex){
@@ -145,13 +148,14 @@ public class MonitorTableModel extends AbstractTableModel {
     }
 
     public Color getObservedCellColour(){return observedCellColour;}
+
     public void setObservedCellColour(Color c){observedCellColour = c;}
 
     // gets initial measurements of monitored patients and sets to dataset for chart
     public DefaultCategoryDataset getMonitoredMeasurements(MeasurementType selectedType) {
         DefaultCategoryDataset dod = new DefaultCategoryDataset();
-//        for (int i = 0; i < columnNames.size(); i++) {
-//            if (columnNames.get(i).equals(selectedType.getName())){
+        // Currently table only has one measurement - hence retrieving from first subject list
+        /* If more types are added to this table, iterate through each column name and only process subject list of the given type */
         for (int j=0;j<monitoredMeasurementSubjects.get(0).size();j++){
             PatientSubject processSubject = monitoredMeasurementSubjects.get(0).get(j);
             int value = processSubject.getState().getMeasurement(selectedType).getMeasurementValue().intValue();
@@ -161,7 +165,6 @@ public class MonitorTableModel extends AbstractTableModel {
         }
         return dod;
     }
-
 
     public Object getValueAt(int row, int col) {
         // column index = for the list of names / measurements / dates
@@ -177,10 +180,12 @@ public class MonitorTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return columnNames.size();
     }
+
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         return String.class;
     }
+
     public int getRowCount() {
         // all columns should have same numbers of rows - observing patient name column to avoid issues
         int rowCount = monitoredData.get(0).size();
@@ -208,7 +213,6 @@ public class MonitorTableModel extends AbstractTableModel {
     }
 
     public void addChart(MeasurementType measurementType, JFreeChart measurementChart, DefaultCategoryDataset chartData){
-
         measurementData = chartData;
 
         CategoryPlot plot = measurementChart.getCategoryPlot();
@@ -217,6 +221,5 @@ public class MonitorTableModel extends AbstractTableModel {
         ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", measurementChart);
         chartFrm.setVisible(true);
         chartFrm.setSize(450, 350);
-
     }
 }

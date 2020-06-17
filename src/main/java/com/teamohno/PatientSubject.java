@@ -82,6 +82,6 @@ public class PatientSubject extends Subject {
             patientState.setMeasurementRecordings(updatedMeasurement.getMeasurementValue(), updatedMeasurement.getDateMeasured(), newType);
         }
         notifyObservers();
-         */
+//         */
     }
 }

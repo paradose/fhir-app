@@ -59,8 +59,9 @@ public class Controller {
                         displaySelectedPatient(rowIndex, allTypes.get(index));
                     }
                 });
+                // Set renderer for table
+                myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.CHOLESTEROL).getMeasurementRenderer());
             }
-            //temporary for bp
             if (allTypes.get(i).type == Constants.MeasurementType.BLOOD_PRESSURE) {
                 int index = i;
                 bpTypes = myModel.getTableTypes(Constants.MeasurementType.BLOOD_PRESSURE);
@@ -83,16 +84,13 @@ public class Controller {
                 // displays textual monitor.
                 myView.getHistMonButton().addActionListener(e -> displayHighPatients(bpTypes.get(0)) );
                 myView.getDisplaySystolicGraphButton().addActionListener(e -> displayXYgraph(bpTypes.get(0)));
+                // Set renderer for table
+                myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).getMeasurementRenderer());
+                // add table for SBP
+                AbstractTableModel histTableModel = myModel.getHistoricalMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE);
+                myView.createHistTablePanel(histTableModel);
             }
         }
-        // Set renderer for table (temporary - need to fix)
-        myView.getCholMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.CHOLESTEROL).getMeasurementRenderer());
-        myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).getMeasurementRenderer());
-
-        // add table for SBP
-        AbstractTableModel histTableModel = myModel.getHistoricalMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE);
-        myView.createHistTablePanel(histTableModel);
-
         // initialise timer and schedule all periodic callers
         myTimer = new Timer();
         scheduleMonitor();
@@ -287,17 +285,15 @@ public class Controller {
 
             if (intFreq * 1000 >= 1000) {
                 // Update frequency for cholesterol only in this system - however can take parameter and deal with different monitor frequencies.
-                // if want to update all - can consider too by looping through all periodic tasks
                 myPeriodicCholesterol.setFrequency(intFreq * 1000);
-
-                // other measurement types can set same frequency here
+                // Since all measurements are being updated at same frequency, frequency is static - and hence only needs to be set from one instance
             }
             else{
                 System.out.println("Error: frequency must be greater or equal to 1000ms (1 second).");
             }
         }
         else if (inputFrequency.isEmpty()) {
-            // only need one periodic class to do this - since frequency is currently static
+            // If called and no new input is provided, just set periodic frequency to label's value
             myPeriodicCholesterol.setFrequency(Integer.parseInt(currentFreq)* 1000);
         }
         else{

@@ -66,7 +66,7 @@ public class PatientRecord{
     //gets current measurement recording
     public MeasurementRecording getMeasurement(MeasurementType newType){
         // make a default measurement object to return if no measurements
-        MeasurementRecording returnRecording = new MeasurementRecording(BigDecimal.ZERO, new Date(2323223231L), newType);
+        MeasurementRecording returnRecording = new MeasurementRecording(newType);
         System.out.println("Size of measurement reocrding list: " + measurementRecordings.size());
         for (int i = 0; i < measurementRecordings.size(); i++) {
                 if(measurementRecordings.get(i).getType().type == newType.type){
@@ -75,6 +75,7 @@ public class PatientRecord{
             }
 
         if(returnRecording.getMeasurementValue().compareTo(BigDecimal.ZERO) == 0) {
+            System.out.println("Potential error with retrieving patients recording.");
             System.out.println("Current reading for this patient's " + newType.getName() + " is zero.");
         }
         return returnRecording;
@@ -124,9 +125,6 @@ public class PatientRecord{
                 System.out.println("Type about to set is correct");
                 measurementRecordings.get(i).setMeasurementValue(BigDecimal.ONE.negate());
                 measurementRecordings.get(i).setDateMeasured(new Date(2323223231L));
-            }
-            else{
-                System.out.println("Type not matched");
             }
         }
     }

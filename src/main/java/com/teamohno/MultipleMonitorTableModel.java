@@ -4,9 +4,11 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class MultipleMonitorTableModel extends MonitorTableModel {
+    // Instance variables
     private MeasurementType type;
     private MultipleTypeCellRenderer childCellRenderer;
 
+    // Constructor
     public MultipleMonitorTableModel(MeasurementType newType, Color c){
         super();
         setObservedCellColour(c);
@@ -18,6 +20,8 @@ public class MultipleMonitorTableModel extends MonitorTableModel {
         childCellRenderer = new MultipleTypeCellRenderer(observedCellColour, newType.getComponentSize());
     }
 
+
+    // Accessors and Mutators
     public void addMeasurementType(MeasurementType newType) {
         for (int i = 0; i < newType.getComponentSize(); i++) {
             ArrayList<String> listVlaues = new ArrayList<>();

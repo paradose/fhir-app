@@ -35,10 +35,10 @@ public class MeasurementObserver extends Observer {
             // send update to model
             monitorredData.updateMeasurements(observerSubject.getState(), patientsNewRecording);
 
-            //update average -> get renderer to change colour
+            //update average
             type.updateAverage();
 
-            // is used for cholesterol - not blood pressure
+            // Used for single value measurements - updates renderer for the table assigned to this observer
             monitorredData.getMeasurementRenderer().updateMinColouredValue(type.getAverage());
 
             System.out.println("Observer's new measurement value: " + patientsNewRecording.getMeasurementValue());

@@ -4,10 +4,12 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class MultipleTypeCellRenderer extends MeasurementCellRenderer {
+    // Instance Variables
     private ArrayList<Double> minValList;
     private ArrayList<Integer> listColumns;
     private int currentIndex;
 
+    // Constructor
     public MultipleTypeCellRenderer(Color colour, int newColumns) {
         super(colour);
         listColumns = new ArrayList<>();
