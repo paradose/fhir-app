@@ -10,28 +10,25 @@ public class MeasurementRecording {
     private MeasurementType type;
     private BigDecimal measurementValue;
     private Date dateMeasured;
-
-    // consider making another object for these.. so they can have code/values stored together - and have methods such as "getValue(childCode) ?"
     private ArrayList<BigDecimal> childValues;
 
+    // Constructors
     public MeasurementRecording(MeasurementType newType){
         measurementValue = BigDecimal.ZERO;
         dateMeasured = new Date(2323223231L);
-        System.out.println("date created: " + dateMeasured);
+        // initialise child values
         childValues = new ArrayList<>();
         for (int i = 0; i < newType.getComponentSize(); i++) {
             childValues.add(BigDecimal.ZERO);
         }
     }
 
-    // Constructor
     public MeasurementRecording(BigDecimal newValue, Date newDate, MeasurementType newType){
         measurementValue = newValue;
         dateMeasured = newDate;
         type = newType;
-
+        // initialise child values
         childValues = new ArrayList<>();
-        // initialise component values
         for (int i = 0; i < newType.getComponentSize(); i++) {
             childValues.add(BigDecimal.ZERO);
         }
@@ -41,6 +38,7 @@ public class MeasurementRecording {
     public BigDecimal getMeasurementValue() {
         return measurementValue;
     }
+
     public void setMeasurementValue(BigDecimal newMeasurementValue) {
         this.measurementValue = newMeasurementValue;
     }
@@ -48,6 +46,7 @@ public class MeasurementRecording {
     public BigDecimal getMeasurementValue(Constants.MeasurementType newChildType) {
         return childValues.get(type.getIndexChild(newChildType));
     }
+
     public void setMeasurementValue(BigDecimal newMeasurementValue, Constants.MeasurementType newChildType){
         childValues.set(type.getIndexChild(newChildType), newMeasurementValue);
     }
@@ -64,20 +63,12 @@ public class MeasurementRecording {
         return type;
     }
 
-    public void setType(MeasurementType type) {
-        this.type = type;
-    }
-
-    public String toString(){
-        String returnStr = "Measurement: " + type.getName() + ", Value: " + measurementValue + ", Date: " + dateMeasured;
-        if(childValues.size() >0){
-            returnStr += ", child components: ";
-            System.out.println("size child values: " + childValues.size());
-            for (int i = 0; i < childValues.size(); i++) {
-                returnStr += type.getChildTypeNames().get(i) + " value: " + childValues.get(i) + " ";
-            }
+    public void setType(MeasurementType newType) {
+        this.type = newType;
+        childValues.clear();
+        for (int i = 0; i < newType.getComponentSize(); i++) {
+            childValues.add(BigDecimal.ZERO);
         }
-        return returnStr;
     }
 
     public void cloneRecording(MeasurementRecording newRecording){
@@ -85,9 +76,20 @@ public class MeasurementRecording {
         dateMeasured = newRecording.getDateMeasured();
         type = newRecording.getType();
 
-        // Clone child values(?)
+        // Clone child values if there are any
         for (int i = 0; i < newRecording.getType().getComponentSize(); i++) {
             this.childValues.set(i, newRecording.childValues.get(i));
         }
+    }
+
+    public String toString(){
+        String returnStr = "Measurement: " + type.getName() + ", Value: " + measurementValue + ", Date: " + dateMeasured;
+        if(childValues.size() >0){
+            returnStr += "\nChild components: ";
+            for (int i = 0; i < childValues.size(); i++) {
+                returnStr += type.getChildTypeNames().get(i) + " value: " + childValues.get(i) + " ";
+            }
+        }
+        return returnStr;
     }
 }
