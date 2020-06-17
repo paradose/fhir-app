@@ -121,6 +121,10 @@ public class MonitorTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    public ArrayList<String> getMonitoredPatientID() {
+        return monitoredPatientID;
+    }
+
     public void updateMeasurements(PatientRecord newPatient, MeasurementRecording newMeasurement) {
         // obtain index to navigate inside table data
         int currentIndex = monitoredPatientID.indexOf(newPatient.getId());
@@ -150,8 +154,8 @@ public class MonitorTableModel extends AbstractTableModel {
     public Color getObservedCellColour(){return observedCellColour;}
 
     public void setObservedCellColour(Color c){observedCellColour = c;}
-
     // gets initial measurements of monitored patients and sets to dataset for chart
+
     public DefaultCategoryDataset getMonitoredMeasurements(MeasurementType selectedType) {
         DefaultCategoryDataset dod = new DefaultCategoryDataset();
         // Currently table only has one measurement - hence retrieving from first subject list
@@ -208,17 +212,13 @@ public class MonitorTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public ArrayList<String> getMonitoredPatientID() {
-        return monitoredPatientID;
-    }
-
-    public void addChart(MeasurementType measurementType, JFreeChart measurementChart, DefaultCategoryDataset chartData){
+    public void addChart(MeasurementType measurementType, JFreeChart newChart, DefaultCategoryDataset chartData){
         measurementData = chartData;
 
-        CategoryPlot plot = measurementChart.getCategoryPlot();
+        CategoryPlot plot = newChart.getCategoryPlot();
         plot.setRangeGridlinePaint(Color.black);
 
-        ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", measurementChart);
+        ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", newChart);
         chartFrm.setVisible(true);
         chartFrm.setSize(450, 350);
     }

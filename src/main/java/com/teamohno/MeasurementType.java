@@ -75,8 +75,6 @@ public abstract class MeasurementType {
         return retMin;
     }
 
-//    public AbstractMeasurementList getChildComponents(){return childComponents;}
-
     public String getFhirCode() {
         return fhirCode;
     }

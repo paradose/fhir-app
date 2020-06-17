@@ -24,10 +24,12 @@ import java.util.ArrayList;
 public class HistoricalTableModel extends MonitorTableModel {
     // Instance Variables
     private MeasurementType historicalType;
+    private Constants.MeasurementType childType;
     private ArrayList<String> monitoredLastRecordings;
+    /* not used
     private JFreeChart recordingsGraph;
+    */
     private ArrayList<PatientSubject> subjects;
-    private  Constants.MeasurementType childType;
     private XYSeriesCollection recordingChartData;
     private boolean graphMonitor;
 
