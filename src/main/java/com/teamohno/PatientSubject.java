@@ -48,7 +48,6 @@ public class PatientSubject extends Subject {
 //        /* Comment out section to test
         if(active){
             // checks if initial value
-//            updatedMeasurement = server.retrieveMeasurement(patientsId, newType);
             updatedMeasurement = server.retrieveMeasurement(patientState, newType);
             if (updatedMeasurement.getMeasurementValue().compareTo(BigDecimal.ZERO)==0){
                 // if the value hasn't been changed from zero inside the server -> subject set inactive

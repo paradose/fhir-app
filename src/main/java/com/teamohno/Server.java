@@ -7,6 +7,7 @@ import org.hl7.fhir.r4.model.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Server {
@@ -16,12 +17,26 @@ public class Server {
     private String serverBase;
     private int entriesPerPage;
 
+    // For testing:
+    boolean firstTime;
+    MeasurementRecording testRecording, testRecording2, testRecording3, testRecording4, testRecording5;
+    ArrayList<MeasurementRecording> testServerRecordings;
+
     // Constructor
     public Server(String inputServerBase){
         context = FhirContext.forR4();
         client = context.newRestfulGenericClient(inputServerBase);
         serverBase = inputServerBase;
         entriesPerPage = 100;
+
+        // For testing
+        firstTime = true;
+        testRecording = new MeasurementRecording();
+        testRecording2 = new MeasurementRecording();
+        testRecording3 = new MeasurementRecording();
+        testRecording4 = new MeasurementRecording();
+        testRecording5 = new MeasurementRecording();
+        testServerRecordings = new ArrayList<>();
     }
     // uses practitioners identifier to get an array of their ids
     public ArrayList<String> retrievePractitionerIDs(String practitionerIdentifier) {
@@ -129,104 +144,11 @@ public class Server {
         return new PatientRecord(id,firstName,lastName,gender,birthDate,location);
     }
 
-    // retrieves patient's measurement value by taking in the type (which contains code) for URL get request.
-    // measurement value and date recorded & returned as a MeasurementRecording object.
-    public MeasurementRecording retrieveMeasurement(PatientRecord patientRecord, MeasurementType newType) {
-        MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
-        BigDecimal newValue = BigDecimal.ONE.negate();
-
-        String patientId = patientRecord.getId();
-        MeasurementRecording initialRec = new MeasurementRecording(newType);
-        initialRec.cloneRecording(patientRecord.getMeasurement(newType));
-
-        String measurementCode = newType.getFhirCode();
-        try {
-            String searchURL = serverBase+"Observation?code=" + measurementCode + "&subject=" + patientId;
-            Bundle results = client.search()
-                    .byUrl(searchURL)
-                    .sort()
-                    .descending("date")
-                    .returnBundle(Bundle.class)
-                    .execute();
-            // iterate through n recordings for type -> push each recording to history
-            for (int j = newType.getNumberStoredRecordings() - 1; j >= 0; j--) {
-                // gets latest observation
-                Observation observation = (Observation) results.getEntry().get(j).getResource();
-
-                //check if observation has multiple components
-                if(observation.getComponent().size() > 1){
-                    // loop through components
-                    for (int i = 0; i < observation.getComponent().size(); i++) {
-                        //  Check child code matches with observation component code in server
-                        String currChildCode = observation.getComponent().get(i).getCode().getCodingFirstRep().getCode();
-                        for (int k = 0; k < newType.getListChildCode().size(); k++) {
-                            // iterator...!
-                            if(newType.getListChildCode().get(k).equals(currChildCode)){
-                                Constants.MeasurementType currentType = newType.getChildTypes().get(k);
-                                newValue = observation.getComponent().get(i).getValueQuantity().getValue();
-                                newRecording.setMeasurementValue(newValue, currentType);
-                                //Set so that it won't be considered inactive?? [temporary]
-                                newRecording.setMeasurementValue(BigDecimal.ONE);
-                            }
-                        }
-                    }
-                }
-                else {
-                    newValue = observation.getValueQuantity().getValue();
-                    newRecording.setMeasurementValue(newValue);
-                }
-                Date newDate = observation.getIssued();
-                newRecording.setDateMeasured(newDate);
-                patientRecord.getMeasurement(newType).cloneRecording(newRecording);
-                patientRecord.pushNewRecordingHistory(newType);
-            }
-
-            /* Process of getting new recording
-            // gets latest observation
-            Observation observation = (Observation) results.getEntry().get(0).getResource();
-
-            //check if observation has multiple components
-            if(observation.getComponent().size() > 1){
-            // loop through components
-                for (int i = 0; i < observation.getComponent().size(); i++) {
-                    //  Check child code matches with observation component code in server
-                    String currChildCode = observation.getComponent().get(i).getCode().getCodingFirstRep().getCode();
-                    for (int j = 0; j < newType.getListChildCode().size(); j++) {
-                        // iterator...!
-                        if(newType.getListChildCode().get(j).equals(currChildCode)){
-                            Constants.MeasurementType currentType = newType.getChildTypes().get(j);
-                            newValue = observation.getComponent().get(i).getValueQuantity().getValue();
-                            newRecording.setMeasurementValue(newValue, currentType);
-                            //Set so that it won't be considered inactive?? [temporary]
-                            newRecording.setMeasurementValue(BigDecimal.ONE);
-                        }
-                    }
-                }
-            }
-            else {
-                newValue = observation.getValueQuantity().getValue();
-                newRecording.setMeasurementValue(newValue);
-            }
-            Date newDate = observation.getIssued();
-            newRecording.setDateMeasured(newDate);
-            System.out.println("Total " + newType.getName() + " value observed from server: " + newValue);
-            System.out.println("Date of observation retrieved: " + newDate);
-             */
-
-            // Clone initial recording to leave the method without changing initial data for subject/observer to process
-            patientRecord.getMeasurement(newType).cloneRecording(initialRec);
-        }
-        catch (Exception e) {
-            System.out.println("No " + newType.getName() + " value available for patient ID: " + patientId + " from server.");
-        }
-        return newRecording;
-    }
-
     // checks if patient already exists in the list of Patients for a particular practitioner.
     public void addPatientToList(ArrayList<String> identifierList, ArrayList<PatientRecord> patientList, Bundle newBundle){
         // looping through bundle
         for (int i = 0; i < newBundle.getEntry().size(); i++) {
-           // current patient being processed
+            // current patient being processed
             Patient patientObject = (Patient) newBundle.getEntry().get(i).getResource();
             String id = patientObject.getIdElement().getIdPart();
             String identifier = patientObject.getIdentifierFirstRep().getValue();
@@ -253,4 +175,119 @@ public class Server {
             }
         }
     }
+
+    // retrieves patient's measurement value by taking in the type (which contains code) for URL get request.
+    // measurement value and date recorded & returned as a MeasurementRecording object.
+    public MeasurementRecording retrieveMeasurement(PatientRecord patientRecord, MeasurementType newType) {
+        MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
+        BigDecimal newValue = BigDecimal.ONE.negate();
+        String patientId = patientRecord.getId();
+        MeasurementRecording initialRec = new MeasurementRecording(newType);
+        initialRec.cloneRecording(patientRecord.getMeasurement(newType));
+
+        String measurementCode = newType.getFhirCode();
+        try {
+            String searchURL = serverBase+"Observation?code=" + measurementCode + "&subject=" + patientId;
+            Bundle results = client.search()
+                    .byUrl(searchURL)
+                    .sort()
+                    .descending("date")
+                    .returnBundle(Bundle.class)
+                    .execute();
+
+                // iterate through n recordings for type -> push n-1 recordings to history
+                for (int j = newType.getNumberStoredRecordings() - 1; j >= 0; j--) {
+                    // Process if value has not been retrieved before, or only for nth(latest) recording
+                    if (patientRecord.getMeasurement(newType).getMeasurementValue().equals(BigDecimal.ZERO) || j == 0) {
+                        // gets latest observation
+                        Observation observation = (Observation) results.getEntry().get(j).getResource();
+                        //check if observation has multiple components
+                        if (observation.getComponent().size() > 1) {
+                            // loop through components
+                            for (int i = 0; i < observation.getComponent().size(); i++) {
+                                //  Check child code matches with observation component code in server
+                                String currChildCode = observation.getComponent().get(i).getCode().getCodingFirstRep().getCode();
+                                for (int k = 0; k < newType.getListChildCode().size(); k++) {
+                                    if (newType.getListChildCode().get(k).equals(currChildCode)) {
+                                        Constants.MeasurementType currentType = newType.getChildTypes().get(k);
+                                        newValue = observation.getComponent().get(i).getValueQuantity().getValue();
+                                        newRecording.setMeasurementValue(newValue, currentType);
+                                        //Set so that it won't be considered inactive?? [temporary]
+                                        newRecording.setMeasurementValue(BigDecimal.ONE);
+                                    }
+                                }
+                            }
+                        } else {
+                            newValue = observation.getValueQuantity().getValue();
+                            newRecording.setMeasurementValue(newValue);
+                        }
+                        Date newDate = observation.getIssued();
+                        newRecording.setDateMeasured(newDate);
+                        if (j > 0) {
+                            patientRecord.getMeasurement(newType).cloneRecording(newRecording);
+                            patientRecord.pushNewRecordingHistory(newType);
+                            // Restore recording to initial to process
+                            patientRecord.getMeasurement(newType).cloneRecording(initialRec);
+                        }
+                    }
+                }
+        }
+        catch (Exception e) {
+            System.out.println("No " + newType.getName() + " value available for patient ID: " + patientId + " from server.");
+        }
+        return newRecording;
+    }
+
+    // Test Retrieval from server
+    /*
+    public MeasurementRecording retrieveMeasurement(PatientRecord patientRecord, MeasurementType newType) {
+        boolean firstLoop = false;
+        MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
+        BigDecimal newValue = BigDecimal.ONE.negate();
+
+        // add in server values if first time
+        if(firstTime) {
+            testRecording.setType(newType);
+            testRecording2.setType(newType);
+            testRecording3.setType(newType);
+            testRecording4.setType(newType);
+            testRecording5.setType(newType);
+            testServerRecordings.add(testRecording);
+            testServerRecordings.add(testRecording2);
+            testServerRecordings.add(testRecording3);
+            testServerRecordings.add(testRecording4);
+            testServerRecordings.add(testRecording5);
+            firstTime = false;
+            firstLoop = true;
+        }
+
+        // incrementing test recording value
+        testRecording.setMeasurementValue(testRecording.getMeasurementValue().add(BigDecimal.ONE));
+        // Increment date by 1 day
+        Calendar currentDate = Calendar.getInstance();
+        currentDate.setTime(testRecording.getDateMeasured());
+        currentDate.add(Calendar.HOUR_OF_DAY, 24);
+        testRecording.setDateMeasured(currentDate.getTime());
+        for (int i = 0; i < newType.getComponentSize(); i++) {
+            testRecording.setMeasurementValue(testRecording.getMeasurementValue(newType.getChildTypes().get(i)).add(BigDecimal.ONE),newType.getChildTypes().get(i));
+        }
+
+        // check type size:
+        if(firstLoop) {
+            for (int j = newType.getNumberStoredRecordings() - 1; j >= 1; j--) {
+                // get newest recording
+                newRecording.cloneRecording(testServerRecordings.get(j));
+                patientRecord.getMeasurement(newType).cloneRecording(newRecording);
+                patientRecord.pushNewRecordingHistory(newType);
+            }
+        }
+        newRecording.cloneRecording(testRecording);
+
+        String patientId = patientRecord.getId();
+        MeasurementRecording initialRec = new MeasurementRecording(newType);
+        initialRec.cloneRecording(patientRecord.getMeasurement(newType));
+        patientRecord.getMeasurement(newType).cloneRecording(initialRec);
+        return newRecording;
+    }
+ */
 }

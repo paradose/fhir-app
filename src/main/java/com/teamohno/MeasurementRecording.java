@@ -13,6 +13,13 @@ public class MeasurementRecording {
     private ArrayList<BigDecimal> childValues;
 
     // Constructors
+    public MeasurementRecording(){
+        measurementValue = BigDecimal.ZERO;
+        dateMeasured = new Date(2323223231L);
+        // initialise child values
+        childValues = new ArrayList<>();
+    }
+
     public MeasurementRecording(MeasurementType newType){
         measurementValue = BigDecimal.ZERO;
         dateMeasured = new Date(2323223231L);
@@ -26,12 +33,9 @@ public class MeasurementRecording {
     public MeasurementRecording(BigDecimal newValue, Date newDate, MeasurementType newType){
         measurementValue = newValue;
         dateMeasured = newDate;
-        type = newType;
         // initialise child values
         childValues = new ArrayList<>();
-        for (int i = 0; i < newType.getComponentSize(); i++) {
-            childValues.add(BigDecimal.ZERO);
-        }
+        this.setType(newType);
     }
 
     //Accessors and Mutators
