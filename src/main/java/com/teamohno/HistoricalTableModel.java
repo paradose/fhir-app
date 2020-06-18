@@ -26,9 +26,6 @@ public class HistoricalTableModel extends MonitorTableModel {
     private MeasurementType historicalType;
     private Constants.MeasurementType childType;
     private ArrayList<String> monitoredLastRecordings;
-    /* not used
-    private JFreeChart recordingsGraph;
-    */
     private ArrayList<PatientSubject> subjects;
     private XYSeriesCollection recordingChartData;
     private boolean graphMonitor;
@@ -147,26 +144,13 @@ public class HistoricalTableModel extends MonitorTableModel {
         returnString+="</html>";
         return returnString;
     }
-
-    public void addChart(){
-        recordingChartData = createDataSet();
+    // inherits from parent class because it uses different graph (XY series)
+    public void addChart(MeasurementType measurementType, JFreeChart newChart, XYSeriesCollection chartData){
         graphMonitor = true;
-        String measurementName = childType.toString();
-        JFreeChart measurementGraph = ChartFactory.createXYLineChart(
-                measurementName + " Graph",
-                "Time",
-                "Levels",
-                recordingChartData,
-               PlotOrientation.VERTICAL,
-                true,true,false);
-        NumberAxis domain = (NumberAxis) measurementGraph.getXYPlot().getDomainAxis();
-        domain.setRange(1.0,5.0);
-        domain.setTickUnit(new NumberTickUnit(1.0));
-        domain.setVerticalTickLabels(true);
-        ChartFrame chartFrm = new ChartFrame( childType.toString() + " Levels", measurementGraph);
-        chartFrm.setSize(450, 350);
+        recordingChartData = chartData;
+        ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", newChart);
         chartFrm.setVisible(true);
-
+        chartFrm.setSize(450, 350);
     }
 
     public void clearDataValues(){
