@@ -56,6 +56,10 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
         minimumValue = value;
         System.out.println("new minimum: " + value);
     }
+
+    public void updateMinColouredValue(double value, int column){
+    }
+
     // gets set minimum value
     public double getMinValue(){
         return minimumValue;

@@ -27,16 +27,19 @@ public class MultipleTypeCellRenderer extends MeasurementCellRenderer {
         }
     }
 
+    @Override
     public void updateMinColouredValue(double newValue, int column){
         minValList.set(column, newValue);
     }
 
+    @Override
     //Iterate through columns
     public void first() {
         currentIndex = 0;
         checkValue();
     }
 
+    @Override
     public void next(){
         currentIndex++;
         if(hasNextColumn()) {
@@ -44,6 +47,7 @@ public class MultipleTypeCellRenderer extends MeasurementCellRenderer {
         }
     }
 
+    @Override
     public boolean hasNextColumn(){
         boolean retBool = false;
         if(currentIndex < listColumns.size()){
@@ -52,7 +56,7 @@ public class MultipleTypeCellRenderer extends MeasurementCellRenderer {
         return retBool;
     }
 
-    public void checkValue(){
+    private void checkValue(){
         column = listColumns.get(currentIndex);
         minimumValue = minValList.get(currentIndex);
     }

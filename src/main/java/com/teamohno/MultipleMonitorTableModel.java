@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class MultipleMonitorTableModel extends MonitorTableModel {
     // Instance variables
     private MeasurementType type;
-    private MultipleTypeCellRenderer childCellRenderer;
+    private MeasurementCellRenderer childCellRenderer;
 
     // Constructor
     public MultipleMonitorTableModel(MeasurementType newType, Color c){
