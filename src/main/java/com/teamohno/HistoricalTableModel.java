@@ -155,11 +155,7 @@ public class HistoricalTableModel extends MonitorTableModel {
 
     public void clearDataValues(){
         System.out.println("Clearing monitored data in Textual Model");
-        // loop all data columns
-        for (int i = 0; i < monitoredData.size(); i++) {
-            monitoredData.get(i).clear();
-        }
-        monitoredPatientID.clear();
+        super.clearDataValues();
         subjects.clear();
         // clearing the graph data set.
         recordingChartData.removeAllSeries();

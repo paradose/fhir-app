@@ -10,15 +10,8 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class MonitorTableModel extends AbstractTableModel {
+public class MonitorTableModel extends PatientTableModel {
     // Instance Variables
-
-    // Table array - containts lists (columns) of data
-    protected ArrayList<ArrayList<String>> monitoredData;
-    protected ArrayList<String> columnNames;
-    protected ArrayList<String> monitoredPatientNames;
-    // used to track index of patient that are being monitored within table
-    protected ArrayList<String> monitoredPatientID;
     // Arraylist of subject list(s)
     protected ArrayList<ArrayList<PatientSubject>> monitoredMeasurementSubjects;
     // Renderer watches the average value
@@ -41,14 +34,7 @@ public class MonitorTableModel extends AbstractTableModel {
 
     public void createTable(){
         monitoredMeasurementSubjects = new ArrayList<>();
-        monitoredPatientID = new ArrayList<>();
-
-        columnNames = new ArrayList<>();
-        columnNames.add("Name");
-
-        monitoredData = new ArrayList<>();
-        monitoredPatientNames = new ArrayList<>();
-        monitoredData.add(monitoredPatientNames);
+        super.createTable();
     }
 
     // Accessors and Mutators
@@ -168,48 +154,6 @@ public class MonitorTableModel extends AbstractTableModel {
             dod.setValue(value, selectedType.getName(), subjectFirstName +" "+ subjectLastName);
         }
         return dod;
-    }
-
-    public Object getValueAt(int row, int col) {
-        // column index = for the list of names / measurements / dates
-        // row index = for the value that column
-        return monitoredData.get(col).get(row);
-    }
-
-    @Override
-    public String getColumnName(int column) {
-        return columnNames.get(column);
-    }
-
-    public int getColumnCount() {
-        return columnNames.size();
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return String.class;
-    }
-
-    public int getRowCount() {
-        // all columns should have same numbers of rows - observing patient name column to avoid issues
-        int rowCount = monitoredData.get(0).size();
-        for (int i = 1; i < monitoredData.size() ; i++) {
-            if (rowCount != monitoredData.get(i).size()) {
-                System.out.println("Error: col " + i + " contains different amount of elements to col 0");
-                rowCount = -1;
-            }
-        }
-        return rowCount;
-    }
-
-    public void clearDataValues(){
-        System.out.println("Clearing monitorred data in table");
-        // loop all data columns
-        for (int i = 0; i < monitoredData.size(); i++) {
-            monitoredData.get(i).clear();
-        }
-        monitoredPatientID.clear();
-        fireTableDataChanged();
     }
 
     public void addChart(MeasurementType measurementType, JFreeChart newChart, DefaultCategoryDataset chartData){
