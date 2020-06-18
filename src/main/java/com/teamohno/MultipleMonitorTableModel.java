@@ -6,21 +6,16 @@ import java.util.ArrayList;
 public class MultipleMonitorTableModel extends MonitorTableModel {
     // Instance variables
     private MeasurementType type;
-    private MeasurementCellRenderer childCellRenderer;
 
     // Constructor
     public MultipleMonitorTableModel(MeasurementType newType, Color c){
         super();
         setObservedCellColour(c);
         type = newType;
-
         this.addMeasurementType(newType);
-
-        // pass in indexes - set default
-        childCellRenderer = new MultipleTypeCellRenderer(observedCellColour, newType.getComponentSize());
+        measurementMinWatcher = new MultipleTypeCellRenderer(observedCellColour, newType.getComponentSize());
     }
-
-
+    
     // Accessors and Mutators
     public void addMeasurementType(MeasurementType newType) {
         for (int i = 0; i < newType.getComponentSize(); i++) {
@@ -79,11 +74,7 @@ public class MultipleMonitorTableModel extends MonitorTableModel {
         fireTableDataChanged();
     }
 
-    public MeasurementCellRenderer getMeasurementRenderer(){
-        return childCellRenderer;
-    }
-
     public void setMinColouredValue(double newValue, int column){
-        childCellRenderer.updateMinColouredValue(newValue, column);
+        measurementMinWatcher.updateMinColouredValue(newValue, column);
     }
 }

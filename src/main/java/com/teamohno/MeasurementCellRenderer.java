@@ -58,6 +58,8 @@ public class MeasurementCellRenderer extends DefaultTableCellRenderer {
     }
 
     public void updateMinColouredValue(double value, int column){
+        System.out.println("Updating colour for specific column - child type");
+        System.out.println("Calling super - need to update through child renderer");
     }
 
     // gets set minimum value
