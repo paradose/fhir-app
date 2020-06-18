@@ -367,7 +367,13 @@ public class Controller {
     public void displayXYgraph(MeasurementType chartType){
         // dataset is a collection os XYSeries which will represent each patient.
         XYSeriesCollection recordingChartData = myModel.getHistoricalMonitorTable(chartType.getType()).createDataSet();
-        String measurementName = chartType.toString();
+        String measurementName = null;
+        if(myModel.getHistoricalMonitorTable(chartType.getType()).getChildType().equals(null)) {
+             measurementName = chartType.getName();
+        }
+        else{
+            measurementName = myModel.getHistoricalMonitorTable(chartType.getType()).getChildType().toString();
+        }
         JFreeChart measurementGraph = ChartFactory.createXYLineChart(
                 measurementName + " Graph",
                 "Time",
@@ -381,7 +387,6 @@ public class Controller {
         domain.setVerticalTickLabels(true);
         myModel.getHistoricalMonitorTable(chartType.getType()).addChart(chartType,measurementGraph,recordingChartData);
     }
-
 }
 
 
