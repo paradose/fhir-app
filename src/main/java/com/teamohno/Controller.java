@@ -99,7 +99,7 @@ public class Controller {
     public void initModel(){
         // Set initial minimums
         myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(75, 0);
-        myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(120, 1);
+        myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(115, 1);
         myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).fireTableDataChanged();
     }
 
