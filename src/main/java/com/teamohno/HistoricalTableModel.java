@@ -145,12 +145,10 @@ public class HistoricalTableModel extends MonitorTableModel {
         return returnString;
     }
     // inherits from parent class because it uses different graph (XY series)
-    public void addChart(MeasurementType measurementType, JFreeChart newChart, XYSeriesCollection chartData){
+    public void addChart(XYSeriesCollection chartData){
         graphMonitor = true;
+        // adds observed data
         recordingChartData = chartData;
-        ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", newChart);
-        chartFrm.setVisible(true);
-        chartFrm.setSize(450, 350);
     }
 
     public void clearDataValues(){

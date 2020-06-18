@@ -156,14 +156,8 @@ public class MonitorTableModel extends PatientTableModel {
         return dod;
     }
 
-    public void addChart(MeasurementType measurementType, JFreeChart newChart, DefaultCategoryDataset chartData){
+    public void addChart(DefaultCategoryDataset chartData){
+        // adds observed data from chart.
         measurementData = chartData;
-
-        CategoryPlot plot = newChart.getCategoryPlot();
-        plot.setRangeGridlinePaint(Color.black);
-
-        ChartFrame chartFrm = new ChartFrame( measurementType.getName() + " Levels", newChart);
-        chartFrm.setVisible(true);
-        chartFrm.setSize(450, 350);
     }
 }

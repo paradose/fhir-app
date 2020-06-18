@@ -3,14 +3,17 @@ package com.teamohno;
 //import com.sun.org.apache.bcel.internal.Const;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -337,7 +340,14 @@ public class Controller {
         DefaultCategoryDataset initialData = myModel.getMonitorTable(chartType.getType()).getMonitoredMeasurements(chartType);
         JFreeChart jchart = ChartFactory.createBarChart(chartType.getName()+" Levels", "Monitored Patients",
                 chartType.getName()+" Levels", initialData, PlotOrientation.VERTICAL, true, true, false);
-        myModel.getMonitorTable(chartType.getType()).addChart(chartType,jchart,initialData);
+        CategoryPlot plot = jchart.getCategoryPlot();
+        plot.setRangeGridlinePaint(Color.black);
+
+        ChartFrame chartFrm = new ChartFrame( chartType.getName() + " Levels", jchart);
+        chartFrm.setVisible(true);
+        chartFrm.setSize(450, 350);
+        myModel.getMonitorTable(chartType.getType()).addChart(initialData);
+
     }
 
     private void displayHighPatients(MeasurementType textualType){
@@ -358,8 +368,6 @@ public class Controller {
                 subjectCheck.attach(new TextualObserver(subjectCheck, typeHistory, textualType ));
             }
         }
-
-        // add them to HistoricalTableModel.
 
     }
 
@@ -385,7 +393,10 @@ public class Controller {
         domain.setRange(1.0,5.0);
         domain.setTickUnit(new NumberTickUnit(1.0));
         domain.setVerticalTickLabels(true);
-        myModel.getHistoricalMonitorTable(chartType.getType()).addChart(chartType,measurementGraph,recordingChartData);
+        ChartFrame chartFrm = new ChartFrame( chartType.getName() + " Levels", measurementGraph);
+        chartFrm.setVisible(true);
+        chartFrm.setSize(450, 350);
+        myModel.getHistoricalMonitorTable(chartType.getType()).addChart(recordingChartData);
     }
 }
 
