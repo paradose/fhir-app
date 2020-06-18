@@ -4,8 +4,11 @@ package com.teamohno;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.table.AbstractTableModel;
 import java.awt.event.MouseAdapter;
@@ -363,7 +366,20 @@ public class Controller {
     // gets last 5 values from table of Systolic Pressure and sets it as default
     public void displayXYgraph(MeasurementType chartType){
         // dataset is a collection os XYSeries which will represent each patient.
-        myModel.getHistoricalMonitorTable(chartType.getType()).addChart();
+        XYSeriesCollection recordingChartData = myModel.getHistoricalMonitorTable(chartType.getType()).createDataSet();
+        String measurementName = chartType.toString();
+        JFreeChart measurementGraph = ChartFactory.createXYLineChart(
+                measurementName + " Graph",
+                "Time",
+                "Levels",
+                recordingChartData,
+                PlotOrientation.VERTICAL,
+                true,true,false);
+        NumberAxis domain = (NumberAxis) measurementGraph.getXYPlot().getDomainAxis();
+        domain.setRange(1.0,5.0);
+        domain.setTickUnit(new NumberTickUnit(1.0));
+        domain.setVerticalTickLabels(true);
+        myModel.getHistoricalMonitorTable(chartType.getType()).addChart(chartType,measurementGraph,recordingChartData);
     }
 
 }
