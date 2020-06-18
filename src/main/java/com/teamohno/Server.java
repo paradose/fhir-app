@@ -244,7 +244,8 @@ public class Server {
         boolean firstLoop = false;
         MeasurementRecording newRecording = new MeasurementRecording(BigDecimal.ZERO,null, newType);
         BigDecimal newValue = BigDecimal.ONE.negate();
-
+        MeasurementRecording initialRec = new MeasurementRecording(newType);
+        initialRec.cloneRecording(patientRecord.getMeasurement(newType));
         // add in server values if first time
         if(firstTime) {
             testRecording.setType(newType);
@@ -279,14 +280,10 @@ public class Server {
                 newRecording.cloneRecording(testServerRecordings.get(j));
                 patientRecord.getMeasurement(newType).cloneRecording(newRecording);
                 patientRecord.pushNewRecordingHistory(newType);
+                patientRecord.getMeasurement(newType).cloneRecording(initialRec);
             }
         }
         newRecording.cloneRecording(testRecording);
-
-        String patientId = patientRecord.getId();
-        MeasurementRecording initialRec = new MeasurementRecording(newType);
-        initialRec.cloneRecording(patientRecord.getMeasurement(newType));
-        patientRecord.getMeasurement(newType).cloneRecording(initialRec);
         return newRecording;
     }
  */
