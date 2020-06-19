@@ -21,7 +21,7 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class HistoricalTableModel extends MonitorTableModel {
+public class HistoricalTableModel extends PatientTableModel {
     // Instance Variables
     private MeasurementType historicalType;
     private Constants.MeasurementType childType;
@@ -100,12 +100,11 @@ public class HistoricalTableModel extends MonitorTableModel {
         int patientIndex = monitoredPatientID.indexOf(newRecord.getId());
 
         if(patientIndex == -1) return false;
-
+        // gets new textual recording with new indexing.
         String newTextualRecording = lastRecordingsToString(lastRecordings);
         monitoredData.get(1).remove(patientIndex);
         monitoredData.get(1).add(patientIndex,newTextualRecording);
-
-        // removes old history from the chart and creates
+        // removes old history from the chart and creates if graph is monitored
         if (graphMonitor) {
             recordingChartData.removeSeries(recordingChartData.getSeries(newRecord.getFirstName() + newRecord.getLastName()));
             XYSeries updatedPatient = new XYSeries(newRecord.getFirstName() + newRecord.getLastName());
@@ -115,17 +114,18 @@ public class HistoricalTableModel extends MonitorTableModel {
             }
             recordingChartData.addSeries(updatedPatient);
         }
+        // updates the table.
         fireTableDataChanged();
         System.out.println("Historical Table is being Updated !");
         return true;
     }
 
-    // need an extra function that converts last recordings to data values for xy graph
-
+    // create the data set for the historical table model.
     public XYSeriesCollection createDataSet(){
         XYSeriesCollection dataset = new XYSeriesCollection();
         for (PatientSubject monitoredSubject: subjects){
             PatientRecord monitoredPatient = monitoredSubject.getState();
+            // assigns each patient to a XY Series with their recordings
             XYSeries newPatient = new XYSeries(monitoredPatient.getFirstName() + monitoredPatient.getLastName());
             for (int i=1; i<monitoredPatient.getLastRecordings(historicalType).size()+1; i++){
                 newPatient.add(i,monitoredPatient.getLastRecordings(historicalType)

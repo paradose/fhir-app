@@ -356,19 +356,18 @@ public class Controller {
         double setMinValue =  myModel.getMonitorTable(textualType.getType()).getMeasurementRenderer().getMinValue();
         myModel.getHistoricalMonitorTable(textualType.getType()).clearDataValues();
         Constants.MeasurementType childType = myModel.getHistoricalMonitorTable(textualType.getType()).getChildType();
-        // check their state / whether above chol, could be in measurement recording but just testing for now
+        // check their state / whether above
         for (PatientSubject subjectCheck: monitoredSubjects){
             double patientsCurrentMeasurement = subjectCheck.getState().getMeasurement(textualType)
                     .getMeasurementValue(childType).doubleValue();
             if (patientsCurrentMeasurement>setMinValue){
                 // adds the patient subject to historical
-                HistoricalTableModel typeHistory =  myModel.getHistoricalMonitorTable(textualType.getType());
-                typeHistory.addPatient(subjectCheck);
+                HistoricalTableModel historyModel =  myModel.getHistoricalMonitorTable(textualType.getType());
+                historyModel.addPatient(subjectCheck);
                 // attach model
-                subjectCheck.attach(new TextualObserver(subjectCheck, typeHistory, textualType ));
+                subjectCheck.attach(new TextualObserver(subjectCheck, historyModel, textualType ));
             }
         }
-
     }
 
     // gets last 5 values from table of Systolic Pressure and sets it as default
@@ -382,6 +381,7 @@ public class Controller {
         else{
             measurementName = myModel.getHistoricalMonitorTable(chartType.getType()).getChildType().toString();
         }
+        // initialises default graph with initial data existing in textual monitor
         JFreeChart measurementGraph = ChartFactory.createXYLineChart(
                 measurementName + " Graph",
                 "Time",
@@ -390,9 +390,11 @@ public class Controller {
                 PlotOrientation.VERTICAL,
                 true,true,false);
         NumberAxis domain = (NumberAxis) measurementGraph.getXYPlot().getDomainAxis();
+        // sets x axis to 5 values , incremented by 1
         domain.setRange(1.0,5.0);
         domain.setTickUnit(new NumberTickUnit(1.0));
         domain.setVerticalTickLabels(true);
+        // creates pop up graph that observes data.
         ChartFrame chartFrm = new ChartFrame( chartType.getName() + " Levels", measurementGraph);
         chartFrm.setVisible(true);
         chartFrm.setSize(450, 350);

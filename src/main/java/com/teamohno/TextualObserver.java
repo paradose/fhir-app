@@ -21,13 +21,14 @@ public class TextualObserver extends Observer {
 
     @Override
     public void update() {
-//      Updating new history of recordings
+        //   Updating new history of recordings
         ArrayList<MeasurementRecording> patientsNewRecordings = observerSubject.getState().getLastRecordings(type);
         // Get most recent recording (need to update)
         MeasurementRecording patientsLatestRecording = patientsNewRecordings.get(patientsNewRecordings.size()-1);
         //check if date of new recording is after the last updated recording's date
         Date newState = patientsLatestRecording.getDateMeasured();
         if (newState.compareTo(lastState) > 0){
+            // updates history of recordings in the textual monitor.
             monitorredData.updateHistory(observerSubject.getState().getLastRecordings(type),observerSubject.getState());
             lastState = newState;
         }
