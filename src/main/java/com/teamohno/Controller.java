@@ -38,11 +38,9 @@ public class Controller {
 
     // Initialise the controller - attach listeners to view components
     public void initController(){
-        // Add ALL high SBP patients
-//        myView.getAddPanelButton().addActionListener(e -> ());
-
         allTypes = myModel.getAllTypes();
         cholTypes = myModel.getTableTypes(Constants.MeasurementType.CHOLESTEROL);
+        bpTypes = myModel.getTableTypes(Constants.MeasurementType.BLOOD_PRESSURE);
 
         // Add listeners to UI elements
         myView.getUpdatePracButton().addActionListener(e -> storePracIdentifier());
@@ -52,9 +50,11 @@ public class Controller {
         for (int i = 0; i < allTypes.size(); i++) {
             if(allTypes.get(i).type == Constants.MeasurementType.CHOLESTEROL){
                 int index = i;
+                // Add Listeners to buttons
                 myView.getMonitorCholButton().addActionListener(e -> monitorSelectedPatients(allTypes.get(index)));
                 myView.getStopMonitorButton().addActionListener(e -> stopMonitorSelectedPatients(allTypes.get(index)));
                 myView.getDisplayChartButton().addActionListener(e -> displayChart(allTypes.get(index)));
+                // Create periodic caller
                 myPeriodicCholesterol = new PeriodicMeasurementCall(allTypes.get(index));
                 // adds mouse listener to monitor table
                 myView.getCholMonitorTable().addMouseListener(new MouseAdapter() {
@@ -70,12 +70,17 @@ public class Controller {
             }
             if (allTypes.get(i).type == Constants.MeasurementType.BLOOD_PRESSURE) {
                 int index = i;
-                bpTypes = myModel.getTableTypes(Constants.MeasurementType.BLOOD_PRESSURE);
+                // Add Listeners to buttons
                 myView.getMonitorBPButton().addActionListener(e -> monitorSelectedPatients(bpTypes.get(0)));
                 myView.getStopMonitorBPButton().addActionListener(e -> stopMonitorSelectedPatients(bpTypes.get(0)));
-
+                myView.getUpdateDbpMinButton().addActionListener(e -> updateMinValue(1, allTypes.get(index)));
+                myView.getUpdateSbpMinButton().addActionListener(e -> updateMinValue(2, allTypes.get(index)));
+                // displays textual monitor.
+                myView.getHistMonButton().addActionListener(e -> displayHighPatients(bpTypes.get(0)) );
+                myView.getDisplaySystolicGraphButton().addActionListener(e -> displayXYgraph(bpTypes.get(0)));
+                // Create periodic caller
                 myPeriodicBP = new PeriodicMeasurementCall(bpTypes.get(0));
-
+                // adds mouse listener to monitor table
                 myView.getBpMonitorTable().addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -84,12 +89,6 @@ public class Controller {
                         displaySelectedPatient(rowIndex, allTypes.get(index));
                     }
                 });
-
-                myView.getUpdateDbpMinButton().addActionListener(e -> updateMinValue(1, allTypes.get(index)));
-                myView.getUpdateSbpMinButton().addActionListener(e -> updateMinValue(2, allTypes.get(index)));
-                // displays textual monitor.
-                myView.getHistMonButton().addActionListener(e -> displayHighPatients(bpTypes.get(0)) );
-                myView.getDisplaySystolicGraphButton().addActionListener(e -> displayXYgraph(bpTypes.get(0)));
                 // Set renderer for table
                 myView.getBpMonitorTable().setDefaultRenderer(String.class,myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).getMeasurementRenderer());
                 // add table for SBP
@@ -103,7 +102,7 @@ public class Controller {
     }
 
     public void initModel(){
-        // Set initial minimums
+        // Set initial minimums to current labels value
         myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(Integer.parseInt(myView.getDbpMinLabel().getText()), 0);
         myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).setMinColouredValue(Integer.parseInt(myView.getSbpMinLabel().getText()), 1);
         myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).fireTableDataChanged();
@@ -140,7 +139,6 @@ public class Controller {
                 createPrac = true;
                 clearExisting = false;
             }
-
             if (clearExisting) {
                 // clear out existing subject lists - loop through all measurement types
                 for (int i = 0; i < allTypes.size(); i++) {
@@ -152,16 +150,11 @@ public class Controller {
                     // update(clear) averages for types after clearing subject list
                     currentType.updateAverage();
                 }
-
-                //temporary
-                // loop through all stored types
                 myModel.getMonitorTable(Constants.MeasurementType.CHOLESTEROL).clearDataValues();
                 myModel.getMonitorTable(Constants.MeasurementType.BLOOD_PRESSURE).clearDataValues();
-
                 // clear patient list model
                 myModel.getPatientListModel().clear(); // can make this a method inside myModel/listModel (inside listmodel can fire -> update)
             }
-
             if (createPrac) {
                 PractitionerRecord newPrac = myModel.createPractitoner(newPracIdentifier);
                 myModel.getStoredIdentifiers().add(newPracIdentifier);
@@ -235,7 +228,6 @@ public class Controller {
 
         for (int i = 0; i < selectedIndices.length ; i++) {
             PatientSubject processSubject = newType.getMonitorredSubjects().get(selectedIndices[i]);
-//            processSubject.getState().resetRecording(newType);
             // remove patient row's
             newType.getMonitorredSubjects().remove(processSubject);
             newType.updateAverage();
@@ -372,6 +364,9 @@ public class Controller {
 
     // gets last 5 values from table of Systolic Pressure and sets it as default
     public void displayXYgraph(MeasurementType chartType){
+        // Refresh textual monitor table that the graph displays
+        displayHighPatients(chartType);
+
         // dataset is a collection os XYSeries which will represent each patient.
         XYSeriesCollection recordingChartData = myModel.getHistoricalMonitorTable(chartType.getType()).createDataSet();
         String measurementName = null;
@@ -394,7 +389,7 @@ public class Controller {
         domain.setRange(1.0,5.0);
         domain.setTickUnit(new NumberTickUnit(1.0));
         domain.setVerticalTickLabels(true);
-        // creates pop up graph that observes data.
+        // creates a new pop up graph that observes data.
         ChartFrame chartFrm = new ChartFrame( chartType.getName() + " Levels", measurementGraph);
         chartFrm.setVisible(true);
         chartFrm.setSize(450, 350);

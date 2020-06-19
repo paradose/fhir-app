@@ -20,10 +20,15 @@ public class MultipleTypeCellRenderer extends MeasurementCellRenderer {
 
     public void addColumnIndex(int numberColumns){
         // adding 1 implies first column aside from name
-        for (int i = 1; i <= numberColumns; i++) {
-            listColumns.add(i);
-            // default initialise
-            minValList.add(0.0);
+        if(numberColumns > 1) {
+            for (int i = 1; i <= numberColumns; i++) {
+                listColumns.add(i);
+                // default initialise
+                minValList.add(0.0);
+            }
+        }
+        else{
+            System.out.println("Error: invalid number of columns");
         }
     }
 

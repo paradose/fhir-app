@@ -135,7 +135,7 @@ public class HistoricalTableModel extends PatientTableModel {
         }
         return dataset;
     }
-    // need to test that this is being called by altering dates.
+
     public String lastRecordingsToString(ArrayList<MeasurementRecording> lastRecordings){
         String returnString = "<html>";
         for (MeasurementRecording lastRecording : lastRecordings){

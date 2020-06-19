@@ -67,7 +67,6 @@ public class PatientRecord{
     public MeasurementRecording getMeasurement(MeasurementType newType){
         // make a default measurement object to return if no measurements
         MeasurementRecording returnRecording = new MeasurementRecording(newType);
-        System.out.println("Size of measurement reocrding list: " + measurementRecordings.size());
         for (int i = 0; i < measurementRecordings.size(); i++) {
                 if(measurementRecordings.get(i).getType().type == newType.type){
                     returnRecording = measurementRecordings.get(i);
@@ -96,6 +95,7 @@ public class PatientRecord{
 
     // push current into history list - parameter - MeasurementType
     public void pushNewRecordingHistory(MeasurementType newType){
+        // Measurement recordings are stored from index 0 = newest, if index n high = older
         for (int i = measurementRecordings.size() - 1; i >= 0; i--) {
             if(measurementRecordings.get(i).getType().type.equals(newType.type)){
                 MeasurementRecording newRecording = new MeasurementRecording(newType);
