@@ -1,5 +1,5 @@
 # Team OH NO
-## Assignment 2 - FIT3077 
+## Assignment 3 - FIT3077 
 
 
 ### Setup
@@ -20,5 +20,5 @@ mvn package
 
 Access the JAR executable within the target folder.
 ```
-java -jar target\Assignment-2-FHIR-1.0-SNAPSHOT-jar-with-dependencies
+java -jar target\Assignment-3-FHIR-1.0-SNAPSHOT-jar-with-dependencies
 ```
