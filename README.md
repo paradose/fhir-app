@@ -11,10 +11,10 @@ The following must be installed:
 
 ### Instructions:
 
-At the terminal navigate to the root of the project folder "Assignment-2-FHIR",
+At the terminal navigate to the root of the project folder "Assignment-3-FHIR",
  and then run the maven package command to create the executable of the project.
 ```
-cd Assignment-2-FHIR
+cd Assignment-3-FHIR
 mvn package 
 ```
 
