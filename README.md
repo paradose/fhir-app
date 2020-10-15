@@ -1,6 +1,5 @@
-# Team OH NO
-## Assignment 3 - FIT3077 
-
+## FHIR application 
+An application connected to Monash's FHIR server built around OOP design principles and patterns using Java. Using HAPI to make API requests to the server, the application monitors patient's cholesterol and blood pressure levels in real time for the given practitioner. 
 
 ### Setup
 The following must be installed:
