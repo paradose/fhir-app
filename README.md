@@ -1,5 +1,5 @@
 ## FHIR application 
-An application connected to Monash's FHIR server built around OOP design principles and patterns using Java. Using HAPI to make API requests to the server, the application monitors patient's cholesterol and blood pressure levels in real time for the given practitioner. 
+An application connected to Monash's FHIR server built around OOP design principles and patterns using Java. Using HAPI to make API requests to the FHIR server, the application monitors patient's cholesterol and blood pressure levels in real time for the given practitioner, and is able to visualise selected patients.
 
 ### Setup
 The following must be installed:
